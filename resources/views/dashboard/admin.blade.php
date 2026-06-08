@@ -1,13 +1,11 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="page-header">
-    <div>
-        <h2>Manajemen Penjadwalan Kegiatan</h2>
-        <p>Buat dan kelola jadwal kegiatan organisasi secara terpusat</p>
-    </div>
-</div>
+@section('page_title')
+    <h2>Manajemen Penjadwalan Kegiatan</h2>
+    <p>Buat dan kelola jadwal kegiatan organisasi secara terpusat</p>
+@endsection
 
+@section('content')
 @php
     $allUsers = \App\Models\User::whereHas('role', function($q) { $q->whereIn('nama_role', ['Pegawai', 'Pimpinan']); })->with('role')->get()->map(function($u) {
         return [
@@ -19,7 +17,8 @@
     });
 @endphp
 
-<div class="split-container" style="grid-template-columns: 28% 72%;" x-data="{ 
+<div style="display: flex; flex-direction: column; gap: 24px;" x-data="{ 
+            formOpen: false,
             allUsers: {{ json_encode($allUsers) }},
             createUnitId: '',
             editModalOpen: false, 
@@ -41,61 +40,70 @@
             }
         }">
     <div class="section-box">
-        <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">➕</span> Buat Kegiatan Baru</h3>
-        <form action="{{ route('kegiatan.store') }}" method="POST">
+        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" @click="formOpen = !formOpen">
+            <h3 class="section-title" style="margin: 0;"><span class="title-icon">➕</span> Buat Kegiatan Baru</h3>
+            <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Kegiatan ▾'"></button>
+        </div>
+        <form action="{{ route('kegiatan.store') }}" method="POST" x-show="formOpen" x-transition style="margin-top: 20px; display: none;">
             @csrf
-            <div class="form-group">
-                <label>Nama Kegiatan</label>
-                <input type="text" name="nama_kegiatan" class="{{ $errors->has('nama_kegiatan') ? 'is-invalid' : '' }}" required>
-                @error('nama_kegiatan') <small class="text-error">{{ $message }}</small> @enderror
-            </div>
-            <div class="form-group">
-                <label>Jenis Kegiatan</label>
-                <select name="jenis_id" required>
-                    @foreach(\App\Models\JenisKegiatan::all() as $jenis)
-                        <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Unit Pelaksana</label>
-                <select name="unit_id" required x-model="createUnitId">
-                    <option value="" disabled selected>Pilih Unit Pelaksana</option>
-                    @foreach(\App\Models\UnitKerja::all() as $unit)
-                        <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Lokasi</label>
-                <select name="lokasi_id" required>
-                    @foreach(\App\Models\LokasiKegiatan::all() as $lokasi)
-                        <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Pegawai & Pimpinan Terlibat</label>
-                <div class="checkbox-list">
-                    <template x-for="u in filteredCreateUsers" :key="u.id">
-                        <label>
-                            <input type="checkbox" name="user_ids[]" :value="u.id">
-                            <span x-text="u.nama + ' (' + u.role + ')'"></span>
-                        </label>
-                    </template>
-                    <template x-if="filteredCreateUsers.length === 0">
-                        <em style="color:var(--text-400); font-size:12px;">Pilih unit pelaksana terlebih dahulu</em>
-                    </template>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div>
+                    <div class="form-group">
+                        <label>Nama Kegiatan</label>
+                        <input type="text" name="nama_kegiatan" class="{{ $errors->has('nama_kegiatan') ? 'is-invalid' : '' }}" required>
+                        @error('nama_kegiatan') <small class="text-error">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Kegiatan</label>
+                        <select name="jenis_id" required>
+                            @foreach(\App\Models\JenisKegiatan::all() as $jenis)
+                                <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Pelaksana</label>
+                        <select name="unit_id" required x-model="createUnitId">
+                            <option value="" disabled selected>Pilih Unit Pelaksana</option>
+                            @foreach(\App\Models\UnitKerja::all() as $unit)
+                                <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokasi</label>
+                        <select name="lokasi_id" required>
+                            @foreach(\App\Models\LokasiKegiatan::all() as $lokasi)
+                                <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label>Waktu Mulai & Selesai</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <input type="datetime-local" name="waktu_mulai" required>
+                            <input type="datetime-local" name="waktu_selesai" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pegawai & Pimpinan Terlibat</label>
+                        <div class="checkbox-list" style="height: 180px; max-height: 180px;">
+                            <template x-for="u in filteredCreateUsers" :key="u.id">
+                                <label>
+                                    <input type="checkbox" name="user_ids[]" :value="u.id">
+                                    <span x-text="u.nama + ' (' + u.role + ')'"></span>
+                                </label>
+                            </template>
+                            <template x-if="filteredCreateUsers.length === 0">
+                                <em style="color:var(--text-400); font-size:12px;">Pilih unit pelaksana terlebih dahulu</em>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Waktu Mulai & Selesai</label>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <input type="datetime-local" name="waktu_mulai" required>
-                    <input type="datetime-local" name="waktu_selesai" required>
-                </div>
-            </div>
-            <button type="submit" class="btn" style="width:100%;">📅 Publikasikan Jadwal</button>
+            <button type="submit" class="btn" style="width:100%; margin-top: 10px;">📅 Publikasikan Jadwal</button>
         </form>
     </div>
 

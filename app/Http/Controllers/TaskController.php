@@ -16,7 +16,7 @@ class TaskController extends Controller {
             
         $pegawais = User::whereHas('role', function($q) {
             $q->where('nama_role', 'Pegawai');
-        })->get();
+        })->where('unit_id', Auth::user()->unit_id)->get();
         
         return view('dashboard.pimpinan', compact('tasks', 'pegawais'));
     }
@@ -51,6 +51,25 @@ class TaskController extends Controller {
         
         $task->save();
         return redirect()->back()->with('success', 'Tugas berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, $id) {
+        $task = Task::findOrFail($id);
+        if ($task->created_by !== Auth::id() && Auth::user()->role->nama_role !== 'Admin') {
+            return abort(403);
+        }
+        
+        $request->validate([
+            'judul' => 'required|string|max:200',
+            'deskripsi' => 'nullable|string',
+            'bobot' => 'required|integer|min:1|max:100',
+            'tgl_mulai' => 'required|date',
+            'tgl_selesai' => 'required|date|after_or_equal:tgl_mulai',
+            'assigned_to' => 'nullable|exists:users,id'
+        ]);
+
+        $task->update($request->all());
+        return redirect()->back()->with('success', 'Tugas berhasil diperbarui.');
     }
 
     public function submitReport(Request $request, $id) {

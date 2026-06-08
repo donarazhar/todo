@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pimpinan/tasks', [TaskController::class, 'pimpinanTasks'])->name('pimpinan.tasks');
     Route::get('/pegawai/tasks', [TaskController::class, 'pegawaiTasks'])->name('pegawai.tasks');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
     Route::post('/tasks/{id}/report', [TaskController::class, 'submitReport'])->name('tasks.report');
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     

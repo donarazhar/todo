@@ -579,6 +579,20 @@
             color: var(--text-500);
             margin-top: 4px;
         }
+        .page-header-nav h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-900);
+            letter-spacing: -0.02em;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .page-header-nav p {
+            font-size: 11.5px;
+            color: var(--text-500);
+            margin-top: 2px;
+            margin-bottom: 0;
+        }
 
         /* ============================
            STAT CARDS
@@ -1299,6 +1313,7 @@
                     @endif
 
                     <!-- Dokumentasi -->
+                    @if(Auth::user()->role->nama_role === 'Admin')
                     <div class="menu-section-title">Dokumentasi Teknis</div>
                     <a href="{{ route('docs.erd') }}" class="menu-item {{ request()->routeIs('docs.erd') ? 'active' : '' }}">
                         <span class="menu-icon">🧬</span>
@@ -1308,6 +1323,7 @@
                         <span class="menu-icon">🔄</span>
                         <span>Alur Aplikasi</span>
                     </a>
+                    @endif
                 </div></div>
             <div class="sidebar-user">
                 <div class="user-avatar" id="avatar-initial">{{ substr(Auth::user()->nama, 0, 1) }}</div>
@@ -1326,7 +1342,10 @@
         <div class="content-area">
             <!-- TOP NAVBAR -->
             <div class="top-navbar">
-                <div class="role-indicator">
+                <div class="page-header-nav">
+                    @yield('page_title')
+                </div>
+                <div class="role-indicator" style="margin-left: auto;">
                     <div class="role-dot"></div>
                     Akses: <span id="current-role-txt">{{ Auth::user()->role->nama_role }}</span>
                 </div>
