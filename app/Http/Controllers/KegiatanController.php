@@ -20,7 +20,6 @@ class KegiatanController extends Controller {
             'lokasi_id' => 'required|exists:lokasi_kegiatans,id',
             'waktu_mulai' => 'required|date',
             'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
-            'status' => 'required|in:Belum,Berlangsung,Selesai',
             'user_ids' => 'nullable|array',
             'user_ids.*' => 'exists:users,id'
         ]);
@@ -44,7 +43,6 @@ class KegiatanController extends Controller {
             'lokasi_id' => 'required|exists:lokasi_kegiatans,id',
             'waktu_mulai' => 'required|date',
             'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
-            'status' => 'required|in:Belum,Berlangsung,Selesai',
             'user_ids' => 'nullable|array',
             'user_ids.*' => 'exists:users,id'
         ]);

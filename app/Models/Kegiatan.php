@@ -22,4 +22,14 @@ class Kegiatan extends Model {
     public function peserta() {
         return $this->belongsToMany(User::class, 'kegiatan_user');
     }
+    public function getStatusAttribute() {
+        $now = now();
+        if ($now < $this->waktu_mulai) {
+            return 'Belum';
+        } elseif ($now >= $this->waktu_mulai && $now <= $this->waktu_selesai) {
+            return 'Berlangsung';
+        } else {
+            return 'Selesai';
+        }
+    }
 }

@@ -8,15 +8,36 @@
     </div>
 </div>
 
+@php
+    $allUsers = \App\Models\User::whereHas('role', function($q) { $q->whereIn('nama_role', ['Pegawai', 'Pimpinan']); })->with('role')->get()->map(function($u) {
+        return [
+            'id' => $u->id,
+            'nama' => $u->nama,
+            'role' => $u->role->nama_role,
+            'unit_id' => $u->unit_id
+        ];
+    });
+@endphp
+
 <div class="split-container" style="grid-template-columns: 28% 72%;" x-data="{ 
+            allUsers: {{ json_encode($allUsers) }},
+            createUnitId: '',
             editModalOpen: false, 
             editId: '', 
-            editData: { user_ids: [] },
+            editData: { user_ids: [], unit_id: '' },
             openEditModal(id, data, users) {
                 this.editId = id;
                 this.editData = data;
                 this.editData.user_ids = users;
                 this.editModalOpen = true;
+            },
+            get filteredCreateUsers() {
+                if (!this.createUnitId) return [];
+                return this.allUsers.filter(u => u.unit_id == this.createUnitId);
+            },
+            get filteredEditUsers() {
+                if (!this.editData.unit_id) return [];
+                return this.allUsers.filter(u => u.unit_id == this.editData.unit_id);
             }
         }">
     <div class="section-box">
@@ -38,7 +59,8 @@
             </div>
             <div class="form-group">
                 <label>Unit Pelaksana</label>
-                <select name="unit_id" required>
+                <select name="unit_id" required x-model="createUnitId">
+                    <option value="" disabled selected>Pilih Unit Pelaksana</option>
                     @foreach(\App\Models\UnitKerja::all() as $unit)
                         <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
                     @endforeach
@@ -55,12 +77,15 @@
             <div class="form-group">
                 <label>Pegawai & Pimpinan Terlibat</label>
                 <div class="checkbox-list">
-                    @foreach(\App\Models\User::whereHas('role', function($q) { $q->whereIn('nama_role', ['Pegawai', 'Pimpinan']); })->get() as $u)
+                    <template x-for="u in filteredCreateUsers" :key="u.id">
                         <label>
-                            <input type="checkbox" name="user_ids[]" value="{{ $u->id }}">
-                            {{ $u->nama }} ({{ $u->role->nama_role }})
+                            <input type="checkbox" name="user_ids[]" :value="u.id">
+                            <span x-text="u.nama + ' (' + u.role + ')'"></span>
                         </label>
-                    @endforeach
+                    </template>
+                    <template x-if="filteredCreateUsers.length === 0">
+                        <em style="color:var(--text-400); font-size:12px;">Pilih unit pelaksana terlebih dahulu</em>
+                    </template>
                 </div>
             </div>
             <div class="form-group">
@@ -70,21 +95,14 @@
                     <input type="datetime-local" name="waktu_selesai" required>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select name="status" required>
-                    <option value="Belum">Belum Berlangsung</option>
-                    <option value="Berlangsung">Sedang Berlangsung</option>
-                    <option value="Selesai">Selesai</option>
-                </select>
-            </div>
             <button type="submit" class="btn" style="width:100%;">📅 Publikasikan Jadwal</button>
         </form>
     </div>
 
     <div class="section-box">
         <h3 class="section-title"><span class="title-icon">📋</span> Database Jadwal Kegiatan</h3>
-        <table>
+        <div style="overflow-x: auto; width: 100%;">
+            <table style="min-width: 800px;">
             <thead>
                 <tr>
                     <th>Detail Kegiatan</th>
@@ -120,17 +138,20 @@
                             {{ $keg->status }}
                         </span>
                     </td>
-                    <td style="display:flex; gap:5px;">
-                        <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, { nama_kegiatan: '{{ addslashes($keg->nama_kegiatan) }}', jenis_id: '{{ $keg->jenis_id }}', unit_id: '{{ $keg->unit_id }}', lokasi_id: '{{ $keg->lokasi_id }}', waktu_mulai: '{{ $keg->waktu_mulai->format('Y-m-d\TH:i') }}', waktu_selesai: '{{ $keg->waktu_selesai->format('Y-m-d\TH:i') }}', status: '{{ $keg->status }}' }, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})">✏️</button>
-                        <form action="{{ route('kegiatan.destroy', $keg->id) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
-                        </form>
+                    <td>
+                        <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, { nama_kegiatan: '{{ addslashes($keg->nama_kegiatan) }}', jenis_id: '{{ $keg->jenis_id }}', unit_id: '{{ $keg->unit_id }}', lokasi_id: '{{ $keg->lokasi_id }}', waktu_mulai: '{{ $keg->waktu_mulai->format('Y-m-d\TH:i') }}', waktu_selesai: '{{ $keg->waktu_selesai->format('Y-m-d\TH:i') }}' }, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})">✏️</button>
+                            <form action="{{ route('kegiatan.destroy', $keg->id) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');" style="margin: 0;">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
     <!-- ============================
          EDIT MODAL (ALPINE JS)
@@ -176,12 +197,15 @@
                 <div class="form-group">
                     <label>Pegawai & Pimpinan Terlibat</label>
                     <div class="checkbox-list" style="max-height: 100px;">
-                        @foreach(\App\Models\User::whereHas('role', function($q) { $q->whereIn('nama_role', ['Pegawai', 'Pimpinan']); })->get() as $u)
+                        <template x-for="u in filteredEditUsers" :key="u.id">
                             <label>
-                                <input type="checkbox" name="user_ids[]" value="{{ $u->id }}" :checked="editData.user_ids && editData.user_ids.includes({{ $u->id }})">
-                                {{ $u->nama }} ({{ $u->role->nama_role }})
+                                <input type="checkbox" name="user_ids[]" :value="u.id" :checked="editData.user_ids && editData.user_ids.includes(u.id)">
+                                <span x-text="u.nama + ' (' + u.role + ')'"></span>
                             </label>
-                        @endforeach
+                        </template>
+                        <template x-if="filteredEditUsers.length === 0">
+                            <em style="color:var(--text-400); font-size:12px;">Pilih unit pelaksana terlebih dahulu</em>
+                        </template>
                     </div>
                 </div>
                 <div class="form-group">
@@ -190,14 +214,6 @@
                         <input type="datetime-local" name="waktu_mulai" x-model="editData.waktu_mulai" required>
                         <input type="datetime-local" name="waktu_selesai" x-model="editData.waktu_selesai" required>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select name="status" x-model="editData.status" required>
-                        <option value="Belum">Belum Berlangsung</option>
-                        <option value="Berlangsung">Sedang Berlangsung</option>
-                        <option value="Selesai">Selesai</option>
-                    </select>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
