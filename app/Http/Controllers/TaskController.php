@@ -21,11 +21,18 @@ class TaskController extends Controller {
         return view('dashboard.pimpinan', compact('tasks', 'pegawais'));
     }
 
-    public function pegawaiTasks() {
+    public function pegawaiTasks(Request $request) {
         if (Auth::user()->role->nama_role !== 'Pegawai') return abort(403);
         
-        $tasks = Task::where('assigned_to', Auth::id())->orderBy('tgl_selesai', 'asc')->get();
-        return view('dashboard.pegawai', compact('tasks'));
+        $tab = $request->query('tab', 'pimpinan');
+        $sumber = $tab === 'mandiri' ? 'Mandiri' : 'Pimpinan';
+
+        $tasks = Task::where('assigned_to', Auth::id())
+                     ->where('sumber', $sumber)
+                     ->orderBy('tgl_selesai', 'asc')
+                     ->get();
+
+        return view('dashboard.pegawai', compact('tasks', 'tab'));
     }
 
     public function store(Request $request) {
@@ -55,7 +62,7 @@ class TaskController extends Controller {
 
     public function update(Request $request, $id) {
         $task = Task::findOrFail($id);
-        if ($task->created_by !== Auth::id() && Auth::user()->role->nama_role !== 'Admin') {
+        if ($task->created_by !== Auth::id() && $task->assigned_to !== Auth::id() && Auth::user()->role->nama_role !== 'Admin') {
             return abort(403);
         }
         

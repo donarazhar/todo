@@ -1250,6 +1250,121 @@
         }
     
         /* ============================
+           RESPONSIVE UI (Hamburger & Bottom Nav)
+        ============================ */
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-700);
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 12px;
+        }
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 37, 69, 0.4);
+            z-index: 8999;
+            backdrop-filter: blur(2px);
+        }
+        
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: var(--bg-sidebar);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 9999;
+            height: 65px;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .b-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.4);
+            text-decoration: none;
+            font-size: 10.5px;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            gap: 4px;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+        .b-nav-item:hover {
+            color: rgba(255,255,255,0.8);
+        }
+        .b-nav-item.active {
+            color: var(--teal-400);
+        }
+        .b-nav-item .icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        /* TABLET (768px - 1024px) */
+        @media(max-width: 1024px) {
+            .hamburger-btn {
+                display: block;
+            }
+            .sidebar {
+                position: fixed;
+                left: -270px;
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+                transition: left 0.3s ease;
+                z-index: 9000;
+                box-shadow: var(--shadow-xl);
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .sidebar-backdrop.show {
+                display: block;
+            }
+        }
+
+        /* MOBILE (< 768px) */
+        @media(max-width: 768px) {
+            .hamburger-btn {
+                display: none; /* Hide hamburger, use bottom nav */
+            }
+            .sidebar {
+                display: none !important; /* Completely hide sidebar */
+            }
+            .sidebar-backdrop {
+                display: none !important;
+            }
+            .bottom-nav {
+                display: flex;
+            }
+            .content-area {
+                padding-bottom: 65px; /* Space for bottom nav */
+            }
+            .top-navbar {
+                padding: 0 16px;
+            }
+            .content-body {
+                padding: 16px;
+            }
+            .role-indicator {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            .page-header-nav h2 {
+                font-size: 16px;
+            }
+        }
+
+        /* ============================
            LARAVEL POLISH ADDITIONS
         ============================ */
         /* Error Validation UI */
@@ -1261,9 +1376,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 </head>
 <body>
-    <div id="app-layout">
+    <div id="app-layout" x-data="{ sidebarOpen: false }">
+        
+        <!-- SIDEBAR BACKDROP FOR TABLET -->
+        <div class="sidebar-backdrop" :class="{ 'show': sidebarOpen }" @click="sidebarOpen = false"></div>
+
         <!-- SIDEBAR NAVIGASI -->
-        <div class="sidebar">
+        <div class="sidebar" :class="{ 'open': sidebarOpen }">
             <div>
                 <div class="sidebar-brand">
                     <div class="sidebar-brand-icon">📋</div>
@@ -1305,9 +1424,13 @@
                     @if(Auth::user()->role->nama_role === 'Pegawai')
                     <div class="pegawai-feature">
                         <div class="menu-section-title">Fitur Pegawai</div>
-                        <a href="{{ route('pegawai.tasks') }}" class="menu-item {{ request()->routeIs('pegawai.tasks') ? 'active' : '' }}">
-                            <span class="menu-icon">✅</span>
-                            <span>My To-Do & Laporan</span>
+                        <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
+                            <span class="menu-icon">👑</span>
+                            <span>Delegasi Pimpinan</span>
+                        </a>
+                        <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'active' : '' }}">
+                            <span class="menu-icon">👤</span>
+                            <span>To-Do Mandiri</span>
                         </a>
                     </div>
                     @endif
@@ -1342,6 +1465,7 @@
         <div class="content-area">
             <!-- TOP NAVBAR -->
             <div class="top-navbar">
+                <button class="hamburger-btn" @click="sidebarOpen = true">☰</button>
                 <div class="page-header-nav">
                     @yield('page_title')
                 </div>
@@ -1360,6 +1484,45 @@
             </div>
         </div>
     </div>
+
+    <!-- BOTTOM NAVIGATION (MOBILE ONLY) -->
+    <nav class="bottom-nav">
+        <a href="{{ route('dashboard') }}" class="b-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <span class="icon">🏠</span><span class="label">Home</span>
+        </a>
+        
+        @if(Auth::user()->role->nama_role === 'Admin')
+            <a href="{{ route('master.index') }}" class="b-nav-item {{ request()->routeIs('master.index') ? 'active' : '' }}">
+                <span class="icon">📂</span><span class="label">Master</span>
+            </a>
+            <a href="{{ route('kegiatan.index') }}" class="b-nav-item {{ request()->routeIs('kegiatan.index') ? 'active' : '' }}">
+                <span class="icon">📅</span><span class="label">Jadwal</span>
+            </a>
+            <!-- Skipping docs in bottom nav to save space, Admin can use tablet/desktop -->
+        @endif
+        
+        @if(Auth::user()->role->nama_role === 'Pimpinan')
+            <a href="{{ route('pimpinan.tasks') }}" class="b-nav-item {{ request()->routeIs('pimpinan.tasks') ? 'active' : '' }}">
+                <span class="icon">📋</span><span class="label">Delegasi</span>
+            </a>
+        @endif
+        
+        @if(Auth::user()->role->nama_role === 'Pegawai')
+            <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="b-nav-item {{ request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
+                <span class="icon">👑</span><span class="label">Delegasi</span>
+            </a>
+            <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="b-nav-item {{ request('tab') === 'mandiri' ? 'active' : '' }}">
+                <span class="icon">👤</span><span class="label">Mandiri</span>
+            </a>
+        @endif
+        
+        <form method="POST" action="{{ route('logout') }}" style="display:contents;">
+            @csrf
+            <button type="submit" class="b-nav-item">
+                <span class="icon">🚪</span><span class="label">Logout</span>
+            </button>
+        </form>
+    </nav>
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast {{ session('success') ? 'show' : '' }}">
