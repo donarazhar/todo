@@ -4,7 +4,13 @@
 <div class="page-header">
     <div>
         <h2>Dashboard Overview & Statistik</h2>
-        <p>Ringkasan performa dan jadwal kegiatan seluruh divisi</p>
+        @if(Auth::user()->role->nama_role === 'Admin')
+            <p>Ringkasan performa dan jadwal kegiatan seluruh divisi</p>
+        @elseif(Auth::user()->role->nama_role === 'Pimpinan')
+            <p>Ringkasan performa unit kerja dan progres pegawai Anda</p>
+        @else
+            <p>Ringkasan progres kerja pribadi Anda</p>
+        @endif
     </div>
 </div>
 
@@ -33,6 +39,7 @@
 </div>
 
 <div class="split-container">
+    @if(Auth::user()->role->nama_role !== 'Pegawai')
     <div class="section-box">
         <h3 class="section-title"><span class="title-icon">📊</span> Progress Kerja Pegawai</h3>
         @if(count($pegawaiProgress) > 0)
@@ -52,8 +59,9 @@
             <p style="font-size:13px; color:var(--text-500); text-align:center;">Belum ada tugas terdaftar.</p>
         @endif
     </div>
+    @endif
 
-    <div class="section-box">
+    <div class="section-box" style="{{ Auth::user()->role->nama_role === 'Pegawai' ? 'grid-column: span 2;' : '' }}">
         <h3 class="section-title"><span class="title-icon">📅</span> Jadwal Kegiatan Terdaftar</h3>
         <table>
             <thead>

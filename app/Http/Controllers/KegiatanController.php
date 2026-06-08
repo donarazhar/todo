@@ -5,11 +5,26 @@ use App\Models\Kegiatan;
 use Illuminate\Support\Facades\Auth;
 
 class KegiatanController extends Controller {
-    public function destroy($id) { Kegiatan::findOrFail($id)->delete(); return redirect()->back()->with('success', 'Kegiatan berhasil dihapus.'); }
+    public function destroy($id) { 
+        Kegiatan::findOrFail($id)->delete(); 
+        return redirect()->back()->with('success', 'Kegiatan berhasil dihapus.'); 
+    }
     public function index() {
-        if (Auth::user()->role->nama_role !== 'Admin') return abort(403);
-        $kegiatans = Kegiatan::with(['jenis', 'lokasi', 'creator'])->orderBy('waktu_mulai', 'asc')->get();
-        return view('dashboard.admin', compact('kegiatans'));
+        $kegiatans = Kegiatan::with(['jenis', 'lokasi', 'creator'])->orderBy('waktu_mulai', 'asc')->paginate(15);
+        
+        $jenis_kegiatans = \App\Models\JenisKegiatan::all();
+        $unit_kerjas = \App\Models\UnitKerja::all();
+        $lokasi_kegiatans = \App\Models\LokasiKegiatan::all();
+        $allUsers = \App\Models\User::whereHas('role', function($q) { $q->whereIn('nama_role', ['Pegawai', 'Pimpinan']); })->with('role')->get()->map(function($u) {
+            return [
+                'id' => $u->id,
+                'nama' => $u->nama,
+                'role' => $u->role->nama_role,
+                'unit_id' => $u->unit_id
+            ];
+        });
+
+        return view('dashboard.admin', compact('kegiatans', 'jenis_kegiatans', 'unit_kerjas', 'lokasi_kegiatans', 'allUsers'));
     }
 
         public function store(Request $request) {

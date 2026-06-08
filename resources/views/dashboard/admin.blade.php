@@ -6,17 +6,6 @@
 @endsection
 
 @section('content')
-@php
-    $allUsers = \App\Models\User::whereHas('role', function($q) { $q->whereIn('nama_role', ['Pegawai', 'Pimpinan']); })->with('role')->get()->map(function($u) {
-        return [
-            'id' => $u->id,
-            'nama' => $u->nama,
-            'role' => $u->role->nama_role,
-            'unit_id' => $u->unit_id
-        ];
-    });
-@endphp
-
 <div style="display: flex; flex-direction: column; gap: 24px;" x-data="{ 
             formOpen: false,
             allUsers: {{ json_encode($allUsers) }},
@@ -56,7 +45,7 @@
                     <div class="form-group">
                         <label>Jenis Kegiatan</label>
                         <select name="jenis_id" required>
-                            @foreach(\App\Models\JenisKegiatan::all() as $jenis)
+                            @foreach($jenis_kegiatans as $jenis)
                                 <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
                             @endforeach
                         </select>
@@ -65,7 +54,7 @@
                         <label>Unit Pelaksana</label>
                         <select name="unit_id" required x-model="createUnitId">
                             <option value="" disabled selected>Pilih Unit Pelaksana</option>
-                            @foreach(\App\Models\UnitKerja::all() as $unit)
+                            @foreach($unit_kerjas as $unit)
                                 <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
                             @endforeach
                         </select>
@@ -73,7 +62,7 @@
                     <div class="form-group">
                         <label>Lokasi</label>
                         <select name="lokasi_id" required>
-                            @foreach(\App\Models\LokasiKegiatan::all() as $lokasi)
+                            @foreach($lokasi_kegiatans as $lokasi)
                                 <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
                             @endforeach
                         </select>
@@ -159,6 +148,7 @@
                 @endforeach
             </tbody>
         </table>
+        {{ $kegiatans->links() }}
         </div>
     </div>
     <!-- ============================
@@ -180,7 +170,7 @@
                     <div class="form-group">
                         <label>Jenis Kegiatan</label>
                         <select name="jenis_id" x-model="editData.jenis_id" required>
-                            @foreach(\App\Models\JenisKegiatan::all() as $jenis)
+                            @foreach($jenis_kegiatans as $jenis)
                                 <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
                             @endforeach
                         </select>
@@ -188,7 +178,7 @@
                     <div class="form-group">
                         <label>Unit Pelaksana</label>
                         <select name="unit_id" x-model="editData.unit_id" required>
-                            @foreach(\App\Models\UnitKerja::all() as $unit)
+                            @foreach($unit_kerjas as $unit)
                                 <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
                             @endforeach
                         </select>
@@ -197,7 +187,7 @@
                 <div class="form-group">
                     <label>Lokasi</label>
                     <select name="lokasi_id" x-model="editData.lokasi_id" required>
-                        @foreach(\App\Models\LokasiKegiatan::all() as $lokasi)
+                        @foreach($lokasi_kegiatans as $lokasi)
                             <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
                         @endforeach
                     </select>

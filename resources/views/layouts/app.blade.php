@@ -737,6 +737,16 @@
         }
 
         /* ============================
+           PAGINATION
+        ============================ */
+        .pagination { display: flex; list-style: none; gap: 5px; margin-top: 15px; padding: 0 10px; align-items: center; justify-content: flex-end; }
+        .page-item.active .page-link { background: var(--teal-500); color: white; border-color: var(--teal-500); }
+        .page-item.disabled .page-link { color: var(--text-400); pointer-events: none; }
+        .page-link { padding: 6px 12px; border: 1px solid var(--border-200); border-radius: var(--radius-sm); color: var(--text-700); text-decoration: none; font-size: 12.5px; transition: all var(--transition-fast); }
+        .page-link:hover { background: var(--border-100); }
+        .page-item:first-child .page-link, .page-item:last-child .page-link { font-weight: bold; }
+
+        /* ============================
            SPLIT / GRID LAYOUTS
         ============================ */
         .split-container {
@@ -1416,7 +1426,14 @@
                         <div class="menu-section-title">Fitur Pimpinan</div>
                         <a href="{{ route('pimpinan.tasks') }}" class="menu-item {{ request()->routeIs('pimpinan.tasks') ? 'active' : '' }}">
                             <span class="menu-icon">📋</span>
-                            <span>Delegasi To-Do List</span>
+                            <span style="flex-grow: 1;">Delegasi To-Do List</span>
+                            @if(isset($notifPimpinan) && $notifPimpinan > 0)
+                                <span style="background: #E53E3E; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);">{{ $notifPimpinan }}</span>
+                            @endif
+                        </a>
+                        <a href="{{ route('pimpinan.mandiri') }}" class="menu-item {{ request()->routeIs('pimpinan.mandiri') ? 'active' : '' }}">
+                            <span class="menu-icon">🎯</span>
+                            <span>Todo Mandiri Pegawai</span>
                         </a>
                     </div>
                     @endif
@@ -1426,7 +1443,10 @@
                         <div class="menu-section-title">Fitur Pegawai</div>
                         <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
                             <span class="menu-icon">👑</span>
-                            <span>Delegasi Pimpinan</span>
+                            <span style="flex-grow: 1;">Delegasi Pimpinan</span>
+                            @if(isset($notifPegawai) && $notifPegawai > 0)
+                                <span style="background: #E53E3E; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);">{{ $notifPegawai }}</span>
+                            @endif
                         </a>
                         <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'active' : '' }}">
                             <span class="menu-icon">👤</span>

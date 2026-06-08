@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,36 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Paginator::useBootstrapFour();
+        \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
+            $notifPimpinan = 0;
+            $notifPegawai = 0;
+
+            if (\Illuminate\Support\Facades\Auth::check()) {
+                $user = \Illuminate\Support\Facades\Auth::user();
+                $role = $user->role->nama_role ?? '';
+
+                if ($role === 'Pimpinan') {
+                    $notifPimpinan = \App\Models\Task::where('created_by', $user->id)
+                                         ->where('status', 'Menunggu Review')
+                                         ->count();
+                } elseif ($role === 'Pegawai') {
+                    $notifPegawai = \App\Models\Task::where('assigned_to', $user->id)
+                                        ->where('sumber', 'Pimpinan')
+                                        ->whereIn('status', ['Revisi']) // Let's just track Revisi for now, or Berlangsung if it has no laporan
+                                        ->count();
+                    
+                    // Add tasks that are new (Berlangsung and no laporan yet)
+                    $newTasks = \App\Models\Task::where('assigned_to', $user->id)
+                                        ->where('sumber', 'Pimpinan')
+                                        ->where('status', 'Berlangsung')
+                                        ->whereNull('laporan')
+                                        ->count();
+                    $notifPegawai += $newTasks;
+                }
+            }
+
+            $view->with(compact('notifPimpinan', 'notifPegawai'));
+        });
     }
 }

@@ -35,7 +35,15 @@
                     </div>
                     <div class="form-group">
                         <label>Deskripsi Detail Tugas</label>
-                        <textarea name="deskripsi" rows="4" required></textarea>
+                        <textarea name="deskripsi" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Prioritas</label>
+                        <select name="prioritas" required style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-200); border-radius: var(--radius-md); font-size: 13.5px; outline: none;">
+                            <option value="Sedang">🟡 Sedang</option>
+                            <option value="Tinggi">🔴 Tinggi</option>
+                            <option value="Rendah">🟢 Rendah</option>
+                        </select>
                     </div>
                 </div>
                 <div>
@@ -82,34 +90,82 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($tasks as $t)
+                @foreach($delegasiTasks as $t)
                 <tr>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
                         <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">👤 {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
-                        <div style="font-size:11.5px; color:var(--text-500);">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
+                        <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
+                        <div>
+                            @php
+                                $badgeColor = $t->prioritas === 'Tinggi' ? 'background: #FEE2E2; color: #991B1B;' : 
+                                             ($t->prioritas === 'Rendah' ? 'background: #D1FAE5; color: #065F46;' : 'background: #FEF3C7; color: #92400E;');
+                            @endphp
+                            <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; {{ $badgeColor }}">Prio: {{ $t->prioritas }}</span>
+                        </div>
                     </td>
                     <td>
                         <div style="font-size:12.5px; font-weight:600; color:var(--text-700);">Mulai: {{ $t->tgl_mulai->format('d M Y') }}</div>
                         <div style="font-size:12px; color:var(--text-500); margin-top:3px;">Deadline: {{ $t->tgl_selesai->format('d M Y') }}</div>
+                        @if($t->is_overdue)
+                            <div style="color:#E53E3E; font-size:11px; font-weight:700; margin-top:3px;">⚠️ Terlambat</div>
+                        @endif
                     </td>
                     <td>
                         <div style="margin-bottom:6px;">
-                            <span class="badge {{ $t->status == 'Selesai' ? 'bg-selesai' : 'bg-proses' }}">
+                            @php
+                                $statusBg = 'bg-proses';
+                                if($t->status === 'Selesai') $statusBg = 'bg-selesai';
+                                elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                                elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
+                            @endphp
+                            <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!}>
                                 {{ $t->status }}
                             </span>
                         </div>
                         <div>
                             @if($t->laporan)
-                                <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">✔ {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}</div>
+                                <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
+                                    ✔ {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                    @if($t->file_laporan)
+                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;">📄 Lihat Lampiran</a>
+                                    @endif
+                                </div>
+                                @if($t->status === 'Menunggu Review')
+                                    <form action="{{ route('tasks.review', $t->id) }}" method="POST" style="margin-top: 8px; display: flex; gap: 5px;">
+                                        @csrf
+                                        <button type="submit" name="action" value="approve" class="btn btn-sm" style="padding: 4px 8px; font-size: 10px;">✅ Setujui</button>
+                                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 10px;" onsubmit="return confirm('Minta pegawai merevisi laporan ini?');">↩️ Revisi</button>
+                                    </form>
+                                @endif
                             @else
                                 <div style="font-size:11px; color:var(--text-400); font-style:italic;">Belum ada laporan</div>
                             @endif
                         </div>
+
+                        <details style="margin-top: 8px;">
+                            <summary style="font-size: 11.5px; font-weight:600; cursor: pointer; color: var(--primary-600); padding:4px 0;">💬 Riwayat Catatan ({{ $t->comments->count() }})</summary>
+                            <div style="background: var(--bg-100); padding: 10px; border-radius: 6px; margin-top: 4px; font-size: 11.5px; border:1px solid var(--border-200);">
+                                @foreach($t->comments as $c)
+                                    <div style="margin-bottom: 8px; border-bottom:1px solid var(--border-200); padding-bottom:6px;">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                                            <strong style="color:var(--text-900);">{{ $c->user->nama }}</strong>
+                                            <span style="font-size: 9px; color: var(--text-400);">{{ $c->created_at->format('d M H:i') }}</span>
+                                        </div>
+                                        <div style="color:var(--text-700);">{{ $c->komentar }}</div>
+                                    </div>
+                                @endforeach
+                                <form action="{{ route('tasks.comments.store', $t->id) }}" method="POST" style="display: flex; gap: 5px; margin-top: 8px;">
+                                    @csrf
+                                    <input type="text" name="komentar" placeholder="Tulis catatan/revisi..." required style="flex-grow: 1; padding: 6px; font-size: 11px; border:1px solid var(--border-300); border-radius:4px;">
+                                    <button class="btn btn-sm" style="padding:4px 10px;">Kirim</button>
+                                </form>
+                            </div>
+                        </details>
                     </td>
                     <td>
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })">✏️</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })">✏️</button>
                             <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
@@ -120,8 +176,12 @@
                 @endforeach
             </tbody>
             </table>
+            {{ $delegasiTasks->links() }}
         </div>
     </div>
+
+
+</div>
 
     <!-- ============================
          EDIT MODAL (ALPINE JS)
@@ -141,6 +201,14 @@
                 <div class="form-group">
                     <label>Deskripsi Detail Tugas</label>
                     <textarea name="deskripsi" rows="3" x-model="editData.deskripsi" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Prioritas</label>
+                    <select name="prioritas" x-model="editData.prioritas" required style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-200); border-radius: var(--radius-md); font-size: 13.5px; outline: none;">
+                        <option value="Sedang">🟡 Sedang</option>
+                        <option value="Tinggi">🔴 Tinggi</option>
+                        <option value="Rendah">🟢 Rendah</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Pegawai yang Ditugaskan</label>
