@@ -68,4 +68,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tasks/{id}/review', [TaskController::class, 'reviewTask'])->name('tasks.review');
     Route::post('/tasks/{id}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::get('/export/tasks', [TaskController::class, 'exportPdf'])->name('tasks.export');
 });

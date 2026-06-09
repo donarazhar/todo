@@ -195,6 +195,26 @@
         <h3 class="section-title" style="margin-bottom: 6px;"><span class="title-icon"><i class="bi bi-bullseye"></i></span> Tugas Mandiri Pegawai</h3>
         <p class="mandiri-subtitle">Daftar tugas mandiri yang dibuat dan dikerjakan sendiri oleh pegawai di unit Anda.</p>
 
+        <form method="GET" action="{{ route('pimpinan.mandiri') }}" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul/deskripsi..." style="flex-grow:1; padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+            <select name="status" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+                <option value="">Semua Status</option>
+                <option value="Berlangsung" {{ request('status') == 'Berlangsung' ? 'selected' : '' }}>Berlangsung</option>
+                <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+            </select>
+            <select name="prioritas" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+                <option value="">Semua Prioritas</option>
+                <option value="Tinggi" {{ request('prioritas') == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
+                <option value="Sedang" {{ request('prioritas') == 'Sedang' ? 'selected' : '' }}>Sedang</option>
+                <option value="Rendah" {{ request('prioritas') == 'Rendah' ? 'selected' : '' }}>Rendah</option>
+            </select>
+            <button type="submit" class="btn btn-primary" style="padding:8px 16px;"><i class="bi bi-search"></i> Cari</button>
+            @if(request('search') || request('status') || request('prioritas'))
+                <a href="{{ route('pimpinan.mandiri') }}" class="btn btn-secondary" style="padding:8px 16px; text-decoration:none;"><i class="bi bi-x-lg"></i> Reset</a>
+            @endif
+            <a href="{{ route('tasks.export', array_merge(request()->all(), ['tab' => 'mandiri'])) }}" target="_blank" class="btn btn-success" style="padding:8px 16px; text-decoration:none; margin-left:auto;"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+        </form>
+
         {{-- ======= DESKTOP TABLE VIEW ======= --}}
         <div class="mandiri-table-wrap">
             <table>

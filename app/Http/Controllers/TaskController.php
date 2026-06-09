@@ -21,9 +21,27 @@ class TaskController extends Controller {
         })->where('unit_id', Auth::user()->unit_id)->get();
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
-        $delegasiTasks = Task::with(['assignee', 'creator', 'comments.user'])
-            ->where('created_by', Auth::id())
-            ->orderBy('tgl_mulai', 'desc')->paginate(15);
+        $query = Task::with(['assignee', 'creator', 'comments.user'])
+            ->where('created_by', Auth::id());
+
+        if (request()->filled('search')) {
+            $query->where(function($q) {
+                $q->where('judul', 'like', '%' . request()->search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . request()->search . '%');
+            });
+        }
+        
+        if (request()->filled('status')) {
+            $query->where('status', request()->status);
+        }
+
+        if (request()->filled('prioritas')) {
+            $query->where('prioritas', request()->prioritas);
+        }
+
+        $delegasiTasks = $query->orderBy('tgl_mulai', 'desc')
+                               ->paginate(15)
+                               ->appends(request()->except('page'));
             
         return view('dashboard.pimpinan', compact('delegasiTasks', 'pegawais'));
     }
@@ -35,10 +53,28 @@ class TaskController extends Controller {
         })->where('unit_id', Auth::user()->unit_id)->get();
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
-        $mandiriTasks = Task::with(['assignee', 'comments.user'])
+        $query = Task::with(['assignee', 'comments.user'])
             ->where('sumber', 'Mandiri')
-            ->whereIn('assigned_to', $pegawaiIds)
-            ->orderBy('tgl_mulai', 'desc')->paginate(15);
+            ->whereIn('assigned_to', $pegawaiIds);
+
+        if (request()->filled('search')) {
+            $query->where(function($q) {
+                $q->where('judul', 'like', '%' . request()->search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . request()->search . '%');
+            });
+        }
+        
+        if (request()->filled('status')) {
+            $query->where('status', request()->status);
+        }
+
+        if (request()->filled('prioritas')) {
+            $query->where('prioritas', request()->prioritas);
+        }
+
+        $mandiriTasks = $query->orderBy('tgl_mulai', 'desc')
+                              ->paginate(15)
+                              ->appends(request()->except('page'));
         
         return view('dashboard.pimpinan_mandiri', compact('mandiriTasks'));
     }
@@ -48,11 +84,28 @@ class TaskController extends Controller {
         $tab = $request->query('tab', 'pimpinan');
         $sumber = $tab === 'mandiri' ? 'Mandiri' : 'Pimpinan';
 
-        $tasks = Task::with(['comments.user'])
+        $query = Task::with(['comments.user'])
                      ->where('assigned_to', Auth::id())
-                     ->where('sumber', $sumber)
-                     ->orderBy('tgl_selesai', 'asc')
-                     ->paginate(15);
+                     ->where('sumber', $sumber);
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('judul', 'like', '%' . $request->search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('prioritas')) {
+            $query->where('prioritas', $request->prioritas);
+        }
+
+        $tasks = $query->orderBy('tgl_selesai', 'asc')
+                       ->paginate(15)
+                       ->appends($request->except('page'));
 
         return view('dashboard.pegawai', compact('tasks', 'tab'));
     }
@@ -149,6 +202,48 @@ class TaskController extends Controller {
         }
         
         $task->save();
+
         return redirect()->back()->with('success', $msg);
+    }
+
+    public function exportPdf(Request $request) {
+        $tab = $request->query('tab', 'pimpinan');
+        $sumber = $tab === 'mandiri' ? 'Mandiri' : 'Pimpinan';
+
+        if (Auth::user()->role->nama_role === 'Pegawai') {
+            $query = Task::with(['creator', 'assignee'])
+                         ->where('assigned_to', Auth::id())
+                         ->where('sumber', $sumber);
+            $title = $sumber === 'Pimpinan' ? "Laporan Tugas Delegasi Pimpinan" : "Laporan Tugas Mandiri";
+        } elseif (Auth::user()->role->nama_role === 'Pimpinan') {
+            if ($sumber === 'Mandiri') {
+                $pegawais = User::whereHas('role', function($q) {
+                    $q->where('nama_role', 'Pegawai');
+                })->where('unit_id', Auth::user()->unit_id)->pluck('id')->toArray();
+                
+                $query = Task::with(['assignee'])
+                             ->where('sumber', 'Mandiri')
+                             ->whereIn('assigned_to', $pegawais);
+                $title = "Laporan Tugas Mandiri Pegawai";
+            } else {
+                $query = Task::with(['assignee'])
+                             ->where('created_by', Auth::id());
+                $title = "Laporan Tugas Delegasi Pimpinan";
+            }
+        } else {
+            return abort(403);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('prioritas')) {
+            $query->where('prioritas', $request->prioritas);
+        }
+
+        $tasks = $query->orderBy('tgl_mulai', 'desc')->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.tasks_pdf', compact('tasks', 'title'));
+        return $pdf->download('Laporan_Tugas_' . date('Y-m-d_Hi') . '.pdf');
     }
 }

@@ -433,6 +433,28 @@
     <div class="section-box">
         <h3 class="section-title" style="margin-bottom: 18px;"><span class="title-icon"><i class="bi bi-bar-chart-line"></i></span> Monitoring Kerja Pegawai</h3>
 
+        <form method="GET" action="{{ route('pimpinan.tasks') }}" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul/deskripsi..." style="flex-grow:1; padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+            <select name="status" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+                <option value="">Semua Status</option>
+                <option value="Berlangsung" {{ request('status') == 'Berlangsung' ? 'selected' : '' }}>Berlangsung</option>
+                <option value="Menunggu Review" {{ request('status') == 'Menunggu Review' ? 'selected' : '' }}>Menunggu Review</option>
+                <option value="Revisi" {{ request('status') == 'Revisi' ? 'selected' : '' }}>Revisi</option>
+                <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+            </select>
+            <select name="prioritas" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+                <option value="">Semua Prioritas</option>
+                <option value="Tinggi" {{ request('prioritas') == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
+                <option value="Sedang" {{ request('prioritas') == 'Sedang' ? 'selected' : '' }}>Sedang</option>
+                <option value="Rendah" {{ request('prioritas') == 'Rendah' ? 'selected' : '' }}>Rendah</option>
+            </select>
+            <button type="submit" class="btn btn-primary" style="padding:8px 16px;"><i class="bi bi-search"></i> Cari</button>
+            @if(request('search') || request('status') || request('prioritas'))
+                <a href="{{ route('pimpinan.tasks') }}" class="btn btn-secondary" style="padding:8px 16px; text-decoration:none;"><i class="bi bi-x-lg"></i> Reset</a>
+            @endif
+            <a href="{{ route('tasks.export', array_merge(request()->all(), ['tab' => 'pimpinan'])) }}" target="_blank" class="btn btn-success" style="padding:8px 16px; text-decoration:none; margin-left:auto;"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+        </form>
+
         {{-- ======= DESKTOP TABLE VIEW ======= --}}
         <div class="task-table-wrap">
             <table>

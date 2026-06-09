@@ -1408,12 +1408,51 @@
             border-color: #E53E3E; box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
         }
         .text-error { color: #E53E3E; font-size: 11px; font-weight: 600; margin-top: 4px; display: block; }
+
+        /* ============================
+           DARK MODE OVERRIDES
+        ============================ */
+        body.dark-mode {
+            --bg-app: #111827;
+            --bg-white: #1F2937;
+            --bg-card: #1F2937;
+            --text-900: #F9FAFB;
+            --text-700: #E5E7EB;
+            --text-500: #9CA3AF;
+            --text-400: #6B7280;
+            --text-300: #4B5563;
+            --border-100: #374151;
+            --border-200: #4B5563;
+            --border-300: #6B7280;
+            --status-pending-bg: #374151;
+            --status-pending-text: #D1D5DB;
+            --status-active-bg: #78350F;
+            --status-active-text: #FDE68A;
+            --status-done-bg: #064E3B;
+            --status-done-text: #A7F3D0;
+            --status-danger-bg: #7F1D1D;
+            --status-danger-text: #FECACA;
+        }
+        body.dark-mode .btn-secondary { background: var(--bg-card); color: var(--text-900); }
+        body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea { background: var(--bg-app); color: var(--text-900); }
+        body.dark-mode .table th, body.dark-mode table th { background: var(--bg-app); color: var(--text-900); }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     @stack('styles')
 </head>
 <body>
-    <div id="app-layout" x-data="{ sidebarOpen: false }">
+    <div id="app-layout" x-data="{ 
+        sidebarOpen: false,
+        darkMode: localStorage.getItem('darkMode') === 'true',
+        init() {
+            if (this.darkMode) document.body.classList.add('dark-mode');
+            $watch('darkMode', val => {
+                localStorage.setItem('darkMode', val);
+                if(val) document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+            })
+        }
+    }">
         
         <!-- SIDEBAR BACKDROP FOR TABLET -->
         <div class="sidebar-backdrop" :class="{ 'show': sidebarOpen }" @click="sidebarOpen = false"></div>
@@ -1518,9 +1557,14 @@
                 <div class="page-header-nav">
                     @yield('page_title')
                 </div>
-                <div class="role-indicator" style="margin-left: auto;">
-                    <div class="role-dot"></div>
-                    Akses: <span id="current-role-txt">{{ Auth::user()->role->nama_role }}</span>
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+                    <button @click="darkMode = !darkMode" class="btn btn-secondary" style="padding: 6px 10px; border-radius: var(--radius-full);" title="Toggle Dark Mode">
+                        <i class="bi" :class="darkMode ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
+                    </button>
+                    <div class="role-indicator">
+                        <div class="role-dot"></div>
+                        Akses: <span id="current-role-txt">{{ Auth::user()->role->nama_role }}</span>
+                    </div>
                 </div>
             </div>
 
