@@ -40,7 +40,8 @@
             --gradient-card-purple: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
 
             --bg-app: #F4F7FB;
-            --bg-sidebar: #0B2545;
+            --gradient-sidebar: linear-gradient(160deg, #071B33 0%, #1E3A8A 30%, #1D4ED8 70%, #2563EB 100%);
+            --bg-sidebar: var(--gradient-sidebar);
             --bg-sidebar-hover: rgba(255,255,255,0.08);
             --bg-sidebar-active: rgba(255,255,255,0.14);
             --bg-white: #FFFFFF;
