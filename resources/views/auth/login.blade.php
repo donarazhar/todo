@@ -7,6 +7,7 @@
     <title>Login — Task&Schedule</title>
     <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         /* ============================
            DESIGN TOKENS
@@ -913,21 +914,21 @@
 
                 <div class="feature-list">
                     <div class="feature-item">
-                        <div class="feature-icon">📋</div>
+                        <div class="feature-icon"><i class="bi bi-check-circle"></i></div>
                         <div class="feature-text">
                             <h4>Manajemen Tugas</h4>
                             <p>Kelola dan pantau seluruh tugas dalam satu dashboard</p>
                         </div>
                     </div>
                     <div class="feature-item">
-                        <div class="feature-icon">📊</div>
+                        <div class="feature-icon"><i class="bi bi-bar-chart-line"></i></div>
                         <div class="feature-text">
                             <h4>Laporan Real-time</h4>
                             <p>Monitor progres tugas secara real-time dan terukur</p>
                         </div>
                     </div>
                     <div class="feature-item">
-                        <div class="feature-icon">👥</div>
+                        <div class="feature-icon"><i class="bi bi-people"></i></div>
                         <div class="feature-text">
                             <h4>Kolaborasi Tim</h4>
                             <p>Koordinasi tugas antar unit kerja dengan mudah</p>
@@ -942,7 +943,7 @@
             <div class="form-wrapper">
                 <div class="form-header">
                     <div class="welcome-back">
-                        <span>👋</span> Selamat datang kembali
+                        <span><i class="bi bi-hand-wave"></i></span> Selamat datang kembali
                     </div>
                     <h1 id="login-heading">Masuk ke Akun Anda</h1>
                     <p>Silakan masuk menggunakan akun organisasi Anda untuk melanjutkan.</p>
@@ -950,7 +951,7 @@
 
                 @if($errors->any())
                     <div class="alert-error" role="alert">
-                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
                         <span class="alert-message">{{ $errors->first() }}</span>
                     </div>
                 @endif
@@ -959,7 +960,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="username">
-                            <span class="label-icon">👤</span>
+                            <span class="label-icon"><i class="bi bi-person-fill"></i></span>
                             Username
                         </label>
                         <div class="input-wrapper">
@@ -974,13 +975,13 @@
                                 autofocus
                                 autocomplete="username"
                             >
-                            <span class="input-icon">👤</span>
+                            <span class="input-icon"><i class="bi bi-person"></i></span>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="password">
-                            <span class="label-icon">🔒</span>
+                            <span class="label-icon"><i class="bi bi-lock-fill"></i></span>
                             Password
                         </label>
                         <div class="input-wrapper">
@@ -993,9 +994,9 @@
                                 required
                                 autocomplete="current-password"
                             >
-                            <span class="input-icon">🔒</span>
+                            <span class="input-icon"><i class="bi bi-lock"></i></span>
                             <button type="button" class="password-toggle" id="password-toggle" aria-label="Tampilkan password" tabindex="-1">
-                                👁️
+                                <i class="bi bi-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1009,7 +1010,7 @@
                 <div class="form-footer">
                     <p>Sistem ini hanya untuk pengguna terdaftar di<br><span class="org-name">organisasi Anda</span>.</p>
                     <div class="security-badge">
-                        <span class="shield-icon">🔒</span>
+                        <span class="shield-icon"><i class="bi bi-shield-lock-fill"></i></span>
                         Koneksi aman & terenkripsi
                     </div>
                 </div>
