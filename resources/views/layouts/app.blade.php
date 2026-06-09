@@ -1534,10 +1534,10 @@
         @endif
         
         @if(Auth::user()->role->nama_role === 'Pegawai')
-            <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="b-nav-item {{ request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
+            <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
                 <span class="icon">👑</span><span class="label">Delegasi</span>
             </a>
-            <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="b-nav-item {{ request('tab') === 'mandiri' ? 'active' : '' }}">
+            <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'active' : '' }}">
                 <span class="icon">👤</span><span class="label">Mandiri</span>
             </a>
         @endif
