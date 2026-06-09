@@ -1317,6 +1317,23 @@
         .b-nav-item .icon {
             font-size: 22px;
             margin-bottom: 2px;
+            position: relative;
+        }
+        .b-nav-badge {
+            position: absolute;
+            top: -4px;
+            right: -10px;
+            background: #E53E3E;
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            min-width: 16px;
+            text-align: center;
+            line-height: 1.2;
+            font-family: 'Inter', sans-serif;
         }
 
         /* TABLET (768px - 1024px) */
@@ -1526,7 +1543,11 @@
         
         @if(Auth::user()->role->nama_role === 'Pimpinan')
             <a href="{{ route('pimpinan.tasks') }}" class="b-nav-item {{ request()->routeIs('pimpinan.tasks') ? 'active' : '' }}">
-                <span class="icon">📋</span><span class="label">Delegasi</span>
+                <span class="icon">📋
+                    @if(isset($notifPimpinan) && $notifPimpinan > 0)
+                        <span class="b-nav-badge">{{ $notifPimpinan }}</span>
+                    @endif
+                </span><span class="label">Delegasi</span>
             </a>
             <a href="{{ route('pimpinan.mandiri') }}" class="b-nav-item {{ request()->routeIs('pimpinan.mandiri') ? 'active' : '' }}">
                 <span class="icon">🎯</span><span class="label">Mandiri</span>
@@ -1535,7 +1556,11 @@
         
         @if(Auth::user()->role->nama_role === 'Pegawai')
             <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
-                <span class="icon">👑</span><span class="label">Delegasi</span>
+                <span class="icon">👑
+                    @if(isset($notifPegawai) && $notifPegawai > 0)
+                        <span class="b-nav-badge">{{ $notifPegawai }}</span>
+                    @endif
+                </span><span class="label">Delegasi</span>
             </a>
             <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'active' : '' }}">
                 <span class="icon">👤</span><span class="label">Mandiri</span>
