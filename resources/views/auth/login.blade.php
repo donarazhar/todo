@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Login ke sistem Task&Schedule — Kelola tugas dan jadwal organisasi Anda dengan mudah.">
     <title>Login — Task&Schedule</title>
+    <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ============================
