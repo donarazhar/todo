@@ -370,7 +370,7 @@
     <div class="section-box">
         <div class="task-form-toggle" @click="formOpen = !formOpen">
             <div class="task-form-toggle-info">
-                <h3 class="section-title"><span class="title-icon">📝</span> Delegasikan Tugas Baru</h3>
+                <h3 class="section-title"><span class="title-icon"><i class="bi bi-pencil-square"></i></span> Delegasikan Tugas Baru</h3>
                 <p>Tugas yang Anda buat akan otomatis muncul di dashboard pegawai yang ditugaskan.</p>
             </div>
             <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Tugas Baru ▾'"></button>
@@ -390,9 +390,9 @@
                     <div class="form-group">
                         <label>Prioritas</label>
                         <select name="prioritas" required>
-                            <option value="Sedang">🟡 Sedang</option>
-                            <option value="Tinggi">🔴 Tinggi</option>
-                            <option value="Rendah">🟢 Rendah</option>
+                            <option value="Sedang">Sedang</option>
+                            <option value="Tinggi">Tinggi</option>
+                            <option value="Rendah">Rendah</option>
                         </select>
                     </div>
                 </div>
@@ -423,7 +423,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn task-form-submit">📤 Kirim Tugas Sekarang</button>
+            <button type="submit" class="btn task-form-submit"><i class="bi bi-send"></i> Kirim Tugas Sekarang</button>
         </form>
     </div>
 
@@ -431,7 +431,7 @@
          SECTION: MONITORING KERJA
     ================================= --}}
     <div class="section-box">
-        <h3 class="section-title" style="margin-bottom: 18px;"><span class="title-icon">📊</span> Monitoring Kerja Pegawai</h3>
+        <h3 class="section-title" style="margin-bottom: 18px;"><span class="title-icon"><i class="bi bi-bar-chart-line"></i></span> Monitoring Kerja Pegawai</h3>
 
         {{-- ======= DESKTOP TABLE VIEW ======= --}}
         <div class="task-table-wrap">
@@ -449,7 +449,7 @@
                 <tr>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
-                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">👤 {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
+                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;"><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
                         <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
                         <div>
                             @php
@@ -462,7 +462,7 @@
                         <div style="font-size:12.5px; font-weight:600; color:var(--text-700);">Mulai: {{ $t->tgl_mulai->format('d M Y') }}</div>
                         <div style="font-size:12px; color:var(--text-500); margin-top:3px;">Deadline: {{ $t->tgl_selesai->format('d M Y') }}</div>
                         @if($t->is_overdue)
-                            <div style="color:#E53E3E; font-size:11px; font-weight:700; margin-top:3px;">⚠️ Terlambat</div>
+                            <div style="color:#E53E3E; font-size:11px; font-weight:700; margin-top:3px;"><i class="bi bi-exclamation-triangle"></i> Terlambat</div>
                         @endif
                     </td>
                     <td>
@@ -480,16 +480,16 @@
                         <div>
                             @if($t->laporan)
                                 <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
-                                    ✔ {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                    <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
                                     @if($t->file_laporan)
-                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;">📄 Lihat Lampiran</a>
+                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
                                     @endif
                                 </div>
                                 @if($t->status === 'Menunggu Review')
                                     <form action="{{ route('tasks.review', $t->id) }}" method="POST" style="margin-top: 8px; display: flex; gap: 5px;">
                                         @csrf
-                                        <button type="submit" name="action" value="approve" class="btn btn-sm" style="padding: 4px 8px; font-size: 10px;">✅ Setujui</button>
-                                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 10px;" onsubmit="return confirm('Minta pegawai merevisi laporan ini?');">↩️ Revisi</button>
+                                        <button type="submit" name="action" value="approve" class="btn btn-sm" style="padding: 4px 8px; font-size: 10px;"><i class="bi bi-check-circle"></i> Setujui</button>
+                                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 10px;" onsubmit="return confirm('Minta pegawai merevisi laporan ini?');"><i class="bi bi-arrow-return-left"></i> Revisi</button>
                                     </form>
                                 @endif
                             @else
@@ -498,7 +498,7 @@
                         </div>
 
                         <details style="margin-top: 8px;">
-                            <summary style="font-size: 11.5px; font-weight:600; cursor: pointer; color: var(--primary-600); padding:4px 0;">💬 Riwayat Catatan ({{ $t->comments->count() }})</summary>
+                            <summary style="font-size: 11.5px; font-weight:600; cursor: pointer; color: var(--primary-600); padding:4px 0;"><i class="bi bi-chat-dots"></i> Riwayat Catatan ({{ $t->comments->count() }})</summary>
                             <div style="background: var(--bg-100); padding: 10px; border-radius: 6px; margin-top: 4px; font-size: 11.5px; border:1px solid var(--border-200);">
                                 @foreach($t->comments as $c)
                                     <div style="margin-bottom: 8px; border-bottom:1px solid var(--border-200); padding-bottom:6px;">
@@ -519,10 +519,10 @@
                     </td>
                     <td>
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })">✏️</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })"><i class="bi bi-pencil"></i></button>
                             <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                             </form>
                         </div>
                     </td>
@@ -531,7 +531,7 @@
                 <tr>
                     <td colspan="4">
                         <div class="empty-state">
-                            <div class="empty-icon">📋</div>
+                            <div class="empty-icon"><i class="bi bi-card-checklist"></i></div>
                             <p>Belum ada tugas yang didelegasikan.</p>
                         </div>
                     </td>
@@ -549,7 +549,7 @@
                 <div class="task-card-header">
                     <div class="task-card-title">{{ $t->judul }}</div>
                     <div class="task-card-meta">
-                        <span>👤 {{ $t->assignee->nama ?? '-' }}</span>
+                        <span><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }}</span>
                         <span>•</span>
                         <span>Bobot: {{ $t->bobot }}</span>
                     </div>
@@ -582,7 +582,7 @@
                             <span class="task-card-info-label">Deadline</span>
                             <span class="task-card-info-value {{ $t->is_overdue ? 'overdue' : '' }}">
                                 {{ $t->tgl_selesai->format('d M Y') }}
-                                @if($t->is_overdue) ⚠️ @endif
+                                @if($t->is_overdue) <i class="bi bi-exclamation-triangle"></i> @endif
                             </span>
                         </div>
                     </div>
@@ -591,11 +591,11 @@
                     @if($t->laporan)
                         <div class="task-card-report">
                             <div class="task-card-report-text">
-                                ✔ {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
+                                <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
                             </div>
                             @if($t->file_laporan)
                                 <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="task-card-report-link">
-                                    📄 Lihat Lampiran
+                                    <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
                                 </a>
                             @endif
                         </div>
@@ -603,8 +603,8 @@
                             <form action="{{ route('tasks.review', $t->id) }}" method="POST">
                                 @csrf
                                 <div class="task-card-review-actions">
-                                    <button type="submit" name="action" value="approve" class="btn btn-sm">✅ Setujui</button>
-                                    <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" onclick="return confirm('Minta pegawai merevisi laporan ini?');">↩️ Revisi</button>
+                                    <button type="submit" name="action" value="approve" class="btn btn-sm"><i class="bi bi-check-circle"></i> Setujui</button>
+                                    <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" onclick="return confirm('Minta pegawai merevisi laporan ini?');"><i class="bi bi-arrow-return-left"></i> Revisi</button>
                                 </div>
                             </form>
                         @endif
@@ -614,7 +614,7 @@
 
                     {{-- Catatan / Notes --}}
                     <details>
-                        <summary class="task-card-notes-toggle">💬 Riwayat Catatan ({{ $t->comments->count() }})</summary>
+                        <summary class="task-card-notes-toggle"><i class="bi bi-chat-dots"></i> Riwayat Catatan ({{ $t->comments->count() }})</summary>
                         <div class="task-card-notes-content">
                             @foreach($t->comments as $c)
                                 <div class="note-item">
@@ -637,22 +637,22 @@
                 {{-- Card Footer / Actions --}}
                 <div class="task-card-footer">
                     @if($t->is_overdue)
-                        <span style="color:#E53E3E; font-size:11px; font-weight:700;">⚠️ Terlambat</span>
+                        <span style="color:#E53E3E; font-size:11px; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
                     @else
                         <span></span>
                     @endif
                     <div class="task-card-actions">
-                        <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })">✏️ Edit</button>
+                        <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })"><i class="bi bi-pencil"></i> Edit</button>
                         <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                         </form>
                     </div>
                 </div>
             </div>
             @empty
             <div class="empty-state">
-                <div class="empty-icon">📋</div>
+                <div class="empty-icon"><i class="bi bi-card-checklist"></i></div>
                 <p>Belum ada tugas yang didelegasikan. Tekan "Buat Tugas Baru" untuk memulai.</p>
             </div>
             @endforelse
@@ -670,7 +670,7 @@
     <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
         <div class="modal-box" @click.away="editModalOpen = false">
             <div class="modal-header">
-                <h3>✏️ Edit Tugas Pegawai</h3>
+                <h3><i class="bi bi-pencil"></i> Edit Tugas Pegawai</h3>
                 <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
             </div>
             <form :action="'{{ url('/tasks') }}/' + editId" method="POST">
@@ -686,9 +686,9 @@
                 <div class="form-group">
                     <label>Prioritas</label>
                     <select name="prioritas" x-model="editData.prioritas" required>
-                        <option value="Sedang">🟡 Sedang</option>
-                        <option value="Tinggi">🔴 Tinggi</option>
-                        <option value="Rendah">🟢 Rendah</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Tinggi">Tinggi</option>
+                        <option value="Rendah">Rendah</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -712,7 +712,7 @@
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 </div>
             </form>
         </div>

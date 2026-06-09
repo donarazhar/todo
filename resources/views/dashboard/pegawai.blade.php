@@ -405,7 +405,7 @@
 <div class="section-box">
     <div class="pgw-form-toggle" @click="formOpen = !formOpen">
         <div class="pgw-form-toggle-info">
-            <h3 class="section-title"><span class="title-icon">✏️</span> Tambah To-Do Mandiri</h3>
+            <h3 class="section-title"><span class="title-icon"><i class="bi bi-pencil"></i></span> Tambah To-Do Mandiri</h3>
             <p>Buat tugas mandiri untuk mencatat pekerjaan pribadi Anda.</p>
         </div>
         <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Tugas Mandiri ▾'"></button>
@@ -427,9 +427,9 @@
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Prioritas</label>
                     <select name="prioritas" required>
-                        <option value="Sedang">🟡 Sedang</option>
-                        <option value="Tinggi">🔴 Tinggi</option>
-                        <option value="Rendah">🟢 Rendah</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Tinggi">Tinggi</option>
+                        <option value="Rendah">Rendah</option>
                     </select>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -445,7 +445,7 @@
                     <input type="date" name="tgl_selesai" required>
                 </div>
             </div>
-            <button type="submit" class="btn pgw-form-submit">➕ Tambah To-Do Mandiri</button>
+            <button type="submit" class="btn pgw-form-submit"><i class="bi bi-plus-lg"></i> Tambah To-Do Mandiri</button>
         </form>
     </div>
 </div>
@@ -456,7 +456,7 @@
 ================================= --}}
 <div class="section-box">
     <h3 class="section-title" style="margin-bottom: 16px;">
-        <span class="title-icon">{{ $tab === 'pimpinan' ? '👑' : '👤' }}</span> 
+        <span class="title-icon">{{ $tab === 'pimpinan' ? '<i class="bi bi-person-badge"></i>' : '<i class="bi bi-person"></i>' }}</span> 
         Daftar {{ $tab === 'pimpinan' ? 'Delegasi Pimpinan' : 'To-Do Mandiri' }}
     </h3>
 
@@ -489,7 +489,7 @@
                     <td>
                         {{ $t->tgl_selesai->format('d M Y') }}
                         @if($t->is_overdue)
-                            <br><span style="color:#E53E3E; font-size:11px; font-weight:700;">⚠️ Terlambat</span>
+                            <br><span style="color:#E53E3E; font-size:11px; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
                         @endif
                     </td>
                     <td>
@@ -506,23 +506,23 @@
                     <td>
                         @if($t->status === 'Selesai')
                             <div style="margin-bottom: 8px;">
-                                <span style="color:var(--teal-600); font-weight:600; font-size:12px;">✔ Terkirim: {{ $t->laporan }}</span>
+                                <span style="color:var(--teal-600); font-weight:600; font-size:12px;"><i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}</span>
                                 @if($t->file_laporan)
-                                    <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;">📄 Lihat Lampiran</a>
+                                    <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
                                 @endif
                             </div>
                         @elseif($t->status === 'Menunggu Review')
                             <div style="margin-bottom: 8px;">
-                                <span style="color:#1E40AF; font-weight:600; font-size:12px;">⏳ Menunggu Pimpinan</span><br>
+                                <span style="color:#1E40AF; font-weight:600; font-size:12px;"><i class="bi bi-hourglass-split"></i> Menunggu Pimpinan</span><br>
                                 <small style="color:var(--text-500);">Laporan: {{ $t->laporan }}</small>
                                 @if($t->file_laporan)
-                                    <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;">📄 Lihat Lampiran</a>
+                                    <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
                                 @endif
                             </div>
                         @else
                             @if($t->status === 'Revisi')
                                 <div style="margin-bottom: 4px;">
-                                    <span style="color:#E53E3E; font-weight:600; font-size:11px;">⚠️ Pimpinan meminta revisi laporan!</span>
+                                    <span style="color:#E53E3E; font-weight:600; font-size:11px;"><i class="bi bi-exclamation-triangle"></i> Pimpinan meminta revisi laporan!</span>
                                 </div>
                             @endif
                             <form action="{{ route('tasks.report', $t->id) }}" method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:5px; margin-bottom: 8px; background:var(--bg-50); padding:8px; border-radius:6px; border:1px dashed var(--border-300);">
@@ -537,7 +537,7 @@
 
                         @if($t->comments->count() > 0 || $t->status === 'Revisi')
                         <details style="margin-bottom: 8px;">
-                            <summary style="font-size: 11.5px; font-weight:600; cursor: pointer; color: var(--primary-600); padding:4px 0;">💬 Riwayat Catatan ({{ $t->comments->count() }})</summary>
+                            <summary style="font-size: 11.5px; font-weight:600; cursor: pointer; color: var(--primary-600); padding:4px 0;"><i class="bi bi-chat-dots"></i> Riwayat Catatan ({{ $t->comments->count() }})</summary>
                             <div style="background: var(--bg-100); padding: 10px; border-radius: 6px; margin-top: 4px; font-size: 11.5px; border:1px solid var(--border-200);">
                                 @foreach($t->comments as $c)
                                     <div style="margin-bottom: 8px; border-bottom:1px solid var(--border-200); padding-bottom:6px;">
@@ -558,12 +558,12 @@
                         @endif
 
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">{{ $tab === 'pimpinan' ? '👁️ Detail' : '✏️ Edit' }}</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">{{ $tab === 'pimpinan' ? '👁️ Detail' : '<i class="bi bi-pencil"></i> Edit' }}</button>
                             
                             @if($tab === 'mandiri')
                             <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Hapus</button>
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
                             </form>
                             @endif
                         </div>
@@ -573,7 +573,7 @@
                 <tr>
                     <td colspan="5">
                         <div class="empty-state">
-                            <div class="empty-icon">{{ $tab === 'pimpinan' ? '👑' : '👤' }}</div>
+                            <div class="empty-icon">{{ $tab === 'pimpinan' ? '<i class="bi bi-person-badge"></i>' : '<i class="bi bi-person"></i>' }}</div>
                             <p>Belum ada tugas {{ $tab === 'pimpinan' ? 'dari pimpinan' : 'mandiri' }}.</p>
                         </div>
                     </td>
@@ -624,7 +624,7 @@
                         <span class="pgw-card-info-label">Deadline</span>
                         <span class="pgw-card-info-value {{ $t->is_overdue ? 'overdue' : '' }}">
                             {{ $t->tgl_selesai->format('d M Y') }}
-                            @if($t->is_overdue) ⚠️ @endif
+                            @if($t->is_overdue) <i class="bi bi-exclamation-triangle"></i> @endif
                         </span>
                     </div>
                 </div>
@@ -632,23 +632,23 @@
                 {{-- Laporan / Report Status --}}
                 @if($t->status === 'Selesai')
                     <div class="pgw-card-report-done">
-                        <div class="pgw-card-report-text done">✔ Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                        <div class="pgw-card-report-text done"><i class="bi bi-check2"></i> Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
                         @if($t->file_laporan)
-                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="pgw-card-report-link">📄 Lihat Lampiran</a>
+                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="pgw-card-report-link"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
                         @endif
                     </div>
                 @elseif($t->status === 'Menunggu Review')
                     <div class="pgw-card-report-done">
-                        <div class="pgw-card-report-text waiting">⏳ Menunggu Review Pimpinan</div>
+                        <div class="pgw-card-report-text waiting"><i class="bi bi-hourglass-split"></i> Menunggu Review Pimpinan</div>
                         <div class="pgw-card-report-sub">Laporan: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
                         @if($t->file_laporan)
-                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="pgw-card-report-link">📄 Lihat Lampiran</a>
+                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="pgw-card-report-link"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
                         @endif
                     </div>
                 @else
                     @if($t->status === 'Revisi')
                         <div style="margin-bottom: 8px;">
-                            <span style="color:#E53E3E; font-weight:700; font-size:12px;">⚠️ Pimpinan meminta revisi laporan!</span>
+                            <span style="color:#E53E3E; font-weight:700; font-size:12px;"><i class="bi bi-exclamation-triangle"></i> Pimpinan meminta revisi laporan!</span>
                         </div>
                     @endif
                     <form action="{{ route('tasks.report', $t->id) }}" method="POST" enctype="multipart/form-data" class="pgw-card-report-form">
@@ -656,7 +656,7 @@
                         <input type="text" name="laporan" placeholder="Tulis hasil singkat..." value="{{ $t->status === 'Revisi' ? $t->laporan : '' }}" required>
                         <div class="pgw-card-report-form-row">
                             <input type="file" name="file_laporan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                            <button type="submit" class="btn btn-sm">{{ $t->status === 'Revisi' ? '🔄 Kirim Revisi' : '📤 Kirim Laporan' }}</button>
+                            <button type="submit" class="btn btn-sm">{{ $t->status === 'Revisi' ? '<i class="bi bi-arrow-repeat"></i> Kirim Revisi' : '<i class="bi bi-send"></i> Kirim Laporan' }}</button>
                         </div>
                     </form>
                 @endif
@@ -664,7 +664,7 @@
                 {{-- Notes / Catatan --}}
                 @if($t->comments->count() > 0 || $t->status === 'Revisi')
                 <details>
-                    <summary class="pgw-card-notes-toggle">💬 Riwayat Catatan ({{ $t->comments->count() }})</summary>
+                    <summary class="pgw-card-notes-toggle"><i class="bi bi-chat-dots"></i> Riwayat Catatan ({{ $t->comments->count() }})</summary>
                     <div class="pgw-card-notes-content">
                         @foreach($t->comments as $c)
                             <div class="pgw-note-item">
@@ -688,16 +688,16 @@
             {{-- Card Footer / Actions --}}
             <div class="pgw-card-footer">
                 @if($t->is_overdue)
-                    <span style="color:#E53E3E; font-size:11px; font-weight:700;">⚠️ Terlambat</span>
+                    <span style="color:#E53E3E; font-size:11px; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
                 @else
                     <span style="color:var(--text-400); font-size:11px;">{{ $t->tgl_mulai->format('d/m/Y') }} — {{ $t->tgl_selesai->format('d/m/Y') }}</span>
                 @endif
                 <div class="pgw-card-actions">
-                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">{{ $tab === 'pimpinan' ? '👁️ Detail' : '✏️ Edit' }}</button>
+                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">{{ $tab === 'pimpinan' ? '👁️ Detail' : '<i class="bi bi-pencil"></i> Edit' }}</button>
                     @if($tab === 'mandiri')
                     <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
                         @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                     </form>
                     @endif
                 </div>
@@ -705,7 +705,7 @@
         </div>
         @empty
         <div class="empty-state">
-            <div class="empty-icon">{{ $tab === 'pimpinan' ? '👑' : '👤' }}</div>
+            <div class="empty-icon">{{ $tab === 'pimpinan' ? '<i class="bi bi-person-badge"></i>' : '<i class="bi bi-person"></i>' }}</div>
             <p>Belum ada tugas {{ $tab === 'pimpinan' ? 'dari pimpinan' : 'mandiri' }}. {{ $tab === 'mandiri' ? 'Tekan "Buat Tugas Mandiri" untuk memulai.' : '' }}</p>
         </div>
         @endforelse
@@ -723,7 +723,7 @@
 <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
     <div class="modal-box" @click.away="editModalOpen = false">
         <div class="modal-header">
-            <h3>{{ $tab === 'pimpinan' ? '👁️ Detail Tugas' : '✏️ Edit Tugas' }}</h3>
+            <h3>{{ $tab === 'pimpinan' ? '👁️ Detail Tugas' : '<i class="bi bi-pencil"></i> Edit Tugas' }}</h3>
             <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
         </div>
         <form :action="'{{ url('/tasks') }}/' + editId" method="POST">
@@ -739,9 +739,9 @@
             <div class="form-group">
                 <label>Prioritas</label>
                 <select name="prioritas" x-model="editData.prioritas" {{ $tab === 'pimpinan' ? 'disabled' : 'required' }}>
-                    <option value="Sedang">🟡 Sedang</option>
-                    <option value="Tinggi">🔴 Tinggi</option>
-                    <option value="Rendah">🟢 Rendah</option>
+                    <option value="Sedang">Sedang</option>
+                    <option value="Tinggi">Tinggi</option>
+                    <option value="Rendah">Rendah</option>
                 </select>
             </div>
             <div class="pgw-modal-grid">
@@ -763,7 +763,7 @@
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                 <button type="button" class="btn btn-secondary" @click="editModalOpen = false">{{ $tab === 'pimpinan' ? 'Tutup' : 'Batal' }}</button>
                 @if($tab === 'mandiri')
-                <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 @endif
             </div>
         </form>

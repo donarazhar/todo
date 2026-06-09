@@ -30,7 +30,7 @@
         }">
     <div class="section-box">
         <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" @click="formOpen = !formOpen">
-            <h3 class="section-title" style="margin: 0;"><span class="title-icon">➕</span> Buat Kegiatan Baru</h3>
+            <h3 class="section-title" style="margin: 0;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Buat Kegiatan Baru</h3>
             <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Kegiatan ▾'"></button>
         </div>
         <form action="{{ route('kegiatan.store') }}" method="POST" x-show="formOpen" x-transition style="margin-top: 20px; display: none;">
@@ -92,12 +92,12 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn" style="width:100%; margin-top: 10px;">📅 Publikasikan Jadwal</button>
+            <button type="submit" class="btn" style="width:100%; margin-top: 10px;"><i class="bi bi-calendar-event"></i> Publikasikan Jadwal</button>
         </form>
     </div>
 
     <div class="section-box">
-        <h3 class="section-title"><span class="title-icon">📋</span> Database Jadwal Kegiatan</h3>
+        <h3 class="section-title"><span class="title-icon"><i class="bi bi-card-checklist"></i></span> Database Jadwal Kegiatan</h3>
         <div style="overflow-x: auto; width: 100%;">
             <table style="min-width: 800px;">
             <thead>
@@ -114,8 +114,8 @@
                 <tr>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $keg->nama_kegiatan }}</div>
-                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">🏢 {{ $keg->unitKerja->nama_unit ?? '-' }}</div>
-                        <div style="font-size:11.5px; color:var(--text-500);">📍 {{ $keg->lokasi->nama_lokasi ?? '-' }}</div>
+                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;"><i class="bi bi-building"></i> {{ $keg->unitKerja->nama_unit ?? '-' }}</div>
+                        <div style="font-size:11.5px; color:var(--text-500);"><i class="bi bi-geo-alt-fill"></i> {{ $keg->lokasi->nama_lokasi ?? '-' }}</div>
                     </td>
                     <td>
                         <div style="font-size:12.5px; font-weight:600; color:var(--text-700);">Mulai: {{ $keg->waktu_mulai->format('d M Y, H:i') }}</div>
@@ -137,10 +137,10 @@
                     </td>
                     <td>
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, { nama_kegiatan: '{{ addslashes($keg->nama_kegiatan) }}', jenis_id: '{{ $keg->jenis_id }}', unit_id: '{{ $keg->unit_id }}', lokasi_id: '{{ $keg->lokasi_id }}', waktu_mulai: '{{ $keg->waktu_mulai->format('Y-m-d\TH:i') }}', waktu_selesai: '{{ $keg->waktu_selesai->format('Y-m-d\TH:i') }}' }, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})">✏️</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, { nama_kegiatan: '{{ addslashes($keg->nama_kegiatan) }}', jenis_id: '{{ $keg->jenis_id }}', unit_id: '{{ $keg->unit_id }}', lokasi_id: '{{ $keg->lokasi_id }}', waktu_mulai: '{{ $keg->waktu_mulai->format('Y-m-d\TH:i') }}', waktu_selesai: '{{ $keg->waktu_selesai->format('Y-m-d\TH:i') }}' }, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})"><i class="bi bi-pencil"></i></button>
                             <form action="{{ route('kegiatan.destroy', $keg->id) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');" style="margin: 0;">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                             </form>
                         </div>
                     </td>
@@ -157,7 +157,7 @@
     <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
         <div class="modal-box" @click.away="editModalOpen = false">
             <div class="modal-header">
-                <h3>✏️ Edit Jadwal Kegiatan</h3>
+                <h3><i class="bi bi-pencil"></i> Edit Jadwal Kegiatan</h3>
                 <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
             </div>
             <form :action="'{{ url('/kegiatan') }}/' + editId" method="POST">
@@ -215,7 +215,7 @@
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 </div>
             </form>
         </div>

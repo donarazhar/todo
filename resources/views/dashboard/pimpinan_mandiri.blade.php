@@ -192,7 +192,7 @@
 @section('content')
 <div style="display: flex; flex-direction: column; gap: 24px;">
     <div class="section-box">
-        <h3 class="section-title" style="margin-bottom: 6px;"><span class="title-icon">🎯</span> Tugas Mandiri Pegawai</h3>
+        <h3 class="section-title" style="margin-bottom: 6px;"><span class="title-icon"><i class="bi bi-bullseye"></i></span> Tugas Mandiri Pegawai</h3>
         <p class="mandiri-subtitle">Daftar tugas mandiri yang dibuat dan dikerjakan sendiri oleh pegawai di unit Anda.</p>
 
         {{-- ======= DESKTOP TABLE VIEW ======= --}}
@@ -210,7 +210,7 @@
                 <tr>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
-                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">👤 {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
+                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;"><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
                         <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
                         <div>
                             @php
@@ -223,7 +223,7 @@
                         <div style="font-size:12.5px; font-weight:600; color:var(--text-700);">Mulai: {{ $t->tgl_mulai->format('d M Y') }}</div>
                         <div style="font-size:12px; color:var(--text-500); margin-top:3px;">Deadline: {{ $t->tgl_selesai->format('d M Y') }}</div>
                         @if($t->is_overdue)
-                            <div style="color:#E53E3E; font-size:11px; font-weight:700; margin-top:3px;">⚠️ Terlambat</div>
+                            <div style="color:#E53E3E; font-size:11px; font-weight:700; margin-top:3px;"><i class="bi bi-exclamation-triangle"></i> Terlambat</div>
                         @endif
                     </td>
                     <td>
@@ -235,9 +235,9 @@
                         <div>
                             @if($t->laporan)
                                 <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
-                                    ✔ {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                    <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
                                     @if($t->file_laporan)
-                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;">📄 Lihat Lampiran</a>
+                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
                                     @endif
                                 </div>
                             @else
@@ -250,7 +250,7 @@
                 <tr>
                     <td colspan="3">
                         <div class="empty-state">
-                            <div class="empty-icon">🎯</div>
+                            <div class="empty-icon"><i class="bi bi-bullseye"></i></div>
                             <p>Belum ada tugas mandiri dari pegawai.</p>
                         </div>
                     </td>
@@ -268,7 +268,7 @@
                 <div class="mandiri-card-header">
                     <div class="mandiri-card-title">{{ $t->judul }}</div>
                     <div class="mandiri-card-meta">
-                        <span>👤 {{ $t->assignee->nama ?? '-' }}</span>
+                        <span><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }}</span>
                         <span>•</span>
                         <span>Bobot: {{ $t->bobot }}</span>
                     </div>
@@ -297,7 +297,7 @@
                             <span class="mandiri-card-info-label">Deadline</span>
                             <span class="mandiri-card-info-value {{ $t->is_overdue ? 'overdue' : '' }}">
                                 {{ $t->tgl_selesai->format('d M Y') }}
-                                @if($t->is_overdue) ⚠️ @endif
+                                @if($t->is_overdue) <i class="bi bi-exclamation-triangle"></i> @endif
                             </span>
                         </div>
                     </div>
@@ -306,11 +306,11 @@
                     @if($t->laporan)
                         <div class="mandiri-card-report">
                             <div class="mandiri-card-report-text">
-                                ✔ {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
+                                <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
                             </div>
                             @if($t->file_laporan)
                                 <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="mandiri-card-report-link">
-                                    📄 Lihat Lampiran
+                                    <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
                                 </a>
                             @endif
                         </div>
@@ -322,7 +322,7 @@
                 {{-- Card Footer --}}
                 <div class="mandiri-card-footer">
                     @if($t->is_overdue)
-                        <span style="color:#E53E3E; font-weight:700;">⚠️ Terlambat</span>
+                        <span style="color:#E53E3E; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
                     @else
                         <span style="color:var(--text-400);">Tugas Mandiri</span>
                     @endif
@@ -331,7 +331,7 @@
             </div>
             @empty
             <div class="empty-state">
-                <div class="empty-icon">🎯</div>
+                <div class="empty-icon"><i class="bi bi-bullseye"></i></div>
                 <p>Belum ada tugas mandiri dari pegawai di unit Anda.</p>
             </div>
             @endforelse

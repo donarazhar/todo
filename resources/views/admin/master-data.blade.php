@@ -33,7 +33,7 @@
     <div class="tab-content" :class="{ 'active': tab === 'unit' }" x-show="tab === 'unit'">
         <div class="split-container">
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">➕</span> Tambah Unit Kerja</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Unit Kerja</h3>
                 <form action="{{ route('master.unit.store') }}" method="POST">
                     @csrf
                     <div class="form-group">
@@ -60,7 +60,7 @@
                 </form>
             </div>
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">📋</span> Daftar Unit Kerja</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-card-checklist"></i></span> Daftar Unit Kerja</h3>
                 <table>
                     <thead>
                         <tr><th>ID</th><th>Nama Unit Kerja</th><th>Kode</th><th>Kepala Unit</th><th>Aksi</th></tr>
@@ -73,10 +73,10 @@
                             <td><span class="badge bg-belum">{{ $unit->kode_unit }}</span></td>
                             <td>{{ $unit->kepalaUnit->nama ?? '—' }}</td>
                             <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })">✏️</button>
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })"><i class="bi bi-pencil"></i></button>
                                 <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -91,7 +91,7 @@
     <div class="tab-content" :class="{ 'active': tab === 'pegawai' }" x-show="tab === 'pegawai'">
         <div class="split-container">
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">➕</span> Tambah Pegawai / Pimpinan</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Pegawai / Pimpinan</h3>
                 <form action="{{ route('master.user.store') }}" method="POST">
                     @csrf
                     <div class="form-group">
@@ -131,7 +131,7 @@
                 </form>
             </div>
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">👥</span> Daftar Pegawai & Pimpinan</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-people"></i></span> Daftar Pegawai & Pimpinan</h3>
                 <table>
                     <thead>
                         <tr><th>Nama</th><th>Username</th><th>Unit Kerja</th><th>Jabatan</th><th>Aksi</th></tr>
@@ -144,18 +144,18 @@
                             <td>{{ $user->unitKerja->nama_unit ?? '-' }}</td>
                             <td>
                                 @if($user->role->nama_role == 'Pimpinan')
-                                    <span class="badge bg-proses">👑 Pimpinan</span>
+                                    <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
                                 @elseif($user->role->nama_role == 'Admin')
                                     <span class="badge bg-belum">⚙️ Admin</span>
                                 @else
-                                    <span class="badge bg-selesai">👤 Pegawai</span>
+                                    <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
                                 @endif
                             </td>
                             <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })">✏️</button>
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i></button>
                                 <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -170,7 +170,7 @@
     <div class="tab-content" :class="{ 'active': tab === 'lokasi' }" x-show="tab === 'lokasi'">
         <div class="split-container">
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">➕</span> Tambah Lokasi Kegiatan</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Lokasi Kegiatan</h3>
                 <form action="{{ route('master.lokasi.store') }}" method="POST">
                     @csrf
                     <div class="form-group">
@@ -185,7 +185,7 @@
                 </form>
             </div>
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">📍</span> Daftar Lokasi</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-geo-alt-fill"></i></span> Daftar Lokasi</h3>
                 <table>
                     <thead>
                         <tr><th>ID</th><th>Nama Lokasi</th><th>Alamat / Keterangan</th><th>Aksi</th></tr>
@@ -197,10 +197,10 @@
                             <td><strong>{{ $l->nama_lokasi }}</strong></td>
                             <td style="font-size:12px; color:var(--text-500);">{{ $l->alamat }}</td>
                             <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('lokasi', {{ $l->id }}, { nama_lokasi: '{{ addslashes($l->nama_lokasi) }}', alamat: '{{ addslashes($l->alamat) }}' })">✏️</button>
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('lokasi', {{ $l->id }}, { nama_lokasi: '{{ addslashes($l->nama_lokasi) }}', alamat: '{{ addslashes($l->alamat) }}' })"><i class="bi bi-pencil"></i></button>
                                 <form action="{{ route('master.lokasi.destroy', $l->id) }}" method="POST" onsubmit="return confirm('Hapus lokasi ini?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -215,7 +215,7 @@
     <div class="tab-content" :class="{ 'active': tab === 'jenis' }" x-show="tab === 'jenis'">
         <div class="split-container">
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">➕</span> Tambah Jenis Kegiatan</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Jenis Kegiatan</h3>
                 <form action="{{ route('master.jenis.store') }}" method="POST">
                     @csrf
                     <div class="form-group">
@@ -230,7 +230,7 @@
                 </form>
             </div>
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon">🏷️</span> Daftar Jenis Kegiatan</h3>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-tag"></i></span> Daftar Jenis Kegiatan</h3>
                 <table>
                     <thead>
                         <tr><th>ID</th><th>Jenis Kegiatan</th><th>Keterangan</th><th>Aksi</th></tr>
@@ -242,10 +242,10 @@
                             <td><strong>{{ $j->nama_jenis }}</strong></td>
                             <td style="font-size:12px; color:var(--text-500);">{{ $j->keterangan }}</td>
                             <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('jenis', {{ $j->id }}, { nama_jenis: '{{ addslashes($j->nama_jenis) }}', keterangan: '{{ addslashes($j->keterangan) }}' })">✏️</button>
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('jenis', {{ $j->id }}, { nama_jenis: '{{ addslashes($j->nama_jenis) }}', keterangan: '{{ addslashes($j->keterangan) }}' })"><i class="bi bi-pencil"></i></button>
                                 <form action="{{ route('master.jenis.destroy', $j->id) }}" method="POST" onsubmit="return confirm('Hapus jenis kegiatan ini?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -262,7 +262,7 @@
     <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
         <div class="modal-box" @click.away="editModalOpen = false">
             <div class="modal-header">
-                <h3>✏️ Edit Data</h3>
+                <h3><i class="bi bi-pencil"></i> Edit Data</h3>
                 <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
             </div>
             
@@ -288,7 +288,7 @@
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 </div>
             </form>
 
@@ -325,7 +325,7 @@
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 </div>
             </form>
 
@@ -342,7 +342,7 @@
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 </div>
             </form>
 
@@ -359,7 +359,7 @@
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
                 </div>
             </form>
 

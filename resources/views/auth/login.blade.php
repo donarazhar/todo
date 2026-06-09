@@ -1008,7 +1008,7 @@
                 </form>
 
                 <div class="form-footer">
-                    <p>Sistem ini hanya untuk pengguna terdaftar di<br><span class="org-name">organisasi Anda</span>.</p>
+                    <p>Sistem ini hanya untuk pengguna terdaftar di<span class="org-name"> Organisasi Anda</span>.</p>
                     <div class="security-badge">
                         <span class="shield-icon"><i class="bi bi-shield-lock-fill"></i></span>
                         Koneksi aman & terenkripsi
