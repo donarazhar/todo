@@ -1424,8 +1424,8 @@
                         <img src="{{ asset('app-icon.png') }}" alt="Icon" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
-                        <h3>Todo & Schedule</h3>
-                        <span>v.1.0 beta</span>
+                        <h3>Task&Schedule</h3>
+                        <span>v.1.0 Beta</span>
                     </div>
                 </div>
                                 <div class="sidebar-menu">
