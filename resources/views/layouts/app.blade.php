@@ -1384,6 +1384,7 @@
         .text-error { color: #E53E3E; font-size: 11px; font-weight: 600; margin-top: 4px; display: block; }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    @stack('styles')
 </head>
 <body>
     <div id="app-layout" x-data="{ sidebarOpen: false }">
@@ -1564,5 +1565,6 @@
             setTimeout(() => { toast.classList.remove('show'); }, 4000);
         }
     </script>
+    @stack('scripts')
 </body>
 </html>
