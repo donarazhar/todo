@@ -20,66 +20,67 @@ class MasterDataController extends Controller {
 
     // -- UNIT KERJA --
     public function storeUnit(Request $request) {
-        $request->validate(['nama_unit' => 'required', 'kode_unit' => 'required']);
-        UnitKerja::create($request->all());
+        $validated = $request->validate(['nama_unit' => 'required', 'kode_unit' => 'required']);
+        UnitKerja::create($validated);
         return redirect()->back()->with('success', 'Unit Kerja berhasil ditambahkan.');
     }
     public function updateUnit(Request $request, $id) {
-        $request->validate(['nama_unit' => 'required', 'kode_unit' => 'required']);
-        UnitKerja::findOrFail($id)->update($request->all());
+        $validated = $request->validate(['nama_unit' => 'required', 'kode_unit' => 'required']);
+        UnitKerja::findOrFail($id)->update($validated);
         return redirect()->back()->with('success', 'Unit Kerja berhasil diubah.');
     }
     public function destroyUnit($id) { UnitKerja::findOrFail($id)->delete(); return redirect()->back()->with('success', 'Unit dihapus.'); }
 
     // -- LOKASI --
     public function storeLokasi(Request $request) {
-        $request->validate(['nama_lokasi' => 'required']);
-        LokasiKegiatan::create($request->all());
+        $validated = $request->validate(['nama_lokasi' => 'required']);
+        LokasiKegiatan::create($validated);
         return redirect()->back()->with('success', 'Lokasi berhasil ditambahkan.');
     }
     public function updateLokasi(Request $request, $id) {
-        $request->validate(['nama_lokasi' => 'required']);
-        LokasiKegiatan::findOrFail($id)->update($request->all());
+        $validated = $request->validate(['nama_lokasi' => 'required']);
+        LokasiKegiatan::findOrFail($id)->update($validated);
         return redirect()->back()->with('success', 'Lokasi berhasil diubah.');
     }
     public function destroyLokasi($id) { LokasiKegiatan::findOrFail($id)->delete(); return redirect()->back()->with('success', 'Lokasi dihapus.'); }
 
     // -- JENIS --
     public function storeJenis(Request $request) {
-        $request->validate(['nama_jenis' => 'required']);
-        JenisKegiatan::create($request->all());
+        $validated = $request->validate(['nama_jenis' => 'required']);
+        JenisKegiatan::create($validated);
         return redirect()->back()->with('success', 'Jenis Kegiatan berhasil ditambahkan.');
     }
     public function updateJenis(Request $request, $id) {
-        $request->validate(['nama_jenis' => 'required']);
-        JenisKegiatan::findOrFail($id)->update($request->all());
+        $validated = $request->validate(['nama_jenis' => 'required']);
+        JenisKegiatan::findOrFail($id)->update($validated);
         return redirect()->back()->with('success', 'Jenis Kegiatan berhasil diubah.');
     }
     public function destroyJenis($id) { JenisKegiatan::findOrFail($id)->delete(); return redirect()->back()->with('success', 'Jenis Kegiatan dihapus.'); }
 
     // -- USERS --
     public function storeUser(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required|string',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:6',
             'role_id' => 'required|exists:roles,id',
             'unit_id' => 'required|exists:unit_kerjas,id'
         ]);
-        $data = $request->all();
+        $data = $validated;
         $data['password'] = Hash::make($data['password']);
         User::create($data);
         return redirect()->back()->with('success', 'Pegawai / Pimpinan berhasil ditambahkan.');
     }
     public function updateUser(Request $request, $id) {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required|string',
             'username' => 'required|string|unique:users,username,'.$id,
             'role_id' => 'required|exists:roles,id',
-            'unit_id' => 'required|exists:unit_kerjas,id'
+            'unit_id' => 'required|exists:unit_kerjas,id',
+            'password' => 'nullable|string|min:6'
         ]);
         $user = User::findOrFail($id);
-        $data = $request->except('password');
+        $data = collect($validated)->except('password')->toArray();
         if($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }

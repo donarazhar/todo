@@ -37,9 +37,12 @@ class DashboardController extends Controller {
         $pegawaiProgress = [];
         if ($pegawaisQuery) {
             $pegawais = $pegawaisQuery->get();
+            $pegawaiIds = $pegawais->pluck('id')->toArray();
+            
+            $allPegawaiTasks = Task::whereIn('assigned_to', $pegawaiIds)->get()->groupBy('assigned_to');
+
             foreach ($pegawais as $p) {
-                // All tasks assigned to this pegawai
-                $tasks = Task::where('assigned_to', $p->id)->get();
+                $tasks = $allPegawaiTasks->get($p->id, collect([]));
                 if ($tasks->count() > 0) {
                     $tb = $tasks->sum('bobot');
                     $bs = $tasks->where('status', 'Selesai')->sum('bobot');

@@ -21,7 +21,7 @@ class TaskController extends Controller {
         })->where('unit_id', Auth::user()->unit_id)->get();
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
-        $delegasiTasks = Task::with(['assignee', 'creator'])
+        $delegasiTasks = Task::with(['assignee', 'creator', 'comments.user'])
             ->where('created_by', Auth::id())
             ->orderBy('tgl_mulai', 'desc')->paginate(15);
             
@@ -35,7 +35,7 @@ class TaskController extends Controller {
         })->where('unit_id', Auth::user()->unit_id)->get();
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
-        $mandiriTasks = Task::with(['assignee'])
+        $mandiriTasks = Task::with(['assignee', 'comments.user'])
             ->where('sumber', 'Mandiri')
             ->whereIn('assigned_to', $pegawaiIds)
             ->orderBy('tgl_mulai', 'desc')->paginate(15);
@@ -48,7 +48,8 @@ class TaskController extends Controller {
         $tab = $request->query('tab', 'pimpinan');
         $sumber = $tab === 'mandiri' ? 'Mandiri' : 'Pimpinan';
 
-        $tasks = Task::where('assigned_to', Auth::id())
+        $tasks = Task::with(['comments.user'])
+                     ->where('assigned_to', Auth::id())
                      ->where('sumber', $sumber)
                      ->orderBy('tgl_selesai', 'asc')
                      ->paginate(15);
@@ -57,7 +58,7 @@ class TaskController extends Controller {
     }
 
     public function store(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'judul' => 'required|string|max:200',
             'deskripsi' => 'nullable|string',
             'prioritas' => 'required|in:Tinggi,Sedang,Rendah',
@@ -67,7 +68,7 @@ class TaskController extends Controller {
             'assigned_to' => 'nullable|exists:users,id'
         ]);
 
-        $task = new Task($request->all());
+        $task = new Task($validated);
         $task->created_by = Auth::id();
         
         if (Auth::user()->role->nama_role === 'Pegawai') {
@@ -88,7 +89,7 @@ class TaskController extends Controller {
             return abort(403);
         }
         
-        $request->validate([
+        $validated = $request->validate([
             'judul' => 'required|string|max:200',
             'deskripsi' => 'nullable|string',
             'prioritas' => 'required|in:Tinggi,Sedang,Rendah',
@@ -98,7 +99,7 @@ class TaskController extends Controller {
             'assigned_to' => 'nullable|exists:users,id'
         ]);
 
-        $task->update($request->all());
+        $task->update($validated);
         return redirect()->back()->with('success', 'Tugas berhasil diperbarui.');
     }
 

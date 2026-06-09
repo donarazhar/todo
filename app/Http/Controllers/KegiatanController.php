@@ -28,7 +28,7 @@ class KegiatanController extends Controller {
     }
 
         public function store(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'nama_kegiatan' => 'required|string|max:200',
             'jenis_id' => 'required|exists:jenis_kegiatans,id',
             'unit_id' => 'required|exists:unit_kerjas,id',
@@ -39,7 +39,7 @@ class KegiatanController extends Controller {
             'user_ids.*' => 'exists:users,id'
         ]);
 
-        $data = $request->all();
+        $data = $validated;
         $data['created_by'] = Auth::id();
         $kegiatan = Kegiatan::create($data);
 
@@ -51,7 +51,7 @@ class KegiatanController extends Controller {
     }
 
     public function update(Request $request, $id) {
-        $request->validate([
+        $validated = $request->validate([
             'nama_kegiatan' => 'required|string|max:200',
             'jenis_id' => 'required|exists:jenis_kegiatans,id',
             'unit_id' => 'required|exists:unit_kerjas,id',
@@ -63,7 +63,7 @@ class KegiatanController extends Controller {
         ]);
 
         $kegiatan = Kegiatan::findOrFail($id);
-        $kegiatan->update($request->except('user_ids'));
+        $kegiatan->update(collect($validated)->except('user_ids')->toArray());
 
         if ($request->has('user_ids')) {
             $kegiatan->peserta()->sync($request->user_ids);

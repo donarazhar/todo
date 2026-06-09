@@ -34,17 +34,13 @@ class AppServiceProvider extends ServiceProvider
                                          ->where('status', 'Menunggu Review')
                                          ->count();
                 } elseif ($role === 'Pegawai') {
-                    $notifPegawai = \App\Models\Task::where('assigned_to', $user->id)
+                    $pegawaiTasks = \App\Models\Task::where('assigned_to', $user->id)
                                         ->where('sumber', 'Pimpinan')
-                                        ->whereIn('status', ['Revisi']) // Let's just track Revisi for now, or Berlangsung if it has no laporan
-                                        ->count();
+                                        ->get();
+
+                    $notifPegawai = $pegawaiTasks->whereIn('status', ['Revisi'])->count();
+                    $newTasks = $pegawaiTasks->where('status', 'Berlangsung')->whereNull('laporan')->count();
                     
-                    // Add tasks that are new (Berlangsung and no laporan yet)
-                    $newTasks = \App\Models\Task::where('assigned_to', $user->id)
-                                        ->where('sumber', 'Pimpinan')
-                                        ->where('status', 'Berlangsung')
-                                        ->whereNull('laporan')
-                                        ->count();
                     $notifPegawai += $newTasks;
                 }
             }

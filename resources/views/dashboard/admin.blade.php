@@ -137,7 +137,7 @@
                     </td>
                     <td>
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, { nama_kegiatan: '{{ addslashes($keg->nama_kegiatan) }}', jenis_id: '{{ $keg->jenis_id }}', unit_id: '{{ $keg->unit_id }}', lokasi_id: '{{ $keg->lokasi_id }}', waktu_mulai: '{{ $keg->waktu_mulai->format('Y-m-d\TH:i') }}', waktu_selesai: '{{ $keg->waktu_selesai->format('Y-m-d\TH:i') }}' }, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})"><i class="bi bi-pencil"></i></button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, {{ \Illuminate\Support\Js::from(['nama_kegiatan' => $keg->nama_kegiatan, 'jenis_id' => $keg->jenis_id, 'unit_id' => $keg->unit_id, 'lokasi_id' => $keg->lokasi_id, 'waktu_mulai' => $keg->waktu_mulai->format('Y-m-d\TH:i'), 'waktu_selesai' => $keg->waktu_selesai->format('Y-m-d\TH:i')]) }}, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})"><i class="bi bi-pencil"></i></button>
                             <form action="{{ route('kegiatan.destroy', $keg->id) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');" style="margin: 0;">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>

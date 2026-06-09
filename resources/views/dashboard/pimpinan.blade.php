@@ -519,7 +519,7 @@
                     </td>
                     <td>
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })"><i class="bi bi-pencil"></i></button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i></button>
                             <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
@@ -642,7 +642,7 @@
                         <span></span>
                     @endif
                     <div class="task-card-actions">
-                        <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', assigned_to: '{{ $t->assigned_to }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                        <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i> Edit</button>
                         <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>

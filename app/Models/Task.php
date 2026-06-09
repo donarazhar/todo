@@ -1,7 +1,9 @@
 <?php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Task extends Model {
+    use SoftDeletes;
     protected $fillable = ['judul', 'deskripsi', 'prioritas', 'bobot', 'tgl_mulai', 'tgl_selesai', 'status', 'laporan', 'file_laporan', 'sumber', 'created_by', 'assigned_to'];
     protected $casts = [
         'tgl_mulai' => 'date',
