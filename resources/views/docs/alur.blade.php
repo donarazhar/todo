@@ -100,14 +100,14 @@
             <div class="step-desc">Siapa yang ditugaskan</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(32, 201, 151, 0.4);">
+        <div class="flow-step" style="border-color: rgba(37, 99, 235, 0.4);">
             <div class="step-num">Step 3</div>
             <div class="step-icon">⚡</div>
             <div class="step-label">Auto Insert</div>
             <div class="step-desc">Masuk ke tabel tasks</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(32, 201, 151, 0.4);">
+        <div class="flow-step" style="border-color: rgba(37, 99, 235, 0.4);">
             <div class="step-num">Step 4</div>
             <div class="step-icon">👤</div>
             <div class="step-label">Muncul di Pegawai</div>

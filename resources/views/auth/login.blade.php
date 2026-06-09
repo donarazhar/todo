@@ -22,18 +22,18 @@
             --primary-100: #BBDEFB;
             --primary-50: #E3F2FD;
 
-            --teal-700: #00695C;
-            --teal-600: #00897B;
-            --teal-500: #20C997;
-            --teal-400: #26D9A2;
-            --teal-300: #5EEDC0;
-            --teal-200: #80F5D2;
-            --teal-100: #B2F5EA;
+            --teal-700: #1E40AF;
+            --teal-600: #1D4ED8;
+            --teal-500: #2563EB;
+            --teal-400: #3B82F6;
+            --teal-300: #60A5FA;
+            --teal-200: #93C5FD;
+            --teal-100: #DBEAFE;
 
-            --gradient-hero: linear-gradient(135deg, #0B2545 0%, #0E4D8F 40%, #137A7F 100%);
-            --gradient-hero-vivid: linear-gradient(160deg, #071B33 0%, #0A3A6B 30%, #0E6B6B 70%, #13A38A 100%);
-            --gradient-teal: linear-gradient(135deg, #20C997 0%, #0E9AA7 100%);
-            --gradient-glow: radial-gradient(circle at 50% 50%, rgba(32, 201, 151, 0.15), transparent 70%);
+            --gradient-hero: linear-gradient(135deg, #0B2545 0%, #1E40AF 40%, #3B82F6 100%);
+            --gradient-hero-vivid: linear-gradient(160deg, #071B33 0%, #1E3A8A 30%, #1D4ED8 70%, #2563EB 100%);
+            --gradient-teal: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            --gradient-glow: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.15), transparent 70%);
 
             --bg-white: #FFFFFF;
             --bg-glass: rgba(255, 255, 255, 0.06);
@@ -63,8 +63,8 @@
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
             --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.15);
-            --shadow-glow-teal: 0 0 40px rgba(32, 201, 151, 0.2);
-            --shadow-input-focus: 0 0 0 4px rgba(32, 201, 151, 0.12);
+            --shadow-glow-teal: 0 0 40px rgba(37, 99, 235, 0.2);
+            --shadow-input-focus: 0 0 0 4px rgba(37, 99, 235, 0.12);
 
             --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -130,7 +130,7 @@
 
         .particle:nth-child(1) {
             width: 6px; height: 6px;
-            background: rgba(32, 201, 151, 0.4);
+            background: rgba(37, 99, 235, 0.4);
             left: 15%; top: 80%;
             animation-duration: 12s;
             animation-delay: 0s;
@@ -144,7 +144,7 @@
         }
         .particle:nth-child(3) {
             width: 8px; height: 8px;
-            background: rgba(32, 201, 151, 0.3);
+            background: rgba(37, 99, 235, 0.3);
             left: 65%; top: 85%;
             animation-duration: 18s;
             animation-delay: 4s;
@@ -158,7 +158,7 @@
         }
         .particle:nth-child(5) {
             width: 5px; height: 5px;
-            background: rgba(32, 201, 151, 0.25);
+            background: rgba(37, 99, 235, 0.25);
             left: 50%; top: 95%;
             animation-duration: 14s;
             animation-delay: 3s;
@@ -195,7 +195,7 @@
             width: 500px;
             height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(32, 201, 151, 0.08) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 65%);
             top: -150px;
             right: -150px;
             animation: orb-drift 20s ease-in-out infinite alternate;
@@ -237,7 +237,7 @@
             justify-content: center;
             font-size: 36px;
             margin: 0 auto 32px;
-            box-shadow: var(--shadow-glow-teal), 0 8px 32px rgba(32, 201, 151, 0.3);
+            box-shadow: var(--shadow-glow-teal), 0 8px 32px rgba(37, 99, 235, 0.3);
             position: relative;
             animation: logo-breathe 4s ease-in-out infinite;
         }
@@ -254,8 +254,8 @@
         }
 
         @keyframes logo-breathe {
-            0%, 100% { transform: scale(1); box-shadow: var(--shadow-glow-teal), 0 8px 32px rgba(32, 201, 151, 0.3); }
-            50% { transform: scale(1.04); box-shadow: var(--shadow-glow-teal), 0 12px 48px rgba(32, 201, 151, 0.4); }
+            0%, 100% { transform: scale(1); box-shadow: var(--shadow-glow-teal), 0 8px 32px rgba(37, 99, 235, 0.3); }
+            50% { transform: scale(1.04); box-shadow: var(--shadow-glow-teal), 0 12px 48px rgba(37, 99, 235, 0.4); }
         }
 
         .brand-title {
@@ -559,7 +559,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(32, 201, 151, 0.35);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
         }
 
         .btn-login:hover::before {
@@ -568,7 +568,7 @@
 
         .btn-login:active {
             transform: translateY(0);
-            box-shadow: 0 4px 12px rgba(32, 201, 151, 0.25);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
 
         .btn-login .btn-arrow {

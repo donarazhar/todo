@@ -11,29 +11,35 @@
            DESIGN SYSTEM & VARIABLES
         ============================ */
         :root {
-            --primary-600: #0E4D8F;
-            --primary-500: #1565C0;
-            --primary-400: #1E88E5;
-            --primary-300: #42A5F5;
-            --primary-100: #BBDEFB;
-            --primary-50: #E3F2FD;
+            /* Corporate/Vibrant Blue Palette */
+            --primary-900: #1E3A8A; /* Very dark blue */
+            --primary-800: #1E40AF;
+            --primary-700: #1D4ED8;
+            --primary-600: #2563EB; /* Vibrant Blue */
+            --primary-500: #3B82F6;
+            --primary-400: #60A5FA;
+            --primary-300: #93C5FD;
+            --primary-100: #DBEAFE;
+            --primary-50:  #EFF6FF;
 
-            --teal-600: #00897B;
-            --teal-500: #20C997;
-            --teal-400: #26D9A2;
-            --teal-300: #5EEDC0;
-            --teal-100: #B2F5EA;
-            --teal-50: #E6FFFA;
+            /* Remapping the old Teal variables to Blue shades so everywhere updates automatically */
+            --teal-600: #1D4ED8;
+            --teal-500: #2563EB;
+            --teal-400: #3B82F6;
+            --teal-300: #60A5FA;
+            --teal-100: #DBEAFE;
+            --teal-50:  #EFF6FF;
 
-            --gradient-primary: linear-gradient(135deg, #0B2545 0%, #13547A 100%);
-            --gradient-hero: linear-gradient(135deg, #0B2545 0%, #0E4D8F 50%, #137A7F 100%);
-            --gradient-teal: linear-gradient(135deg, #20C997 0%, #0E9AA7 100%);
-            --gradient-card-blue: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%);
-            --gradient-card-teal: linear-gradient(135deg, #00897B 0%, #20C997 100%);
+            /* Gradients using Dark Blue to Vibrant Blue */
+            --gradient-primary: linear-gradient(135deg, #0B2545 0%, #1D4ED8 100%);
+            --gradient-hero: linear-gradient(135deg, #0B2545 0%, #1E40AF 50%, #3B82F6 100%);
+            --gradient-teal: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); /* Old teal gradient is now Dark-to-Vibrant Blue */
+            --gradient-card-blue: linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%);
+            --gradient-card-teal: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
             --gradient-card-amber: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
             --gradient-card-purple: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
 
-            --bg-app: #F0F4F8;
+            --bg-app: #F4F7FB;
             --bg-sidebar: #0B2545;
             --bg-sidebar-hover: rgba(255,255,255,0.08);
             --bg-sidebar-active: rgba(255,255,255,0.14);
@@ -155,7 +161,7 @@
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(32, 201, 151, 0.3);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
         }
         .btn:hover::after {
             width: 300px;
@@ -204,7 +210,7 @@
             width: 600px;
             height: 600px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(32, 201, 151, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
             top: -200px;
             right: -200px;
         }
@@ -247,7 +253,7 @@
             justify-content: center;
             font-size: 24px;
             color: white;
-            box-shadow: 0 6px 20px rgba(32, 201, 151, 0.25);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
         }
         .login-box h2 {
             color: var(--primary-600);
@@ -327,7 +333,7 @@
             right: 0;
             width: 1px;
             height: 100%;
-            background: linear-gradient(180deg, rgba(32, 201, 151, 0.3) 0%, transparent 30%, transparent 70%, rgba(32, 201, 151, 0.3) 100%);
+            background: linear-gradient(180deg, rgba(37, 99, 235, 0.3) 0%, transparent 30%, transparent 70%, rgba(37, 99, 235, 0.3) 100%);
         }
 
         .sidebar-brand {
@@ -347,7 +353,7 @@
             justify-content: center;
             font-size: 18px;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(32, 201, 151, 0.25);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
         .sidebar-brand h3 {
             font-size: 17px;
