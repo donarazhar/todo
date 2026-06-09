@@ -904,7 +904,9 @@
             <div class="particle"></div>
 
             <div class="branding-content">
-                <div class="brand-logo" aria-hidden="true">📅</div>
+                <div class="brand-logo" aria-hidden="true" style="background: transparent; box-shadow: none; border: none;">
+                    <img src="{{ asset('app-icon.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <h1 class="brand-title">Task<span>&</span>Schedule</h1>
                 <p class="brand-subtitle">Platform manajemen tugas & penjadwalan terpadu untuk meningkatkan produktivitas organisasi Anda.</p>
 

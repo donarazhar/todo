@@ -1396,10 +1396,12 @@
         <div class="sidebar" :class="{ 'open': sidebarOpen }">
             <div>
                 <div class="sidebar-brand">
-                    <div class="sidebar-brand-icon">📋</div>
+                    <div class="sidebar-brand-icon" style="background: transparent; box-shadow: none;">
+                        <img src="{{ asset('app-icon.png') }}" alt="Icon" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                     <div>
-                        <h3>Task&Schedule</h3>
-                        <span>v1.0 Mockup</span>
+                        <h3>Todo & Schedule</h3>
+                        <span>v.1.0 beta</span>
                     </div>
                 </div>
                                 <div class="sidebar-menu">
@@ -1525,6 +1527,9 @@
         @if(Auth::user()->role->nama_role === 'Pimpinan')
             <a href="{{ route('pimpinan.tasks') }}" class="b-nav-item {{ request()->routeIs('pimpinan.tasks') ? 'active' : '' }}">
                 <span class="icon">📋</span><span class="label">Delegasi</span>
+            </a>
+            <a href="{{ route('pimpinan.mandiri') }}" class="b-nav-item {{ request()->routeIs('pimpinan.mandiri') ? 'active' : '' }}">
+                <span class="icon">🎯</span><span class="label">Mandiri</span>
             </a>
         @endif
         

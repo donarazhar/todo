@@ -5,6 +5,386 @@
     <p>Daftar tugas dari pimpinan dan tugas mandiri Anda &mdash; {{ Auth::user()->nama }} ({{ Auth::user()->unitKerja->nama_unit ?? '' }})</p>
 @endsection
 
+@push('styles')
+<style>
+    /* ============================
+       PEGAWAI PAGE – RESPONSIVE STYLES
+    ============================ */
+
+    /* --- Priority Badges --- */
+    .prio-badge {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 10.5px;
+        font-weight: 700;
+        display: inline-block;
+    }
+    .prio-tinggi { background: #FEE2E2; color: #991B1B; }
+    .prio-sedang { background: #FEF3C7; color: #92400E; }
+    .prio-rendah { background: #D1FAE5; color: #065F46; }
+
+    /* --- Form Section --- */
+    .pgw-form-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        gap: 12px;
+    }
+    .pgw-form-toggle-info h3 {
+        margin-bottom: 6px;
+    }
+    .pgw-form-toggle-info p {
+        font-size: 12px;
+        color: var(--text-500);
+        margin: 0;
+        line-height: 1.5;
+    }
+    .pgw-form-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .pgw-form-left {
+        flex: 7;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .pgw-form-right {
+        flex: 3;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .pgw-form-submit {
+        width: 100%;
+    }
+
+    /* --- Desktop Table (hidden on mobile) --- */
+    .pgw-table-wrap {
+        overflow-x: auto;
+        width: 100%;
+    }
+    .pgw-table-wrap table {
+        min-width: 750px;
+    }
+
+    /* --- Mobile Card Layout (hidden on desktop) --- */
+    .pgw-cards-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Card structure */
+    .pgw-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: box-shadow var(--transition-base);
+    }
+    .pgw-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    .pgw-card-header {
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--border-100);
+    }
+    .pgw-card-title {
+        font-weight: 700;
+        color: var(--text-900);
+        font-size: 14px;
+        margin-bottom: 6px;
+        line-height: 1.4;
+    }
+    .pgw-card-desc {
+        font-size: 12px;
+        color: var(--text-500);
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+    .pgw-card-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+    }
+
+    /* Card Body */
+    .pgw-card-body {
+        padding: 12px 16px;
+    }
+    .pgw-card-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    .pgw-card-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .pgw-card-info-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-400);
+        font-weight: 700;
+    }
+    .pgw-card-info-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-700);
+    }
+    .pgw-card-info-value.overdue {
+        color: #E53E3E;
+    }
+
+    /* Report Section in Card */
+    .pgw-card-report-done {
+        background: var(--bg-app);
+        border-radius: var(--radius-md);
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        border: 1px solid var(--border-100);
+    }
+    .pgw-card-report-text {
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+    .pgw-card-report-text.done {
+        color: var(--teal-600);
+    }
+    .pgw-card-report-text.waiting {
+        color: #1E40AF;
+    }
+    .pgw-card-report-text.revision {
+        color: #E53E3E;
+    }
+    .pgw-card-report-link {
+        font-size: 11.5px;
+        color: var(--primary-600);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+    }
+    .pgw-card-report-link:hover {
+        text-decoration: underline;
+    }
+    .pgw-card-report-sub {
+        font-size: 11.5px;
+        color: var(--text-500);
+        margin-top: 2px;
+    }
+
+    /* Report form in card */
+    .pgw-card-report-form {
+        background: var(--bg-app);
+        border: 1px dashed var(--border-300);
+        border-radius: var(--radius-md);
+        padding: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .pgw-card-report-form input[type="text"] {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 13px;
+        border: 1px solid var(--border-200);
+        border-radius: var(--radius-sm);
+        outline: none;
+        font-family: inherit;
+        transition: border-color var(--transition-fast);
+    }
+    .pgw-card-report-form input[type="text"]:focus {
+        border-color: var(--primary-400);
+    }
+    .pgw-card-report-form-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .pgw-card-report-form-row input[type="file"] {
+        font-size: 11px;
+        flex-shrink: 0;
+        max-width: 160px;
+    }
+    .pgw-card-report-form-row .btn {
+        flex-grow: 1;
+    }
+
+    /* Notes section in card */
+    .pgw-card-notes-toggle {
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--primary-600);
+        padding: 6px 0;
+        user-select: none;
+    }
+    .pgw-card-notes-content {
+        background: var(--bg-white);
+        padding: 10px;
+        border-radius: var(--radius-md);
+        margin-top: 6px;
+        font-size: 12px;
+        border: 1px solid var(--border-200);
+    }
+    .pgw-note-item {
+        margin-bottom: 8px;
+        border-bottom: 1px solid var(--border-100);
+        padding-bottom: 6px;
+    }
+    .pgw-note-item:last-of-type {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .pgw-note-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+        align-items: center;
+    }
+    .pgw-note-author {
+        font-weight: 700;
+        color: var(--text-900);
+        font-size: 11.5px;
+    }
+    .pgw-note-time {
+        font-size: 9.5px;
+        color: var(--text-400);
+    }
+    .pgw-note-text {
+        color: var(--text-700);
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .pgw-note-form {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .pgw-note-form input {
+        flex-grow: 1;
+        padding: 8px 10px;
+        font-size: 12px;
+        border: 1px solid var(--border-300);
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        outline: none;
+    }
+
+    /* Card Footer / Actions */
+    .pgw-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border-100);
+        background: var(--bg-app);
+    }
+    .pgw-card-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .pgw-card-actions .btn {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    /* --- Modal Responsive --- */
+    .pgw-modal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    /* ============================
+       TABLET BREAKPOINT (≤ 1024px)
+    ============================ */
+    @media (max-width: 1024px) {
+        .pgw-form-grid {
+            flex-direction: column;
+        }
+        .pgw-form-left,
+        .pgw-form-right {
+            flex: none;
+            min-width: 0;
+        }
+    }
+
+    /* ============================
+       MOBILE BREAKPOINT (≤ 768px)
+    ============================ */
+    @media (max-width: 768px) {
+        /* Hide table, show cards */
+        .pgw-table-wrap {
+            display: none !important;
+        }
+        .pgw-cards-mobile {
+            display: flex !important;
+        }
+
+        /* Form toggle stacks */
+        .pgw-form-toggle {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .pgw-form-toggle .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Modal fullscreen on mobile */
+        .modal-box {
+            max-width: 100% !important;
+            margin: 12px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: var(--radius-lg) !important;
+        }
+        .modal-overlay {
+            padding: 0;
+            align-items: flex-end !important;
+        }
+        .pgw-modal-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ============================
+       SMALL MOBILE (≤ 480px)
+    ============================ */
+    @media (max-width: 480px) {
+        .pgw-card-info-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .pgw-card-report-form-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .pgw-card-report-form-row input[type="file"] {
+            max-width: 100%;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div style="display: flex; flex-direction: column; gap: 24px;" x-data="{ 
     formOpen: false,
@@ -18,32 +398,35 @@
     }
 }">
 
+{{-- ================================
+     SECTION: FORM TAMBAH TUGAS MANDIRI
+================================= --}}
 @if($tab === 'mandiri')
 <div class="section-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" @click="formOpen = !formOpen">
-        <div>
-            <h3 class="section-title" style="margin-bottom: 6px;"><span class="title-icon">✏️</span> Tambah To-Do Mandiri</h3>
-            <p style="font-size:12px; color:var(--text-500); margin:0;">Buat tugas mandiri untuk mencatat pekerjaan pribadi Anda.</p>
+    <div class="pgw-form-toggle" @click="formOpen = !formOpen">
+        <div class="pgw-form-toggle-info">
+            <h3 class="section-title"><span class="title-icon">✏️</span> Tambah To-Do Mandiri</h3>
+            <p>Buat tugas mandiri untuk mencatat pekerjaan pribadi Anda.</p>
         </div>
         <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Tugas Mandiri ▾'"></button>
     </div>
-    <div x-show="formOpen" x-transition style="display: none; margin-top: 20px;">
-        <form action="{{ route('tasks.store') }}" method="POST" style="display:flex; flex-wrap:wrap; gap: 20px;">
+    <div x-show="formOpen" x-transition style="display: none;">
+        <form action="{{ route('tasks.store') }}" method="POST" class="pgw-form-grid">
             @csrf
-            <div style="flex: 7; min-width: 250px; display:flex; flex-direction:column; gap:15px;">
+            <div class="pgw-form-left">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Judul Pekerjaan</label>
                     <input type="text" name="judul" required>
                 </div>
                 <div class="form-group" style="margin-bottom:0; display:flex; flex-direction:column; flex-grow:1;">
                     <label>Deskripsi</label>
-                    <textarea name="deskripsi" rows="3" style="border:1px solid var(--border-200); border-radius:6px; padding:10px; font-family:inherit; font-size:13px; outline:none; resize:none; flex-grow:1;" onfocus="this.style.borderColor='var(--primary-400)'" onblur="this.style.borderColor='var(--border-200)'" required></textarea>
+                    <textarea name="deskripsi" rows="3" required></textarea>
                 </div>
             </div>
-            <div style="flex: 3; min-width: 200px; display:flex; flex-direction:column; gap:15px;">
+            <div class="pgw-form-right">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Prioritas</label>
-                    <select name="prioritas" required style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-200); border-radius: var(--radius-md); font-size: 13.5px; outline: none;">
+                    <select name="prioritas" required>
                         <option value="Sedang">🟡 Sedang</option>
                         <option value="Tinggi">🔴 Tinggi</option>
                         <option value="Rendah">🟢 Rendah</option>
@@ -62,20 +445,24 @@
                     <input type="date" name="tgl_selesai" required>
                 </div>
             </div>
-            <button type="submit" class="btn" style="width:100%;">➕ Tambah To-Do Mandiri</button>
+            <button type="submit" class="btn pgw-form-submit">➕ Tambah To-Do Mandiri</button>
         </form>
     </div>
 </div>
 @endif
 
+{{-- ================================
+     SECTION: DAFTAR TUGAS
+================================= --}}
 <div class="section-box">
     <h3 class="section-title" style="margin-bottom: 16px;">
         <span class="title-icon">{{ $tab === 'pimpinan' ? '👑' : '👤' }}</span> 
         Daftar {{ $tab === 'pimpinan' ? 'Delegasi Pimpinan' : 'To-Do Mandiri' }}
     </h3>
 
-    <div style="overflow-x: auto; width: 100%;">
-        <table style="min-width: 700px;">
+    {{-- ======= DESKTOP TABLE VIEW ======= --}}
+    <div class="pgw-table-wrap">
+        <table>
             <thead>
                 <tr>
                     <th>Detail Tugas</th>
@@ -86,17 +473,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($tasks as $t)
+                @forelse($tasks as $t)
                 <tr>
                     <td>
                         <strong>{{ $t->judul }}</strong><br>
                         <small style="color:var(--text-500);">{{ $t->deskripsi }}</small>
                         <div style="margin-top: 4px;">
                             @php
-                                $badgeColor = $t->prioritas === 'Tinggi' ? 'background: #FEE2E2; color: #991B1B;' : 
-                                             ($t->prioritas === 'Rendah' ? 'background: #D1FAE5; color: #065F46;' : 'background: #FEF3C7; color: #92400E;');
+                                $prioClass = $t->prioritas === 'Tinggi' ? 'prio-tinggi' : ($t->prioritas === 'Rendah' ? 'prio-rendah' : 'prio-sedang');
                             @endphp
-                            <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; {{ $badgeColor }}">Prio: {{ $t->prioritas }}</span>
+                            <span class="prio-badge {{ $prioClass }}">Prio: {{ $t->prioritas }}</span>
                         </div>
                     </td>
                     <td><strong>{{ $t->bobot }}</strong></td>
@@ -110,8 +496,8 @@
                         @php
                             $statusBg = 'bg-proses';
                             if($t->status === 'Selesai') $statusBg = 'bg-selesai';
-                            elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses'; // or custom color
-                            elseif($t->status === 'Revisi') $statusBg = 'bg-belum'; // actually red might be better, but bg-belum uses pending colors
+                            elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                            elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
                         @endphp
                         <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!}>
                             {{ $t->status }}
@@ -183,16 +569,157 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-icon">{{ $tab === 'pimpinan' ? '👑' : '👤' }}</div>
+                            <p>Belum ada tugas {{ $tab === 'pimpinan' ? 'dari pimpinan' : 'mandiri' }}.</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- ======= MOBILE CARD VIEW ======= --}}
+    <div class="pgw-cards-mobile">
+        @forelse($tasks as $t)
+        <div class="pgw-card">
+            {{-- Card Header --}}
+            <div class="pgw-card-header">
+                <div class="pgw-card-title">{{ $t->judul }}</div>
+                @if($t->deskripsi)
+                    <div class="pgw-card-desc">{{ \Illuminate\Support\Str::limit($t->deskripsi, 120) }}</div>
+                @endif
+                <div class="pgw-card-badges">
+                    @php
+                        $prioClass = $t->prioritas === 'Tinggi' ? 'prio-tinggi' : ($t->prioritas === 'Rendah' ? 'prio-rendah' : 'prio-sedang');
+                        $statusBg = 'bg-proses';
+                        if($t->status === 'Selesai') $statusBg = 'bg-selesai';
+                        elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                        elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
+                    @endphp
+                    <span class="prio-badge {{ $prioClass }}">{{ $t->prioritas }}</span>
+                    <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!}>
+                        {{ $t->status }}
+                    </span>
+                </div>
+            </div>
+
+            {{-- Card Body --}}
+            <div class="pgw-card-body">
+                {{-- Info Grid: Bobot, Deadline, Mulai --}}
+                <div class="pgw-card-info-grid">
+                    <div class="pgw-card-info-item">
+                        <span class="pgw-card-info-label">Bobot</span>
+                        <span class="pgw-card-info-value">{{ $t->bobot }}</span>
+                    </div>
+                    <div class="pgw-card-info-item">
+                        <span class="pgw-card-info-label">Mulai</span>
+                        <span class="pgw-card-info-value">{{ $t->tgl_mulai->format('d M Y') }}</span>
+                    </div>
+                    <div class="pgw-card-info-item">
+                        <span class="pgw-card-info-label">Deadline</span>
+                        <span class="pgw-card-info-value {{ $t->is_overdue ? 'overdue' : '' }}">
+                            {{ $t->tgl_selesai->format('d M Y') }}
+                            @if($t->is_overdue) ⚠️ @endif
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Laporan / Report Status --}}
+                @if($t->status === 'Selesai')
+                    <div class="pgw-card-report-done">
+                        <div class="pgw-card-report-text done">✔ Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                        @if($t->file_laporan)
+                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="pgw-card-report-link">📄 Lihat Lampiran</a>
+                        @endif
+                    </div>
+                @elseif($t->status === 'Menunggu Review')
+                    <div class="pgw-card-report-done">
+                        <div class="pgw-card-report-text waiting">⏳ Menunggu Review Pimpinan</div>
+                        <div class="pgw-card-report-sub">Laporan: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                        @if($t->file_laporan)
+                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="pgw-card-report-link">📄 Lihat Lampiran</a>
+                        @endif
+                    </div>
+                @else
+                    @if($t->status === 'Revisi')
+                        <div style="margin-bottom: 8px;">
+                            <span style="color:#E53E3E; font-weight:700; font-size:12px;">⚠️ Pimpinan meminta revisi laporan!</span>
+                        </div>
+                    @endif
+                    <form action="{{ route('tasks.report', $t->id) }}" method="POST" enctype="multipart/form-data" class="pgw-card-report-form">
+                        @csrf
+                        <input type="text" name="laporan" placeholder="Tulis hasil singkat..." value="{{ $t->status === 'Revisi' ? $t->laporan : '' }}" required>
+                        <div class="pgw-card-report-form-row">
+                            <input type="file" name="file_laporan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            <button type="submit" class="btn btn-sm">{{ $t->status === 'Revisi' ? '🔄 Kirim Revisi' : '📤 Kirim Laporan' }}</button>
+                        </div>
+                    </form>
+                @endif
+
+                {{-- Notes / Catatan --}}
+                @if($t->comments->count() > 0 || $t->status === 'Revisi')
+                <details>
+                    <summary class="pgw-card-notes-toggle">💬 Riwayat Catatan ({{ $t->comments->count() }})</summary>
+                    <div class="pgw-card-notes-content">
+                        @foreach($t->comments as $c)
+                            <div class="pgw-note-item">
+                                <div class="pgw-note-header">
+                                    <span class="pgw-note-author">{{ $c->user->nama }}</span>
+                                    <span class="pgw-note-time">{{ $c->created_at->format('d M H:i') }}</span>
+                                </div>
+                                <div class="pgw-note-text">{{ $c->komentar }}</div>
+                            </div>
+                        @endforeach
+                        <form action="{{ route('tasks.comments.store', $t->id) }}" method="POST" class="pgw-note-form">
+                            @csrf
+                            <input type="text" name="komentar" placeholder="Tulis catatan..." required>
+                            <button class="btn btn-sm" style="padding:8px 14px;">Balas</button>
+                        </form>
+                    </div>
+                </details>
+                @endif
+            </div>
+
+            {{-- Card Footer / Actions --}}
+            <div class="pgw-card-footer">
+                @if($t->is_overdue)
+                    <span style="color:#E53E3E; font-size:11px; font-weight:700;">⚠️ Terlambat</span>
+                @else
+                    <span style="color:var(--text-400); font-size:11px;">{{ $t->tgl_mulai->format('d/m/Y') }} — {{ $t->tgl_selesai->format('d/m/Y') }}</span>
+                @endif
+                <div class="pgw-card-actions">
+                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">✏️ Edit</button>
+                    @if($tab === 'mandiri')
+                    <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                    </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="empty-state">
+            <div class="empty-icon">{{ $tab === 'pimpinan' ? '👑' : '👤' }}</div>
+            <p>Belum ada tugas {{ $tab === 'pimpinan' ? 'dari pimpinan' : 'mandiri' }}. {{ $tab === 'mandiri' ? 'Tekan "Buat Tugas Mandiri" untuk memulai.' : '' }}</p>
+        </div>
+        @endforelse
+    </div>
+
+    {{-- Pagination --}}
+    <div style="margin-top: 16px;">
         {{ $tasks->appends(['tab' => request('tab')])->links() }}
     </div>
 </div>
 
-<!-- ============================
+{{-- ================================
      EDIT MODAL (ALPINE JS)
-============================ -->
+================================= --}}
 <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
     <div class="modal-box" @click.away="editModalOpen = false">
         <div class="modal-header">
@@ -211,13 +738,13 @@
             </div>
             <div class="form-group">
                 <label>Prioritas</label>
-                <select name="prioritas" x-model="editData.prioritas" required style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-200); border-radius: var(--radius-md); font-size: 13.5px; outline: none;">
+                <select name="prioritas" x-model="editData.prioritas" required>
                     <option value="Sedang">🟡 Sedang</option>
                     <option value="Tinggi">🔴 Tinggi</option>
                     <option value="Rendah">🟢 Rendah</option>
                 </select>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+            <div class="pgw-modal-grid">
                 <div class="form-group">
                     <label>Bobot (1–100)</label>
                     <input type="number" name="bobot" min="1" max="100" x-model="editData.bobot" required>

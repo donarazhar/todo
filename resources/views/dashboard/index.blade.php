@@ -376,26 +376,42 @@
         .dashboard-header h2 { font-size: 24px; }
         .dashboard-header p { font-size: 14px; }
         
+        /* 2x2 Grid for Mobile (Clean & Professional) */
         .stats-grid { 
-            grid-template-columns: 1fr; 
-            gap: 16px;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px;
         }
         
         .stat-card-premium {
             min-height: auto;
-            padding: 20px;
-            flex-direction: row;
-            align-items: center;
+            padding: 16px;
+            flex-direction: column;
+            align-items: flex-start;
+            border-radius: var(--radius-lg);
         }
         
         .stat-card-premium .stat-icon-wrap {
-            margin-bottom: 0;
-            margin-right: 20px;
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+            margin-bottom: 12px;
+            margin-right: 0;
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-card-premium .value {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .stat-card-premium h3 {
+            font-size: 10px;
+            line-height: 1.3;
         }
         
         .stat-card-premium::before {
-            top: -50px; right: -20px;
-            width: 100px; height: 100px;
+            top: -30px; right: -20px;
+            width: 80px; height: 80px;
         }
         
         .split-container-premium {
