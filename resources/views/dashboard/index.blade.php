@@ -497,7 +497,7 @@
 
 <div class="stats-grid">
     <div class="stat-card-premium sc-blue-premium">
-        <div class="stat-icon-wrap">📅</div>
+        <div class="stat-icon-wrap"><i class="bi bi-calendar-event"></i></div>
         <div>
             <div class="value">{{ $totalKegiatan }}</div>
             <h3>Total Kegiatan</h3>
@@ -505,7 +505,7 @@
     </div>
     
     <div class="stat-card-premium sc-amber-premium">
-        <div class="stat-icon-wrap">⏳</div>
+        <div class="stat-icon-wrap"><i class="bi bi-hourglass-split"></i></div>
         <div>
             <div class="value">{{ $tugasBerlangsung }}</div>
             <h3>Tugas Berlangsung</h3>
@@ -513,7 +513,7 @@
     </div>
     
     <div class="stat-card-premium sc-teal-premium">
-        <div class="stat-icon-wrap">✅</div>
+        <div class="stat-icon-wrap"><i class="bi bi-check-circle"></i></div>
         <div>
             <div class="value">{{ $tugasSelesai }}</div>
             <h3>Tugas Selesai</h3>
@@ -521,7 +521,7 @@
     </div>
     
     <div class="stat-card-premium sc-purple-premium">
-        <div class="stat-icon-wrap">⚡</div>
+        <div class="stat-icon-wrap"><i class="bi bi-lightning-charge"></i></div>
         <div>
             <div class="value">{{ $efisiensi }}%</div>
             <h3>Efisiensi Kerja</h3>
@@ -533,7 +533,7 @@
     @if(Auth::user()->role->nama_role !== 'Pegawai')
     <div class="section-box-premium">
         <h3 class="section-title-premium">
-            <div class="icon-bg">📈</div>
+            <div class="icon-bg"><i class="bi bi-graph-up"></i></div>
             Progress Kerja Pegawai
         </h3>
         
@@ -563,7 +563,7 @@
                 @endforeach
             @else
                 <div class="empty-state">
-                    <div class="empty-icon">👥</div>
+                    <div class="empty-icon"><i class="bi bi-people"></i></div>
                     <p>Belum ada data progres kerja pegawai saat ini.</p>
                 </div>
             @endif
@@ -573,7 +573,7 @@
 
     <div class="section-box-premium" style="{{ Auth::user()->role->nama_role === 'Pegawai' ? 'grid-column: 1 / -1;' : '' }}">
         <h3 class="section-title-premium">
-            <div class="icon-bg">🗓️</div>
+            <div class="icon-bg"><i class="bi bi-calendar-week"></i></div>
             Jadwal Kegiatan Terdekat
         </h3>
         
@@ -592,7 +592,7 @@
                         <tr>
                             <td data-label="Kegiatan">
                                 <span class="keg-name">{{ $keg->nama_kegiatan }}</span>
-                                <span class="keg-loc">📍 {{ $keg->lokasi->nama_lokasi ?? 'Lokasi Belum Ditentukan' }}</span>
+                                <span class="keg-loc"><i class="bi bi-geo-alt-fill"></i> {{ $keg->lokasi->nama_lokasi ?? 'Lokasi Belum Ditentukan' }}</span>
                             </td>
                             <td data-label="Waktu">
                                 <span style="font-weight: 600; color: var(--text-800);">{{ $keg->waktu_mulai->format('d M Y') }}</span><br>
@@ -612,7 +612,7 @@
                 </table>
             @else
                 <div class="empty-state">
-                    <div class="empty-icon">📅</div>
+                    <div class="empty-icon"><i class="bi bi-calendar-event"></i></div>
                     <p>Tidak ada jadwal kegiatan dalam waktu dekat.</p>
                 </div>
             @endif
@@ -623,7 +623,7 @@
 <!-- KALENDER INTEGRASI -->
 <div class="section-box-premium" style="margin-top: 32px;">
     <div class="section-title-premium" style="margin-bottom: 16px;">
-        <div class="icon-bg">🗓️</div>
+        <div class="icon-bg"><i class="bi bi-calendar-week"></i></div>
         Kalender {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}
     </div>
     <div class="calendar-wrapper">
