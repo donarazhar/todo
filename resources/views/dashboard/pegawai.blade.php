@@ -558,7 +558,7 @@
                         @endif
 
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">✏️ Edit</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">{{ $tab === 'pimpinan' ? '👁️ Detail' : '✏️ Edit' }}</button>
                             
                             @if($tab === 'mandiri')
                             <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
@@ -693,7 +693,7 @@
                     <span style="color:var(--text-400); font-size:11px;">{{ $t->tgl_mulai->format('d/m/Y') }} — {{ $t->tgl_selesai->format('d/m/Y') }}</span>
                 @endif
                 <div class="pgw-card-actions">
-                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">✏️ Edit</button>
+                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, { judul: '{{ addslashes($t->judul) }}', deskripsi: '{{ addslashes($t->deskripsi) }}', prioritas: '{{ $t->prioritas }}', bobot: '{{ $t->bobot }}', tgl_mulai: '{{ $t->tgl_mulai->format('Y-m-d') }}', tgl_selesai: '{{ $t->tgl_selesai->format('Y-m-d') }}', assigned_to: '{{ $t->assigned_to }}' })">{{ $tab === 'pimpinan' ? '👁️ Detail' : '✏️ Edit' }}</button>
                     @if($tab === 'mandiri')
                     <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
                         @csrf @method('DELETE')
@@ -723,22 +723,22 @@
 <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
     <div class="modal-box" @click.away="editModalOpen = false">
         <div class="modal-header">
-            <h3>✏️ Edit Tugas</h3>
+            <h3>{{ $tab === 'pimpinan' ? '👁️ Detail Tugas' : '✏️ Edit Tugas' }}</h3>
             <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
         </div>
         <form :action="'{{ url('/tasks') }}/' + editId" method="POST">
             @csrf @method('PUT')
             <div class="form-group">
                 <label>Judul Pekerjaan / Tugas</label>
-                <input type="text" name="judul" x-model="editData.judul" required>
+                <input type="text" name="judul" x-model="editData.judul" {{ $tab === 'pimpinan' ? 'readonly' : 'required' }}>
             </div>
             <div class="form-group">
                 <label>Deskripsi Detail Tugas</label>
-                <textarea name="deskripsi" rows="3" x-model="editData.deskripsi"></textarea>
+                <textarea name="deskripsi" rows="3" x-model="editData.deskripsi" {{ $tab === 'pimpinan' ? 'readonly' : '' }}></textarea>
             </div>
             <div class="form-group">
                 <label>Prioritas</label>
-                <select name="prioritas" x-model="editData.prioritas" required>
+                <select name="prioritas" x-model="editData.prioritas" {{ $tab === 'pimpinan' ? 'disabled' : 'required' }}>
                     <option value="Sedang">🟡 Sedang</option>
                     <option value="Tinggi">🔴 Tinggi</option>
                     <option value="Rendah">🟢 Rendah</option>
@@ -747,22 +747,24 @@
             <div class="pgw-modal-grid">
                 <div class="form-group">
                     <label>Bobot (1–100)</label>
-                    <input type="number" name="bobot" min="1" max="100" x-model="editData.bobot" required>
+                    <input type="number" name="bobot" min="1" max="100" x-model="editData.bobot" {{ $tab === 'pimpinan' ? 'readonly' : 'required' }}>
                 </div>
                 <div class="form-group">
                     <label>Tanggal Mulai</label>
-                    <input type="date" name="tgl_mulai" x-model="editData.tgl_mulai" required>
+                    <input type="date" name="tgl_mulai" x-model="editData.tgl_mulai" {{ $tab === 'pimpinan' ? 'readonly' : 'required' }}>
                 </div>
             </div>
             <div class="form-group">
                 <label>Deadline Penyelesaian</label>
-                <input type="date" name="tgl_selesai" x-model="editData.tgl_selesai" required>
+                <input type="date" name="tgl_selesai" x-model="editData.tgl_selesai" {{ $tab === 'pimpinan' ? 'readonly' : 'required' }}>
             </div>
             <input type="hidden" name="assigned_to" x-model="editData.assigned_to">
             
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
-                <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
+                <button type="button" class="btn btn-secondary" @click="editModalOpen = false">{{ $tab === 'pimpinan' ? 'Tutup' : 'Batal' }}</button>
+                @if($tab === 'mandiri')
                 <button type="submit" class="btn">💾 Simpan Perubahan</button>
+                @endif
             </div>
         </form>
     </div>
