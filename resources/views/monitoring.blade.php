@@ -290,15 +290,64 @@
     </header>
 
     <div class="tabs-nav">
-        <button :class="{'active': currentTab === 'progress'}" @click="currentTab = 'progress'">
-            <i class="bi bi-person-workspace" style="margin-right: 8px;"></i> Progress Tugas
-        </button>
         <button :class="{'active': currentTab === 'jadwal'}" @click="currentTab = 'jadwal'">
             <i class="bi bi-calendar-event" style="margin-right: 8px;"></i> Jadwal Kegiatan
+        </button>
+        <button :class="{'active': currentTab === 'progress'}" @click="currentTab = 'progress'">
+            <i class="bi bi-person-workspace" style="margin-right: 8px;"></i> Progress Tugas
         </button>
     </div>
 
     <main class="main-content">
+        <!-- PANEL: JADWAL KEGIATAN -->
+        <section class="panel" x-show="currentTab === 'jadwal'" style="display: none;">
+            <div class="panel-header">
+                <h2>
+                    <div class="panel-icon" style="background: #10B981;"><i class="bi bi-calendar-event"></i></div>
+                    Jadwal Kegiatan Bulan Ini
+                </h2>
+                <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kegiatan & Lokasi</th>
+                            <th>Waktu Pelaksanaan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($kegiatans as $k)
+                        <tr @click="openModal('kegiatan', {{ \Illuminate\Support\Js::from([
+                            'nama' => $k->nama_kegiatan,
+                            'unit' => $k->unitKerja->nama_unit ?? '-',
+                            'lokasi' => $k->lokasi->nama_lokasi ?? '-',
+                            'waktu_mulai' => $k->waktu_mulai->format('d M Y, H:i'),
+                            'waktu_selesai' => $k->waktu_selesai->format('d M Y, H:i'),
+                            'status' => $k->status,
+                            'peserta' => $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : 'Belum ada peserta'
+                        ]) }})">
+                            <td>
+                                <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $k->nama_kegiatan }}</div>
+                                <div style="font-size: 13px; color: var(--text-500);"><i class="bi bi-geo-alt-fill"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">{{ $k->waktu_mulai->format('d M Y') }}</div>
+                                <div style="font-size: 13px; color: var(--text-500); margin-top: 4px;">{{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB</div>
+                            </td>
+                            <td>
+                                <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- PANEL: TUGAS PEGAWAI -->
         <section class="panel" x-show="currentTab === 'progress'" style="display: none;">
             <div class="panel-header">
@@ -375,55 +424,6 @@
                 @empty
                 <div style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada tugas aktif.</div>
                 @endforelse
-            </div>
-        </section>
-
-        <!-- PANEL: JADWAL KEGIATAN -->
-        <section class="panel" x-show="currentTab === 'jadwal'" style="display: none;">
-            <div class="panel-header">
-                <h2>
-                    <div class="panel-icon" style="background: #10B981;"><i class="bi bi-calendar-event"></i></div>
-                    Jadwal Kegiatan Bulan Ini
-                </h2>
-                <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
-            </div>
-            <div class="panel-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Kegiatan & Lokasi</th>
-                            <th>Waktu Pelaksanaan</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($kegiatans as $k)
-                        <tr @click="openModal('kegiatan', {{ \Illuminate\Support\Js::from([
-                            'nama' => $k->nama_kegiatan,
-                            'unit' => $k->unitKerja->nama_unit ?? '-',
-                            'lokasi' => $k->lokasi->nama_lokasi ?? '-',
-                            'waktu_mulai' => $k->waktu_mulai->format('d M Y, H:i'),
-                            'waktu_selesai' => $k->waktu_selesai->format('d M Y, H:i'),
-                            'status' => $k->status,
-                            'peserta' => $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : 'Belum ada peserta'
-                        ]) }})">
-                            <td>
-                                <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $k->nama_kegiatan }}</div>
-                                <div style="font-size: 13px; color: var(--text-500);"><i class="bi bi-geo-alt-fill"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}</div>
-                            </td>
-                            <td>
-                                <div style="font-weight: 600;">{{ $k->waktu_mulai->format('d M Y') }}</div>
-                                <div style="font-size: 13px; color: var(--text-500); margin-top: 4px;">{{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB</div>
-                            </td>
-                            <td>
-                                <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
             </div>
         </section>
     </main>
