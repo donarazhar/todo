@@ -21,6 +21,56 @@
         this.editModalOpen = true;
     }
 }">
+    @push('styles')
+    <style>
+        .master-cards-mobile {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .master-cards-mobile .task-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            padding: 16px;
+        }
+        .master-cards-mobile .task-card-title {
+            font-weight: 700;
+            color: var(--text-900);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .master-cards-mobile .task-card-subtitle {
+            font-size: 12px;
+            color: var(--text-500);
+            margin-bottom: 12px;
+        }
+        .master-cards-mobile .task-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-100);
+        }
+
+        @media (max-width: 1024px) {
+            .split-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .master-table-wrap {
+                display: none !important;
+            }
+            .master-cards-mobile {
+                display: flex !important;
+            }
+        }
+    </style>
+    @endpush
     <!-- Tab Master Data -->
     <div class="tabs-bar">
         <button class="tab-btn" :class="{ 'active': tab === 'unit' }" @click="tab = 'unit'">Unit Kerja</button>
@@ -61,28 +111,50 @@
             </div>
             <div class="section-box">
                 <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-card-checklist"></i></span> Daftar Unit Kerja</h3>
-                <table>
-                    <thead>
-                        <tr><th>ID</th><th>Nama Unit Kerja</th><th>Kode</th><th>Kepala Unit</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($units as $unit)
-                        <tr>
-                            <td>{{ $unit->id }}</td>
-                            <td><strong>{{ $unit->nama_unit }}</strong></td>
-                            <td><span class="badge bg-belum">{{ $unit->kode_unit }}</span></td>
-                            <td>{{ $unit->kepalaUnit->nama ?? '—' }}</td>
-                            <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })"><i class="bi bi-pencil"></i></button>
-                                <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="master-table-wrap" style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Nama Unit Kerja</th><th>Kode</th><th>Kepala Unit</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach($units as $unit)
+                            <tr>
+                                <td>{{ $unit->id }}</td>
+                                <td><strong>{{ $unit->nama_unit }}</strong></td>
+                                <td><span class="badge bg-belum">{{ $unit->kode_unit }}</span></td>
+                                <td>{{ $unit->kepalaUnit->nama ?? '—' }}</td>
+                                <td style="display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })"><i class="bi bi-pencil"></i></button>
+                                    <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Mobile Card View: Unit Kerja --}}
+                <div class="master-cards-mobile">
+                    @forelse($units as $unit)
+                    <div class="task-card">
+                        <div class="task-card-title">{{ $unit->nama_unit }}</div>
+                        <div class="task-card-subtitle">Kode: <span class="badge bg-belum">{{ $unit->kode_unit }}</span> | ID: {{ $unit->id }}</div>
+                        <div style="font-size: 12px; color: var(--text-600);"><i class="bi bi-person"></i> Kepala: {{ $unit->kepalaUnit->nama ?? '—' }}</div>
+                        <div class="task-card-actions">
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                            <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="empty-state"><p>Belum ada data unit kerja.</p></div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -131,37 +203,69 @@
                 </form>
             </div>
             <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-people"></i></span> Daftar Pegawai & Pimpinan</h3>
-                <table>
-                    <thead>
-                        <tr><th>Nama</th><th>Username</th><th>Unit Kerja</th><th>Jabatan</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($users as $user)
-                        <tr>
-                            <td><strong>{{ $user->nama }}</strong></td>
-                            <td>{{ $user->username }}</td>
-                            <td>{{ $user->unitKerja->nama_unit ?? '-' }}</td>
-                            <td>
-                                @if($user->role->nama_role == 'Pimpinan')
-                                    <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
-                                @elseif($user->role->nama_role == 'Admin')
-                                    <span class="badge bg-belum">⚙️ Admin</span>
-                                @else
-                                    <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
-                                @endif
-                            </td>
-                            <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i></button>
-                                <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-people"></i></span> Daftar Pegawai</h3>
+                <div class="master-table-wrap" style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Nama User</th><th>Username</th><th>Unit Kerja</th><th>Role</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $user)
+                            <tr>
+                                <td>{{ $user->id }}</td>
+                                <td><strong>{{ $user->nama }}</strong></td>
+                                <td>{{ $user->username }}</td>
+                                <td>{{ $user->unitKerja->nama_unit ?? '—' }}</td>
+                                <td>
+                                    @if($user->role->nama_role == 'Admin')
+                                        <span class="badge bg-belum"><i class="bi bi-shield-lock"></i> Admin</span>
+                                    @elseif($user->role->nama_role == 'Pimpinan')
+                                        <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
+                                    @else
+                                        <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
+                                    @endif
+                                </td>
+                                <td style="display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i></button>
+                                    <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Mobile Card View: Pegawai --}}
+                <div class="master-cards-mobile">
+                    @forelse($users as $user)
+                    <div class="task-card">
+                        <div class="task-card-title">{{ $user->nama }}</div>
+                        <div class="task-card-subtitle">{{ $user->username }} | ID: {{ $user->id }}</div>
+                        <div style="font-size: 12px; color: var(--text-600); margin-bottom: 8px;"><i class="bi bi-building"></i> {{ $user->unitKerja->nama_unit ?? '—' }}</div>
+                        <div>
+                            @if($user->role->nama_role == 'Admin')
+                                <span class="badge bg-belum"><i class="bi bi-shield-lock"></i> Admin</span>
+                            @elseif($user->role->nama_role == 'Pimpinan')
+                                <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
+                            @else
+                                <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
+                            @endif
+                        </div>
+                        <div class="task-card-actions">
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                            <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="empty-state"><p>Belum ada data pegawai.</p></div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -186,27 +290,49 @@
             </div>
             <div class="section-box">
                 <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-geo-alt-fill"></i></span> Daftar Lokasi</h3>
-                <table>
-                    <thead>
-                        <tr><th>ID</th><th>Nama Lokasi</th><th>Alamat / Keterangan</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($lokasi as $l)
-                        <tr>
-                            <td>{{ $l->id }}</td>
-                            <td><strong>{{ $l->nama_lokasi }}</strong></td>
-                            <td style="font-size:12px; color:var(--text-500);">{{ $l->alamat }}</td>
-                            <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('lokasi', {{ $l->id }}, { nama_lokasi: '{{ addslashes($l->nama_lokasi) }}', alamat: '{{ addslashes($l->alamat) }}' })"><i class="bi bi-pencil"></i></button>
-                                <form action="{{ route('master.lokasi.destroy', $l->id) }}" method="POST" onsubmit="return confirm('Hapus lokasi ini?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="master-table-wrap" style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Nama Lokasi</th><th>Alamat / Keterangan</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach($lokasi as $l)
+                            <tr>
+                                <td>{{ $l->id }}</td>
+                                <td><strong>{{ $l->nama_lokasi }}</strong></td>
+                                <td style="font-size:12px; color:var(--text-500);">{{ $l->alamat }}</td>
+                                <td style="display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('lokasi', {{ $l->id }}, { nama_lokasi: '{{ addslashes($l->nama_lokasi) }}', alamat: '{{ addslashes($l->alamat) }}' })"><i class="bi bi-pencil"></i></button>
+                                    <form action="{{ route('master.lokasi.destroy', $l->id) }}" method="POST" onsubmit="return confirm('Hapus lokasi ini?');">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Mobile Card View: Lokasi --}}
+                <div class="master-cards-mobile">
+                    @forelse($lokasi as $l)
+                    <div class="task-card">
+                        <div class="task-card-title">{{ $l->nama_lokasi }}</div>
+                        <div class="task-card-subtitle">ID: {{ $l->id }}</div>
+                        <div style="font-size: 12px; color: var(--text-600);"><i class="bi bi-geo-alt"></i> {{ $l->alamat ?? 'Tidak ada alamat' }}</div>
+                        <div class="task-card-actions">
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('lokasi', {{ $l->id }}, { nama_lokasi: '{{ addslashes($l->nama_lokasi) }}', alamat: '{{ addslashes($l->alamat) }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                            <form action="{{ route('master.lokasi.destroy', $l->id) }}" method="POST" onsubmit="return confirm('Hapus lokasi ini?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="empty-state"><p>Belum ada data lokasi.</p></div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -231,27 +357,49 @@
             </div>
             <div class="section-box">
                 <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-tag"></i></span> Daftar Jenis Kegiatan</h3>
-                <table>
-                    <thead>
-                        <tr><th>ID</th><th>Jenis Kegiatan</th><th>Keterangan</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($jenis as $j)
-                        <tr>
-                            <td>{{ $j->id }}</td>
-                            <td><strong>{{ $j->nama_jenis }}</strong></td>
-                            <td style="font-size:12px; color:var(--text-500);">{{ $j->keterangan }}</td>
-                            <td style="display:flex; gap:5px;">
-                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('jenis', {{ $j->id }}, { nama_jenis: '{{ addslashes($j->nama_jenis) }}', keterangan: '{{ addslashes($j->keterangan) }}' })"><i class="bi bi-pencil"></i></button>
-                                <form action="{{ route('master.jenis.destroy', $j->id) }}" method="POST" onsubmit="return confirm('Hapus jenis kegiatan ini?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="master-table-wrap" style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Jenis Kegiatan</th><th>Keterangan</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach($jenis as $j)
+                            <tr>
+                                <td>{{ $j->id }}</td>
+                                <td><strong>{{ $j->nama_jenis }}</strong></td>
+                                <td style="font-size:12px; color:var(--text-500);">{{ $j->keterangan }}</td>
+                                <td style="display:flex; gap:5px;">
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('jenis', {{ $j->id }}, { nama_jenis: '{{ addslashes($j->nama_jenis) }}', keterangan: '{{ addslashes($j->keterangan) }}' })"><i class="bi bi-pencil"></i></button>
+                                    <form action="{{ route('master.jenis.destroy', $j->id) }}" method="POST" onsubmit="return confirm('Hapus jenis kegiatan ini?');">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Mobile Card View: Jenis Kegiatan --}}
+                <div class="master-cards-mobile">
+                    @forelse($jenis as $j)
+                    <div class="task-card">
+                        <div class="task-card-title">{{ $j->nama_jenis }}</div>
+                        <div class="task-card-subtitle">ID: {{ $j->id }}</div>
+                        <div style="font-size: 12px; color: var(--text-600);"><i class="bi bi-info-circle"></i> {{ $j->keterangan ?? 'Tidak ada keterangan' }}</div>
+                        <div class="task-card-actions">
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('jenis', {{ $j->id }}, { nama_jenis: '{{ addslashes($j->nama_jenis) }}', keterangan: '{{ addslashes($j->keterangan) }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                            <form action="{{ route('master.jenis.destroy', $j->id) }}" method="POST" onsubmit="return confirm('Hapus jenis kegiatan ini?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="empty-state"><p>Belum ada data jenis kegiatan.</p></div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>

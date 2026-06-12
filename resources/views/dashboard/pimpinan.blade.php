@@ -331,6 +331,10 @@
         .modal-box .modal-form-dates {
             flex-direction: column;
         }
+        /* Hide desktop pagination on mobile */
+        .desktop-pagination {
+            display: none;
+        }
     }
 
     /* ============================
@@ -680,9 +684,26 @@
             @endforelse
         </div>
 
-        {{-- Pagination --}}
-        <div style="margin-top: 16px;">
+        {{-- Desktop Pagination --}}
+        <div class="desktop-pagination" style="margin-top: 16px;">
             {{ $delegasiTasks->links() }}
+        </div>
+        
+        {{-- Mobile Pagination --}}
+        <div class="pagination-mobile">
+            <span class="page-info">Halaman {{ $delegasiTasks->currentPage() }} dari {{ $delegasiTasks->lastPage() }}</span>
+            <div class="page-nav-buttons">
+                @if($delegasiTasks->onFirstPage())
+                    <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                @else
+                    <a href="{{ $delegasiTasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                @endif
+                @if($delegasiTasks->hasMorePages())
+                    <a href="{{ $delegasiTasks->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                @else
+                    <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                @endif
+            </div>
         </div>
     </div>
 

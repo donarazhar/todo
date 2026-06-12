@@ -2,9 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1E3A8A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Task&Schedule — Platform manajemen tugas dan penjadwalan terpadu">
     <title>Task&Schedule - Dashboard Overview</title>
     <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -91,6 +97,15 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::selection {
+            background: var(--primary-400);
+            color: white;
         }
 
         body {
@@ -1436,6 +1451,49 @@
         body.dark-mode .btn-secondary { background: var(--bg-card); color: var(--text-900); }
         body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea { background: var(--bg-app); color: var(--text-900); }
         body.dark-mode .table th, body.dark-mode table th { background: var(--bg-app); color: var(--text-900); }
+        body.dark-mode .agenda-event-item { background: var(--bg-app); }
+        body.dark-mode .ptr-indicator { background: var(--bg-card); }
+
+        /* ============================
+           ACCESSIBILITY & PREFERENCES
+        ============================ */
+        *:focus-visible {
+            outline: 2px solid var(--primary-400);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* ============================
+           SKELETON LOADING
+        ============================ */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card) 25%, var(--border-100) 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: var(--radius-sm);
+            color: transparent !important;
+            user-select: none;
+            pointer-events: none;
+        }
+        .skeleton * {
+            visibility: hidden;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ============================
+           PRINT STYLES
+        ============================ */
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     @stack('styles')
@@ -1637,8 +1695,62 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toast = document.getElementById('toast');
-            if(toast.classList.contains('show')) {
+            if(toast && toast.classList.contains('show')) {
                 setTimeout(() => { toast.classList.remove('show'); }, 4000);
+            }
+
+            // ============================
+            // PULL-TO-REFRESH (Mobile only)
+            // ============================
+            if ('ontouchstart' in window) {
+                const contentBody = document.querySelector('.content-body');
+                if (contentBody) {
+                    let startY = 0;
+                    let pulling = false;
+                    let indicator = document.querySelector('.ptr-indicator');
+                    
+                    // Create indicator if not exists
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'ptr-indicator';
+                        indicator.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                        contentBody.style.position = 'relative';
+                        contentBody.insertBefore(indicator, contentBody.firstChild);
+                    }
+
+                    contentBody.addEventListener('touchstart', (e) => {
+                        if (contentBody.scrollTop <= 0) {
+                            startY = e.touches[0].clientY;
+                            pulling = true;
+                        }
+                    }, { passive: true });
+
+                    contentBody.addEventListener('touchmove', (e) => {
+                        if (!pulling) return;
+                        const currentY = e.touches[0].clientY;
+                        const diff = currentY - startY;
+                        
+                        if (diff > 20 && diff < 120) {
+                            indicator.classList.add('visible');
+                            indicator.style.transform = `translateX(-50%) translateY(${Math.min(diff * 0.5, 30)}px)`;
+                        }
+                    }, { passive: true });
+
+                    contentBody.addEventListener('touchend', () => {
+                        if (!pulling) return;
+                        pulling = false;
+                        
+                        if (indicator.classList.contains('visible')) {
+                            indicator.classList.remove('visible');
+                            indicator.classList.add('refreshing');
+                            indicator.style.transform = 'translateX(-50%) translateY(10px)';
+                            
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 400);
+                        }
+                    }, { passive: true });
+                }
             }
         });
         function showToast(msg) {
@@ -1651,3 +1763,4 @@
     @stack('scripts')
 </body>
 </html>
+

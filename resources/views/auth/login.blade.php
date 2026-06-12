@@ -86,6 +86,7 @@
         html {
             font-size: 16px;
             -webkit-text-size-adjust: 100%;
+            scroll-behavior: smooth;
         }
 
         body {
@@ -93,6 +94,7 @@
             background: var(--gradient-hero-vivid);
             color: var(--text-700);
             min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -104,6 +106,7 @@
         .login-container {
             display: flex;
             min-height: 100vh;
+            min-height: 100dvh;
             width: 100%;
             position: relative;
         }
@@ -682,30 +685,32 @@
             .login-container {
                 flex-direction: column;
                 min-height: 100vh;
+                min-height: 100dvh;
             }
 
             .login-branding {
                 min-height: auto;
-                padding: 48px 28px 40px;
+                padding: 36px 28px 28px;
                 flex: 0 0 auto;
             }
 
             .brand-logo {
-                width: 60px;
-                height: 60px;
-                font-size: 28px;
-                margin-bottom: 20px;
+                width: 56px;
+                height: 56px;
+                font-size: 26px;
+                margin-bottom: 16px;
                 border-radius: var(--radius-lg);
             }
 
             .brand-title {
-                font-size: 28px;
-                margin-bottom: 10px;
+                font-size: 26px;
+                margin-bottom: 8px;
             }
 
             .brand-subtitle {
-                font-size: 13.5px;
-                margin-bottom: 28px;
+                font-size: 13px;
+                margin-bottom: 0;
+                line-height: 1.5;
             }
 
             .feature-list {
@@ -717,7 +722,7 @@
                 min-width: 100%;
                 flex: 1;
                 border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-                padding: 36px 28px 40px;
+                padding: 32px 24px 36px;
                 box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
             }
 
@@ -744,7 +749,7 @@
             }
 
             .form-header {
-                margin-bottom: 28px;
+                margin-bottom: 20px;
             }
 
             .form-header h1 {
@@ -755,19 +760,24 @@
                 font-size: 13px;
             }
 
+            .form-group {
+                margin-bottom: 16px;
+            }
+
             .form-input {
-                padding: 14px 16px 14px 44px;
+                padding: 13px 16px 13px 44px;
                 font-size: 16px; /* Prevent iOS zoom */
             }
 
             .btn-login {
-                padding: 15px 24px;
+                padding: 14px 24px;
                 font-size: 15px;
+                margin-top: 20px;
             }
 
             .form-footer {
-                margin-top: 24px;
-                padding-top: 20px;
+                margin-top: 20px;
+                padding-top: 16px;
             }
         }
 
@@ -776,40 +786,54 @@
         ============================ */
         @media (max-width: 480px) {
             .login-branding {
-                padding: 36px 24px 32px;
+                padding: 28px 20px 20px;
             }
 
             .brand-logo {
-                width: 52px;
-                height: 52px;
-                font-size: 24px;
-                margin-bottom: 16px;
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+                margin-bottom: 12px;
+                border-radius: var(--radius-md);
             }
 
             .brand-title {
-                font-size: 24px;
+                font-size: 22px;
             }
 
             .brand-subtitle {
-                font-size: 13px;
-                margin-bottom: 0;
+                display: none;
             }
 
             .login-form-panel {
-                padding: 32px 20px 36px;
+                padding: 28px 20px 32px;
+            }
+
+            .form-header {
+                margin-bottom: 16px;
             }
 
             .form-header .welcome-back {
                 font-size: 11px;
                 padding: 5px 12px;
+                margin-bottom: 12px;
             }
 
             .form-header h1 {
                 font-size: 20px;
             }
 
+            .form-header p {
+                font-size: 12.5px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
             .form-group label {
                 font-size: 12.5px;
+                margin-bottom: 5px;
             }
 
             .form-input {
@@ -818,6 +842,12 @@
 
             .btn-login {
                 padding: 14px 20px;
+                margin-top: 16px;
+            }
+
+            .form-footer {
+                margin-top: 16px;
+                padding-top: 12px;
             }
 
             .security-badge {

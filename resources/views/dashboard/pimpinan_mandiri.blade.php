@@ -175,6 +175,9 @@
         .mandiri-cards-mobile {
             display: flex !important;
         }
+        .desktop-pagination {
+            display: none;
+        }
     }
 
     /* ============================
@@ -357,9 +360,26 @@
             @endforelse
         </div>
 
-        {{-- Pagination --}}
-        <div style="margin-top: 16px;">
+        {{-- Desktop Pagination --}}
+        <div class="desktop-pagination" style="margin-top: 16px;">
             {{ $mandiriTasks->links() }}
+        </div>
+        
+        {{-- Mobile Pagination --}}
+        <div class="pagination-mobile">
+            <span class="page-info">Halaman {{ $mandiriTasks->currentPage() }} dari {{ $mandiriTasks->lastPage() }}</span>
+            <div class="page-nav-buttons">
+                @if($mandiriTasks->onFirstPage())
+                    <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                @else
+                    <a href="{{ $mandiriTasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                @endif
+                @if($mandiriTasks->hasMorePages())
+                    <a href="{{ $mandiriTasks->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                @else
+                    <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                @endif
+            </div>
         </div>
     </div>
 </div>

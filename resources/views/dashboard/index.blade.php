@@ -689,6 +689,57 @@
                 <div class="calendar-cell empty"></div>
             @endfor
         </div>
+
+        {{-- ======= MOBILE AGENDA VIEW (hidden on desktop) ======= --}}
+        <div class="calendar-agenda-mobile">
+            @php
+                $hasEvents = false;
+                for ($day = 1; $day <= $daysInMonth; $day++) {
+                    $currentDate = $now->copy()->day($day);
+                    $dateStr = $currentDate->format('Y-m-d');
+                    if (isset($kegiatanMap[$dateStr]) && count($kegiatanMap[$dateStr]) > 0) {
+                        $hasEvents = true;
+                        break;
+                    }
+                }
+            @endphp
+            
+            @if($hasEvents)
+                @for ($day = 1; $day <= $daysInMonth; $day++)
+                    @php
+                        $currentDate = $now->copy()->day($day);
+                        $dateStr = $currentDate->format('Y-m-d');
+                        $isToday = $dateStr === \Carbon\Carbon::today()->format('Y-m-d');
+                        $events = $kegiatanMap[$dateStr] ?? [];
+                    @endphp
+                    @if(count($events) > 0)
+                    <div class="agenda-item">
+                        <div class="agenda-date {{ $isToday ? 'today' : '' }}">
+                            <div class="day">{{ $day }}</div>
+                            <div class="month">{{ $currentDate->translatedFormat('M') }}</div>
+                        </div>
+                        <div class="agenda-events">
+                            @foreach($events as $event)
+                                @php
+                                    $eventClass = '';
+                                    if ($event->status == 'Selesai') $eventClass = 'teal';
+                                    elseif ($event->status == 'Berlangsung') $eventClass = 'amber';
+                                @endphp
+                                <div class="agenda-event-item {{ $eventClass }}">
+                                    <i class="bi bi-calendar-event" style="margin-right:4px"></i> {{ $event->nama_kegiatan }}
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                @endfor
+            @else
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="bi bi-calendar-event"></i></div>
+                    <p>Tidak ada kegiatan bulan ini.</p>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="refresh" content="300"> <!-- Auto refresh every 5 minutes -->
+    <title>Monitoring & Presentasi - Task&Schedule</title>
+    <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-50: #EFF6FF;
+            --primary-100: #DBEAFE;
+            --primary-400: #60A5FA;
+            --primary-500: #3B82F6;
+            --primary-600: #2563EB;
+            --primary-700: #1D4ED8;
+            --bg-app: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --text-900: #0F172A;
+            --text-700: #334155;
+            --text-500: #64748B;
+            --text-400: #94A3B8;
+            --border-100: #F1F5F9;
+            --border-200: #E2E8F0;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --gradient-hero: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-700);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+        }
+        .header-title { display: flex; align-items: center; gap: 16px; }
+        .header-title img { width: 40px; height: 40px; }
+        .header-title h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+        .header-title p { font-size: 14px; color: var(--primary-100); opacity: 0.9; }
+        .header-clock { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 8px; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-200);
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #F8FAFC;
+        }
+        .panel-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-900);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 16px;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th {
+            background: #F1F5F9;
+            color: var(--text-500);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 12px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-100);
+            font-size: 14px;
+            color: var(--text-700);
+        }
+        tr { transition: background 0.2s ease; cursor: pointer; }
+        tr:hover { background: var(--primary-50); }
+
+        /* BADGES */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+        .bg-selesai { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+        .bg-selesai::before { background: #059669; }
+        .bg-proses { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+        .bg-proses::before { background: #D97706; }
+        .bg-belum { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
+        .bg-belum::before { background: #64748B; }
+        
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            padding: 24px;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            width: 100%; max-width: 600px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-100);
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .modal-header h3 { font-size: 20px; font-weight: 800; color: var(--text-900); line-height: 1.4; margin-bottom: 8px;}
+        .modal-close {
+            background: none; border: none; font-size: 24px; color: var(--text-500);
+            cursor: pointer; padding: 4px; line-height: 1; transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--text-900); }
+        .modal-body { padding: 24px; }
+        .detail-row { margin-bottom: 16px; }
+        .detail-label { font-size: 12px; color: var(--text-500); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+        .detail-value { font-size: 15px; color: var(--text-900); font-weight: 500; }
+
+        @media (max-width: 1024px) {
+            .main-content { grid-template-columns: 1fr; overflow-y: auto; }
+            .panel { min-height: 500px; }
+            body { height: auto; overflow-y: auto; }
+        }
+    </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+</head>
+<body x-data="{
+    modalOpen: false,
+    modalType: '',
+    modalData: {},
+    openModal(type, data) {
+        this.modalType = type;
+        this.modalData = data;
+        this.modalOpen = true;
+    },
+    currentTime: '',
+    updateTime() {
+        const now = new Date();
+        this.currentTime = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    }
+}" x-init="updateTime(); setInterval(() => updateTime(), 1000);">
+
+    <header class="header">
+        <div class="header-title">
+            <img src="{{ asset('app-icon.png') }}" alt="Logo" style="background: white; border-radius: 8px; padding: 4px;">
+            <div>
+                <h1>Dashboard Monitoring</h1>
+                <p>Task&Schedule • Presentasi Live</p>
+            </div>
+        </div>
+        <div class="header-clock">
+            <i class="bi bi-clock"></i>
+            <span x-text="currentTime"></span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- PANEL: TUGAS PEGAWAI -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>
+                    <div class="panel-icon" style="background: #3B82F6;"><i class="bi bi-person-workspace"></i></div>
+                    Progress Tugas Pegawai
+                </h2>
+                <div class="badge" style="background: #E0E7FF; color: #4338CA;">Total: {{ $tasks->count() }} Tugas</div>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tugas & Assignee</th>
+                            <th>Target Selesai</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($tasks as $t)
+                        <tr @click="openModal('task', {{ \Illuminate\Support\Js::from([
+                            'judul' => $t->judul,
+                            'deskripsi' => $t->deskripsi,
+                            'pegawai' => $t->assignee->nama ?? '-',
+                            'unit' => $t->assignee->unitKerja->nama_unit ?? '-',
+                            'prioritas' => $t->prioritas,
+                            'tgl_mulai' => $t->tgl_mulai->format('d M Y'),
+                            'tgl_selesai' => $t->tgl_selesai->format('d M Y'),
+                            'status' => $t->status,
+                            'bobot' => $t->bobot
+                        ]) }})">
+                            <td>
+                                <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $t->judul }}</div>
+                                <div style="font-size: 13px; color: var(--primary-600);"><i class="bi bi-person-fill"></i> {{ $t->assignee->nama ?? '-' }}</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">{{ $t->tgl_selesai->format('d M Y') }}</div>
+                                @if($t->is_overdue)
+                                    <div style="font-size: 12px; color: #DC2626; font-weight: 700; margin-top: 4px;"><i class="bi bi-exclamation-triangle-fill"></i> Terlambat</div>
+                                @endif
+                            </td>
+                            <td>
+                                @php
+                                    $statusBg = 'bg-proses';
+                                    if($t->status === 'Selesai') $statusBg = 'bg-selesai';
+                                    elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                                    elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
+                                @endphp
+                                <span class="badge {{ $statusBg }}">{{ $t->status }}</span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada tugas aktif.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PANEL: JADWAL KEGIATAN -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2>
+                    <div class="panel-icon" style="background: #10B981;"><i class="bi bi-calendar-event"></i></div>
+                    Jadwal Kegiatan Bulan Ini
+                </h2>
+                <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
+            </div>
+            <div class="panel-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kegiatan & Lokasi</th>
+                            <th>Waktu Pelaksanaan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($kegiatans as $k)
+                        <tr @click="openModal('kegiatan', {{ \Illuminate\Support\Js::from([
+                            'nama' => $k->nama_kegiatan,
+                            'unit' => $k->unitKerja->nama_unit ?? '-',
+                            'lokasi' => $k->lokasi->nama_lokasi ?? '-',
+                            'waktu_mulai' => $k->waktu_mulai->format('d M Y, H:i'),
+                            'waktu_selesai' => $k->waktu_selesai->format('d M Y, H:i'),
+                            'status' => $k->status,
+                            'peserta' => $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : 'Belum ada peserta'
+                        ]) }})">
+                            <td>
+                                <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $k->nama_kegiatan }}</div>
+                                <div style="font-size: 13px; color: var(--text-500);"><i class="bi bi-geo-alt-fill"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">{{ $k->waktu_mulai->format('d M Y') }}</div>
+                                <div style="font-size: 13px; color: var(--text-500); margin-top: 4px;">{{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB</div>
+                            </td>
+                            <td>
+                                <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" style="display: none;" x-show="modalOpen" x-transition>
+        <div class="modal-box" @click.away="modalOpen = false">
+            
+            <!-- Modal Template for TASK -->
+            <template x-if="modalType === 'task'">
+                <div>
+                    <div class="modal-header">
+                        <div>
+                            <span class="badge bg-proses" style="margin-bottom: 12px; display: inline-flex;" x-text="modalData.status"></span>
+                            <h3 x-text="modalData.judul"></h3>
+                            <div style="font-size: 14px; color: var(--primary-600); font-weight: 600;"><i class="bi bi-person-fill"></i> <span x-text="modalData.pegawai"></span> (<span x-text="modalData.unit"></span>)</div>
+                        </div>
+                        <button class="modal-close" @click="modalOpen = false"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="detail-row">
+                            <div class="detail-label">Deskripsi Tugas</div>
+                            <div class="detail-value" style="font-weight: 400; line-height: 1.6;" x-text="modalData.deskripsi || 'Tidak ada deskripsi.'"></div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="detail-row">
+                                <div class="detail-label">Tanggal Pelaksanaan</div>
+                                <div class="detail-value"><span x-text="modalData.tgl_mulai"></span> - <span x-text="modalData.tgl_selesai"></span></div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Prioritas & Bobot</div>
+                                <div class="detail-value">
+                                    <span style="font-weight: 700; color: #DC2626;" x-show="modalData.prioritas === 'Tinggi'">Tinggi</span>
+                                    <span style="font-weight: 700; color: #D97706;" x-show="modalData.prioritas === 'Sedang'">Sedang</span>
+                                    <span style="font-weight: 700; color: #059669;" x-show="modalData.prioritas === 'Rendah'">Rendah</span>
+                                    • Bobot <span x-text="modalData.bobot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Modal Template for KEGIATAN -->
+            <template x-if="modalType === 'kegiatan'">
+                <div>
+                    <div class="modal-header">
+                        <div>
+                            <span class="badge bg-belum" style="margin-bottom: 12px; display: inline-flex;" x-text="modalData.status"></span>
+                            <h3 x-text="modalData.nama"></h3>
+                            <div style="font-size: 14px; color: var(--text-500); font-weight: 600;"><i class="bi bi-building"></i> <span x-text="modalData.unit"></span></div>
+                        </div>
+                        <button class="modal-close" @click="modalOpen = false"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="detail-row">
+                            <div class="detail-label">Lokasi Kegiatan</div>
+                            <div class="detail-value"><i class="bi bi-geo-alt-fill" style="color: #EF4444;"></i> <span x-text="modalData.lokasi"></span></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Waktu Pelaksanaan</div>
+                            <div class="detail-value"><i class="bi bi-clock-history"></i> <span x-text="modalData.waktu_mulai"></span> s/d <span x-text="modalData.waktu_selesai"></span></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Peserta Terlibat</div>
+                            <div class="detail-value" style="font-weight: 400; line-height: 1.6; max-height: 100px; overflow-y: auto;" x-text="modalData.peserta"></div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+        </div>
+    </div>
+</body>
+</html>

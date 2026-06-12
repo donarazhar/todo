@@ -6,12 +6,16 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\MonitoringController;
 
 Route::get('/', function () { return redirect()->route('login'); });
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Public Monitoring Dashboard for Presentations
+Route::get('/monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

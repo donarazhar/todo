@@ -5,6 +5,57 @@
     <p>Buat dan kelola jadwal kegiatan organisasi secara terpusat</p>
 @endsection
 
+@push('styles')
+<style>
+    .admin-cards-mobile {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .admin-cards-mobile .task-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: box-shadow var(--transition-base);
+    }
+    .admin-cards-mobile .task-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
+        .admin-table-wrap {
+            display: none !important;
+        }
+        .admin-cards-mobile {
+            display: flex !important;
+        }
+        .desktop-pagination {
+            display: none;
+        }
+        /* Form grid responsive */
+        .form-grid-admin {
+            grid-template-columns: 1fr !important;
+        }
+        /* Datetime inputs stack */
+        .datetime-row {
+            grid-template-columns: 1fr !important;
+        }
+        /* Checkbox list touch-friendly */
+        .checkbox-list label {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+        /* Modal grid responsive */
+        .modal-box .modal-grid-2col {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div style="display: flex; flex-direction: column; gap: 24px;" x-data="{ 
             formOpen: false,
@@ -98,7 +149,9 @@
 
     <div class="section-box">
         <h3 class="section-title"><span class="title-icon"><i class="bi bi-card-checklist"></i></span> Database Jadwal Kegiatan</h3>
-        <div style="overflow-x: auto; width: 100%;">
+        
+        {{-- ======= DESKTOP TABLE VIEW ======= --}}
+        <div class="admin-table-wrap" style="overflow-x: auto; width: 100%;">
             <table style="min-width: 800px;">
             <thead>
                 <tr>
@@ -148,7 +201,74 @@
                 @endforeach
             </tbody>
         </table>
-        {{ $kegiatans->links() }}
+        </div>
+
+        {{-- ======= MOBILE CARD VIEW ======= --}}
+        <div class="admin-cards-mobile">
+            @forelse($kegiatans as $keg)
+            <div class="task-card" style="margin-bottom: 12px;">
+                <div class="task-card-header" style="padding: 16px 16px 12px; border-bottom: 1px solid var(--border-100);">
+                    <div style="font-weight:700; color:var(--text-900); font-size:14px; margin-bottom:6px; line-height:1.4;">{{ $keg->nama_kegiatan }}</div>
+                    <div style="font-size:12px; color:var(--primary-500); font-weight:600; margin-bottom:4px;"><i class="bi bi-building"></i> {{ $keg->unitKerja->nama_unit ?? '-' }}</div>
+                    <div style="font-size:12px; color:var(--text-500); margin-bottom:8px;"><i class="bi bi-geo-alt-fill"></i> {{ $keg->lokasi->nama_lokasi ?? '-' }}</div>
+                    <span class="badge {{ $keg->status == 'Selesai' ? 'bg-selesai' : ($keg->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $keg->status }}</span>
+                </div>
+                <div style="padding: 12px 16px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                        <div>
+                            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-400); font-weight:700;">Mulai</div>
+                            <div style="font-size:13px; font-weight:600; color:var(--text-700);">{{ $keg->waktu_mulai->format('d M Y') }}</div>
+                            <div style="font-size:11px; color:var(--text-500);">{{ $keg->waktu_mulai->format('H:i') }} WIB</div>
+                        </div>
+                        <div>
+                            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-400); font-weight:700;">Selesai</div>
+                            <div style="font-size:13px; font-weight:600; color:var(--text-700);">{{ $keg->waktu_selesai->format('d M Y') }}</div>
+                            <div style="font-size:11px; color:var(--text-500);">{{ $keg->waktu_selesai->format('H:i') }} WIB</div>
+                        </div>
+                    </div>
+                    @if($keg->peserta->count() > 0)
+                        <div style="font-size:11px; color:var(--text-600); line-height:1.5;">
+                            <strong style="font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-400); display:block; margin-bottom:4px;">Peserta</strong>
+                            {{ $keg->peserta->pluck('nama')->join(', ') }}
+                        </div>
+                    @endif
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; padding:10px 16px; border-top:1px solid var(--border-100); background:var(--bg-app);">
+                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $keg->id }}, {{ \Illuminate\Support\Js::from(['nama_kegiatan' => $keg->nama_kegiatan, 'jenis_id' => $keg->jenis_id, 'unit_id' => $keg->unit_id, 'lokasi_id' => $keg->lokasi_id, 'waktu_mulai' => $keg->waktu_mulai->format('Y-m-d\TH:i'), 'waktu_selesai' => $keg->waktu_selesai->format('Y-m-d\TH:i')]) }}, {{ json_encode($keg->peserta->pluck('id')->toArray()) }})"><i class="bi bi-pencil"></i> Edit</button>
+                    <form action="{{ route('kegiatan.destroy', $keg->id) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');" style="margin: 0;">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+            @empty
+            <div class="empty-state">
+                <div class="empty-icon"><i class="bi bi-calendar-event"></i></div>
+                <p>Belum ada kegiatan yang dijadwalkan.</p>
+            </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop Pagination --}}
+        <div class="desktop-pagination">
+            {{ $kegiatans->links() }}
+        </div>
+        
+        {{-- Mobile Pagination --}}
+        <div class="pagination-mobile">
+            <span class="page-info">Halaman {{ $kegiatans->currentPage() }} dari {{ $kegiatans->lastPage() }}</span>
+            <div class="page-nav-buttons">
+                @if($kegiatans->onFirstPage())
+                    <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                @else
+                    <a href="{{ $kegiatans->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                @endif
+                @if($kegiatans->hasMorePages())
+                    <a href="{{ $kegiatans->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                @else
+                    <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                @endif
+            </div>
         </div>
     </div>
     <!-- ============================
