@@ -26,6 +26,11 @@ class MonitoringController extends Controller
             ->orderBy('tgl_selesai', 'asc')
             ->get();
 
+        // Group tasks by pegawai (assignee) name
+        $tasksGrouped = $tasks->groupBy(function ($task) {
+            return $task->assignee->nama ?? 'Belum Ditugaskan';
+        });
+
         // Ambil data Jadwal Kegiatan
         // Kita ambil kegiatan bulan ini dan yang akan datang
         $startOfMonth = Carbon::now()->startOfMonth();
@@ -41,6 +46,6 @@ class MonitoringController extends Controller
             'tugas_selesai' => $tasks->where('status', 'Selesai')->count(),
         ];
 
-        return view('monitoring', compact('tasks', 'kegiatans', 'stats'));
+        return view('monitoring', compact('tasks', 'tasksGrouped', 'kegiatans', 'stats'));
     }
 }

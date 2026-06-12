@@ -61,24 +61,47 @@
         .header-title p { font-size: 14px; color: var(--primary-100); opacity: 0.9; }
         .header-clock { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 8px; }
 
-        /* MAIN CONTENT */
+        /* MAIN CONTENT & TABS */
+        .tabs-nav {
+            display: flex;
+            background: white;
+            padding: 0 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            gap: 32px;
+        }
+        .tabs-nav button {
+            background: none;
+            border: none;
+            padding: 16px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-500);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tabs-nav button.active {
+            color: var(--primary-600);
+            border-bottom-color: var(--primary-600);
+        }
+        .tabs-nav button:hover:not(.active) {
+            color: var(--text-900);
+        }
+
         .main-content {
             flex: 1;
-            padding: 24px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            overflow: hidden;
+            padding: 24px 40px;
+            overflow-y: auto;
         }
 
         .panel {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-200);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            border: 1px solid var(--border-200);
         }
 
         .panel-header {
@@ -124,9 +147,6 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             padding: 12px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 5;
         }
         td {
             padding: 16px 24px;
@@ -136,6 +156,49 @@
         }
         tr { transition: background 0.2s ease; cursor: pointer; }
         tr:hover { background: var(--primary-50); }
+
+        /* ACCORDION (DETAILS) */
+        .pegawai-group {
+            border-bottom: 1px solid var(--border-200);
+        }
+        .pegawai-group:last-child {
+            border-bottom: none;
+        }
+        .pegawai-summary {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-900);
+            list-style: none;
+            transition: background 0.2s;
+        }
+        .pegawai-summary::-webkit-details-marker {
+            display: none;
+        }
+        .pegawai-summary:hover {
+            background: #F8FAFC;
+        }
+        .pegawai-summary::after {
+            content: '\F282'; /* bootstrap bi-chevron-down */
+            font-family: 'bootstrap-icons';
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+            color: var(--text-500);
+        }
+        .pegawai-group[open] .pegawai-summary::after {
+            transform: rotate(180deg);
+        }
+        .pegawai-group[open] .pegawai-summary {
+            background: #EFF6FF;
+            border-bottom: 1px solid var(--border-200);
+        }
+        .pegawai-tasks {
+            background: white;
+        }
 
         /* BADGES */
         .badge {
@@ -196,6 +259,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 </head>
 <body x-data="{
+    currentTab: 'progress',
     modalOpen: false,
     modalType: '',
     modalData: {},
@@ -225,68 +289,97 @@
         </div>
     </header>
 
+    <div class="tabs-nav">
+        <button :class="{'active': currentTab === 'progress'}" @click="currentTab = 'progress'">
+            <i class="bi bi-person-workspace" style="margin-right: 8px;"></i> Progress Tugas
+        </button>
+        <button :class="{'active': currentTab === 'jadwal'}" @click="currentTab = 'jadwal'">
+            <i class="bi bi-calendar-event" style="margin-right: 8px;"></i> Jadwal Kegiatan
+        </button>
+    </div>
+
     <main class="main-content">
         <!-- PANEL: TUGAS PEGAWAI -->
-        <section class="panel">
+        <section class="panel" x-show="currentTab === 'progress'" style="display: none;">
             <div class="panel-header">
                 <h2>
                     <div class="panel-icon" style="background: #3B82F6;"><i class="bi bi-person-workspace"></i></div>
-                    Progress Tugas Pegawai
+                    Progress Tugas per Pegawai
                 </h2>
                 <div class="badge" style="background: #E0E7FF; color: #4338CA;">Total: {{ $tasks->count() }} Tugas</div>
             </div>
             <div class="panel-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tugas & Assignee</th>
-                            <th>Target Selesai</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($tasks as $t)
-                        <tr @click="openModal('task', {{ \Illuminate\Support\Js::from([
-                            'judul' => $t->judul,
-                            'deskripsi' => $t->deskripsi,
-                            'pegawai' => $t->assignee->nama ?? '-',
-                            'unit' => $t->assignee->unitKerja->nama_unit ?? '-',
-                            'prioritas' => $t->prioritas,
-                            'tgl_mulai' => $t->tgl_mulai->format('d M Y'),
-                            'tgl_selesai' => $t->tgl_selesai->format('d M Y'),
-                            'status' => $t->status,
-                            'bobot' => $t->bobot
-                        ]) }})">
-                            <td>
-                                <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $t->judul }}</div>
-                                <div style="font-size: 13px; color: var(--primary-600);"><i class="bi bi-person-fill"></i> {{ $t->assignee->nama ?? '-' }}</div>
-                            </td>
-                            <td>
-                                <div style="font-weight: 600;">{{ $t->tgl_selesai->format('d M Y') }}</div>
-                                @if($t->is_overdue)
-                                    <div style="font-size: 12px; color: #DC2626; font-weight: 700; margin-top: 4px;"><i class="bi bi-exclamation-triangle-fill"></i> Terlambat</div>
-                                @endif
-                            </td>
-                            <td>
-                                @php
-                                    $statusBg = 'bg-proses';
-                                    if($t->status === 'Selesai') $statusBg = 'bg-selesai';
-                                    elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
-                                    elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
-                                @endphp
-                                <span class="badge {{ $statusBg }}">{{ $t->status }}</span>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada tugas aktif.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                @forelse($tasksGrouped as $pegawai => $tasksByPegawai)
+                <details class="pegawai-group">
+                    <summary class="pegawai-summary">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-100); color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-weight: 800;">
+                                {{ substr($pegawai, 0, 1) }}
+                            </div>
+                            <div>
+                                <div>{{ $pegawai }}</div>
+                                <div style="font-size: 12px; color: var(--text-500); font-weight: 500;">{{ $tasksByPegawai->first()->assignee->unitKerja->nama_unit ?? 'Tugas Mandiri/Pimpinan' }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge bg-belum" style="margin-right: 16px;">{{ count($tasksByPegawai) }} Tugas</span>
+                        </div>
+                    </summary>
+                    <div class="pegawai-tasks">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Judul Tugas</th>
+                                    <th>Target Selesai</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($tasksByPegawai as $t)
+                                <tr @click="openModal('task', {{ \Illuminate\Support\Js::from([
+                                    'judul' => $t->judul,
+                                    'deskripsi' => $t->deskripsi,
+                                    'pegawai' => $t->assignee->nama ?? '-',
+                                    'unit' => $t->assignee->unitKerja->nama_unit ?? '-',
+                                    'prioritas' => $t->prioritas,
+                                    'tgl_mulai' => $t->tgl_mulai->format('d M Y'),
+                                    'tgl_selesai' => $t->tgl_selesai->format('d M Y'),
+                                    'status' => $t->status,
+                                    'bobot' => $t->bobot
+                                ]) }})">
+                                    <td style="width: 50%;">
+                                        <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $t->judul }}</div>
+                                        <div style="font-size: 13px; color: var(--text-500);">Bobot: {{ $t->bobot }} • Prioritas: {{ $t->prioritas }}</div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600;">{{ $t->tgl_selesai->format('d M Y') }}</div>
+                                        @if($t->is_overdue)
+                                            <div style="font-size: 12px; color: #DC2626; font-weight: 700; margin-top: 4px;"><i class="bi bi-exclamation-triangle-fill"></i> Terlambat</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statusBg = 'bg-proses';
+                                            if($t->status === 'Selesai') $statusBg = 'bg-selesai';
+                                            elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                                            elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
+                                        @endphp
+                                        <span class="badge {{ $statusBg }}">{{ $t->status }}</span>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+                @empty
+                <div style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada tugas aktif.</div>
+                @endforelse
             </div>
         </section>
 
         <!-- PANEL: JADWAL KEGIATAN -->
-        <section class="panel">
+        <section class="panel" x-show="currentTab === 'jadwal'" style="display: none;">
             <div class="panel-header">
                 <h2>
                     <div class="panel-icon" style="background: #10B981;"><i class="bi bi-calendar-event"></i></div>
