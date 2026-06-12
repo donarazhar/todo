@@ -334,7 +334,7 @@
                                 </div>
                             </td>
                             <td>
-                                <div style="font-weight: 700; color: var(--text-900); font-size: 13px; margin-bottom: 4px;"><i class="bi bi-calendar-check"></i> {{ $k->waktu_mulai->format('d M Y') }}</div>
+                                <div style="font-weight: 700; color: var(--text-900); font-size: 13px; margin-bottom: 4px;"><i class="bi bi-calendar-check"></i> {{ \Carbon\Carbon::parse($k->waktu_mulai)->locale('id')->translatedFormat('l, d M Y') }}</div>
                                 <div style="font-size: 12px; color: var(--text-500); background: #F1F5F9; padding: 4px 8px; border-radius: 4px; display: inline-block;">
                                     <i class="bi bi-clock"></i> {{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB
                                 </div>
