@@ -200,6 +200,76 @@
             background: white;
         }
 
+        /* KEGIATAN CARDS */
+        .kegiatan-list {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #F8FAFC;
+        }
+        .kegiatan-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            border: 1px solid var(--border-200);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kegiatan-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .kegiatan-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .kegiatan-time {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-500);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kegiatan-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-900);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .kegiatan-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            font-size: 14px;
+            color: var(--text-700);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kegiatan-peserta {
+            background: #F1F5F9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-700);
+            line-height: 1.6;
+        }
+        .kegiatan-peserta strong {
+            color: var(--text-900);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
         /* BADGES */
         .badge {
             padding: 6px 12px;
@@ -309,42 +379,29 @@
                 <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
             </div>
             <div class="panel-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Kegiatan & Lokasi</th>
-                            <th>Waktu Pelaksanaan</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($kegiatans as $k)
-                        <tr @click="openModal('kegiatan', {{ \Illuminate\Support\Js::from([
-                            'nama' => $k->nama_kegiatan,
-                            'unit' => $k->unitKerja->nama_unit ?? '-',
-                            'lokasi' => $k->lokasi->nama_lokasi ?? '-',
-                            'waktu_mulai' => $k->waktu_mulai->format('d M Y, H:i'),
-                            'waktu_selesai' => $k->waktu_selesai->format('d M Y, H:i'),
-                            'status' => $k->status,
-                            'peserta' => $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : 'Belum ada peserta'
-                        ]) }})">
-                            <td>
-                                <div style="font-weight: 700; color: var(--text-900); margin-bottom: 4px;">{{ $k->nama_kegiatan }}</div>
-                                <div style="font-size: 13px; color: var(--text-500);"><i class="bi bi-geo-alt-fill"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}</div>
-                            </td>
-                            <td>
-                                <div style="font-weight: 600;">{{ $k->waktu_mulai->format('d M Y') }}</div>
-                                <div style="font-size: 13px; color: var(--text-500); margin-top: 4px;">{{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB</div>
-                            </td>
-                            <td>
-                                <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <div class="kegiatan-list">
+                    @forelse($kegiatans as $k)
+                    <div class="kegiatan-card">
+                        <div class="kegiatan-card-header">
+                            <div class="kegiatan-time">
+                                <i class="bi bi-calendar-check"></i> {{ $k->waktu_mulai->format('d M Y') }} • <i class="bi bi-clock"></i> {{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB
+                            </div>
+                            <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
+                        </div>
+                        <h3 class="kegiatan-title">{{ $k->nama_kegiatan }}</h3>
+                        <div class="kegiatan-meta">
+                            <div class="meta-item"><i class="bi bi-geo-alt-fill" style="color: #EF4444;"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}</div>
+                            <div class="meta-item"><i class="bi bi-building" style="color: #3B82F6;"></i> {{ $k->unitKerja->nama_unit ?? '-' }}</div>
+                        </div>
+                        <div class="kegiatan-peserta">
+                            <strong><i class="bi bi-people-fill"></i> Peserta Terlibat:</strong>
+                            {{ $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : 'Belum ada peserta yang ditugaskan.' }}
+                        </div>
+                    </div>
+                    @empty
+                    <div style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal bulan ini.</div>
+                    @endforelse
+                </div>
             </div>
         </section>
 
