@@ -14,43 +14,57 @@ class TaskController extends Controller {
         $t->delete();
         return redirect()->back()->with('success', 'Tugas dibatalkan/dihapus.');
     }
-    public function pimpinanTasks() {
-        
-        $pegawais = User::whereHas('role', function($q) {
-            $q->where('nama_role', 'Pegawai');
-        })->where('unit_id', Auth::user()->unit_id)->get();
+    public function pimpinanTasks(Request $request) {
+        $tab = $request->query('tab', 'delegasi');
+        $myUnit = Auth::user()->unitKerja;
+        $descendantIds = $myUnit ? $myUnit->getAllDescendantIds() : [];
+        $allUnitIds = array_merge([Auth::user()->unit_id], $descendantIds);
+
+        $pegawais = User::whereIn('unit_id', $allUnitIds)
+            ->where('id', '!=', Auth::id())
+            ->get();
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
-        $query = Task::with(['assignee', 'creator', 'comments.user'])
-            ->where('created_by', Auth::id());
+        $query = Task::with(['assignee', 'creator', 'comments.user']);
 
-        if (request()->filled('search')) {
-            $query->where(function($q) {
-                $q->where('judul', 'like', '%' . request()->search . '%')
-                  ->orWhere('deskripsi', 'like', '%' . request()->search . '%');
+        if ($tab === 'delegasi') {
+            $query->where('created_by', Auth::id());
+        } elseif ($tab === 'masuk') {
+            $query->where('assigned_to', Auth::id())->where('sumber', 'Pimpinan');
+        } elseif ($tab === 'mandiri') {
+            $query->where('assigned_to', Auth::id())->where('sumber', 'Mandiri');
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('judul', 'like', '%' . $request->search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
             });
         }
         
-        if (request()->filled('status')) {
-            $query->where('status', request()->status);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
-        if (request()->filled('prioritas')) {
-            $query->where('prioritas', request()->prioritas);
+        if ($request->filled('prioritas')) {
+            $query->where('prioritas', $request->prioritas);
         }
 
-        $delegasiTasks = $query->orderBy('tgl_mulai', 'desc')
-                               ->paginate(15)
-                               ->appends(request()->except('page'));
+        $tasks = $query->orderBy('tgl_mulai', 'desc')
+                       ->paginate(15)
+                       ->appends($request->except('page'));
             
-        return view('dashboard.pimpinan', compact('delegasiTasks', 'pegawais'));
+        return view('dashboard.pimpinan', compact('tasks', 'pegawais', 'tab'));
     }
 
     public function pimpinanMandiriTasks() {
-        
-        $pegawais = User::whereHas('role', function($q) {
-            $q->where('nama_role', 'Pegawai');
-        })->where('unit_id', Auth::user()->unit_id)->get();
+        $myUnit = Auth::user()->unitKerja;
+        $descendantIds = $myUnit ? $myUnit->getAllDescendantIds() : [];
+        $allUnitIds = array_merge([Auth::user()->unit_id], $descendantIds);
+
+        $pegawais = User::whereIn('unit_id', $allUnitIds)
+            ->where('id', '!=', Auth::id())
+            ->get();
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
         $query = Task::with(['assignee', 'comments.user'])
@@ -124,8 +138,8 @@ class TaskController extends Controller {
         $task = new Task($validated);
         $task->created_by = Auth::id();
         
-        if (Auth::user()->role->nama_role === 'Pegawai') {
-            $task->assigned_to = Auth::id();
+        // Pimpinan maupun Pegawai bisa buat tugas mandiri dengan assign ke diri sendiri
+        if ($task->assigned_to == Auth::id()) {
             $task->sumber = 'Mandiri';
         } else {
             $task->sumber = 'Pimpinan';

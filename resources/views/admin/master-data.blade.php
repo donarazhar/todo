@@ -9,7 +9,7 @@
 </div>
 
 <div x-data="{ 
-    tab: 'unit',
+    tab: '{{ $activeTab }}',
     editModalOpen: false,
     editType: '',
     editId: '',
@@ -97,10 +97,20 @@
                         @error('kode_unit') <small class="text-error">{{ $message }}</small> @enderror
                     </div>
                     <div class="form-group">
+                        <label>Induk Unit Kerja (Opsional)</label>
+                        <select name="parent_id" class="{{ $errors->has('parent_id') ? 'is-invalid' : '' }}">
+                            <option value="">— Tidak Ada Induk (Level Tertinggi) —</option>
+                            @foreach($allUnits as $u)
+                                <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
+                            @endforeach
+                        </select>
+                        @error('parent_id') <small class="text-error">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="form-group">
                         <label>Kepala Unit</label>
                         <select name="kepala_unit_id" class="{{ $errors->has('kepala_unit_id') ? 'is-invalid' : '' }}">
                             <option value="">— Pilih Pimpinan (Opsional) —</option>
-                            @foreach($users->where('role.nama_role', 'Pimpinan') as $p)
+                            @foreach($allUsers->where('role.nama_role', 'Pimpinan') as $p)
                                 <option value="{{ $p->id }}">{{ $p->nama }}</option>
                             @endforeach
                         </select>
@@ -114,17 +124,18 @@
                 <div class="master-table-wrap" style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr><th>ID</th><th>Nama Unit Kerja</th><th>Kode</th><th>Kepala Unit</th><th>Aksi</th></tr>
+                            <tr><th>ID</th><th>Nama Unit Kerja</th><th>Induk Unit</th><th>Kode</th><th>Kepala Unit</th><th>Aksi</th></tr>
                         </thead>
                         <tbody>
                             @foreach($units as $unit)
                             <tr>
                                 <td>{{ $unit->id }}</td>
                                 <td><strong>{{ $unit->nama_unit }}</strong></td>
+                                <td style="font-size:12px; color:var(--text-600);"><i class="bi bi-diagram-3"></i> {{ $unit->parent->nama_unit ?? '—' }}</td>
                                 <td><span class="badge bg-belum">{{ $unit->kode_unit }}</span></td>
                                 <td>{{ $unit->kepalaUnit->nama ?? '—' }}</td>
                                 <td style="display:flex; gap:5px;">
-                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })"><i class="bi bi-pencil"></i></button>
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}', parent_id: '{{ $unit->parent_id }}' })"><i class="bi bi-pencil"></i></button>
                                     <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
@@ -142,9 +153,10 @@
                     <div class="task-card">
                         <div class="task-card-title">{{ $unit->nama_unit }}</div>
                         <div class="task-card-subtitle">Kode: <span class="badge bg-belum">{{ $unit->kode_unit }}</span> | ID: {{ $unit->id }}</div>
+                        <div style="font-size: 12px; color: var(--text-600); margin-bottom: 4px;"><i class="bi bi-diagram-3"></i> Induk: {{ $unit->parent->nama_unit ?? '—' }}</div>
                         <div style="font-size: 12px; color: var(--text-600);"><i class="bi bi-person"></i> Kepala: {{ $unit->kepalaUnit->nama ?? '—' }}</div>
                         <div class="task-card-actions">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}', parent_id: '{{ $unit->parent_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
                             <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
@@ -154,6 +166,10 @@
                     @empty
                     <div class="empty-state"><p>Belum ada data unit kerja.</p></div>
                     @endforelse
+                </div>
+
+                <div style="margin-top: 20px;">
+                    {{ $units->appends(['tab' => 'unit', 'user_page' => request('user_page'), 'lokasi_page' => request('lokasi_page'), 'jenis_page' => request('jenis_page')])->links() }}
                 </div>
             </div>
         </div>
@@ -185,7 +201,7 @@
                         <label>Unit Kerja</label>
                         <select name="unit_id" required>
                             <option value="">— Pilih Unit Kerja —</option>
-                            @foreach($units as $u)
+                            @foreach($allUnits as $u)
                                 <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
                             @endforeach
                         </select>
@@ -266,6 +282,10 @@
                     <div class="empty-state"><p>Belum ada data pegawai.</p></div>
                     @endforelse
                 </div>
+
+                <div style="margin-top: 20px;">
+                    {{ $users->appends(['tab' => 'pegawai', 'unit_page' => request('unit_page'), 'lokasi_page' => request('lokasi_page'), 'jenis_page' => request('jenis_page')])->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -332,6 +352,10 @@
                     @empty
                     <div class="empty-state"><p>Belum ada data lokasi.</p></div>
                     @endforelse
+                </div>
+
+                <div style="margin-top: 20px;">
+                    {{ $lokasi->appends(['tab' => 'lokasi', 'user_page' => request('user_page'), 'unit_page' => request('unit_page'), 'jenis_page' => request('jenis_page')])->links() }}
                 </div>
             </div>
         </div>
@@ -400,6 +424,10 @@
                     <div class="empty-state"><p>Belum ada data jenis kegiatan.</p></div>
                     @endforelse
                 </div>
+
+                <div style="margin-top: 20px;">
+                    {{ $jenis->appends(['tab' => 'jenis', 'user_page' => request('user_page'), 'unit_page' => request('unit_page'), 'lokasi_page' => request('lokasi_page')])->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -426,10 +454,19 @@
                     <input type="text" name="kode_unit" x-model="editData.kode_unit" required>
                 </div>
                 <div class="form-group">
+                    <label>Induk Unit Kerja (Opsional)</label>
+                    <select name="parent_id" x-model="editData.parent_id">
+                        <option value="">— Tidak Ada Induk (Level Tertinggi) —</option>
+                        @foreach($allUnits as $u)
+                            <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Kepala Unit</label>
                     <select name="kepala_unit_id" x-model="editData.kepala_unit_id">
                         <option value="">— Pilih Pimpinan (Opsional) —</option>
-                        @foreach($users->where('role.nama_role', 'Pimpinan') as $p)
+                        @foreach($allUsers->where('role.nama_role', 'Pimpinan') as $p)
                             <option value="{{ $p->id }}">{{ $p->nama }}</option>
                         @endforeach
                     </select>
@@ -458,7 +495,7 @@
                 <div class="form-group">
                     <label>Unit Kerja</label>
                     <select name="unit_id" x-model="editData.unit_id" required>
-                        @foreach($units as $u)
+                        @foreach($allUnits as $u)
                             <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
                         @endforeach
                     </select>

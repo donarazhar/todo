@@ -10,12 +10,18 @@ use Illuminate\Support\Facades\Hash;
 
 class MasterDataController extends Controller {
     public function index() {
-        $users = User::with(['role', 'unitKerja'])->get();
+        $users = User::with(['role', 'unitKerja'])->paginate(10, ['*'], 'user_page');
+        $allUsers = User::with('role')->get();
         $roles = Role::all();
-        $units = UnitKerja::with('kepalaUnit')->get();
-        $lokasi = LokasiKegiatan::all();
-        $jenis = JenisKegiatan::all();
-        return view('admin.master-data', compact('users', 'roles', 'units', 'lokasi', 'jenis'));
+        $units = UnitKerja::with(['kepalaUnit', 'parent'])->paginate(10, ['*'], 'unit_page');
+        $allUnits = UnitKerja::all();
+        $lokasi = LokasiKegiatan::paginate(10, ['*'], 'lokasi_page');
+        $jenis = JenisKegiatan::paginate(10, ['*'], 'jenis_page');
+        
+        // Pass the active tab from request or default to 'unit'
+        $activeTab = request()->query('tab', 'unit');
+        
+        return view('admin.master-data', compact('users', 'allUsers', 'roles', 'units', 'allUnits', 'lokasi', 'jenis', 'activeTab'));
     }
 
     // -- UNIT KERJA --
@@ -23,7 +29,8 @@ class MasterDataController extends Controller {
         $validated = $request->validate([
             'nama_unit' => 'required', 
             'kode_unit' => 'required',
-            'kepala_unit_id' => 'nullable|exists:users,id'
+            'kepala_unit_id' => 'nullable|exists:users,id',
+            'parent_id' => 'nullable|exists:unit_kerjas,id'
         ]);
         UnitKerja::create($validated);
         return redirect()->back()->with('success', 'Unit Kerja berhasil ditambahkan.');
@@ -32,7 +39,8 @@ class MasterDataController extends Controller {
         $validated = $request->validate([
             'nama_unit' => 'required', 
             'kode_unit' => 'required',
-            'kepala_unit_id' => 'nullable|exists:users,id'
+            'kepala_unit_id' => 'nullable|exists:users,id',
+            'parent_id' => 'nullable|exists:unit_kerjas,id'
         ]);
         UnitKerja::findOrFail($id)->update($validated);
         return redirect()->back()->with('success', 'Unit Kerja berhasil diubah.');

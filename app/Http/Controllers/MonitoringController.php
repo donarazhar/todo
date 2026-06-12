@@ -17,6 +17,16 @@ class MonitoringController extends Controller
     {
         $unit_id = $request->query('unit_id');
 
+        // Jika ada filter unit, dapatkan semua ID unit turunannya
+        $filterUnitIds = [];
+        if ($unit_id) {
+            $unit = UnitKerja::find($unit_id);
+            if ($unit) {
+                $filterUnitIds = $unit->getAllDescendantIds();
+                $filterUnitIds[] = $unit_id; // Termasuk unit itu sendiri
+            }
+        }
+
         // Ambil data Tugas (Tasks)
         $tasksQuery = Task::with(['assignee.unitKerja'])
             ->orderByRaw("CASE 
@@ -26,9 +36,9 @@ class MonitoringController extends Controller
                 ELSE 4 END")
             ->orderBy('tgl_selesai', 'asc');
 
-        if ($unit_id) {
-            $tasksQuery->whereHas('assignee', function($q) use ($unit_id) {
-                $q->where('unit_id', $unit_id);
+        if (!empty($filterUnitIds)) {
+            $tasksQuery->whereHas('assignee', function($q) use ($filterUnitIds) {
+                $q->whereIn('unit_id', $filterUnitIds);
             });
         }
         $tasks = $tasksQuery->get();
@@ -46,13 +56,16 @@ class MonitoringController extends Controller
             ->where('waktu_selesai', '>=', $now)
             ->orderBy('waktu_mulai', 'asc');
 
-        if ($unit_id) {
-            $kegiatansQuery->where('unit_id', $unit_id);
+        if (!empty($filterUnitIds)) {
+            $kegiatansQuery->whereIn('unit_id', $filterUnitIds);
         }
         $kegiatans = $kegiatansQuery->get();
 
-        // Ambil daftar Unit Kerja untuk dropdown filter
-        $units = UnitKerja::orderBy('nama_unit', 'asc')->get();
+        // Ambil daftar Unit Kerja untuk dropdown filter (Hanya Kepala Bagian / Level 2)
+        // Level 2 adalah unit yang parent_id-nya menunjuk ke unit yang parent_id-nya null (Sekretariat)
+        $units = UnitKerja::whereHas('parent', function($q) {
+            $q->whereNull('parent_id');
+        })->orderBy('nama_unit', 'asc')->get();
 
         // Statistik sederhana untuk header
         $stats = [

@@ -1,8 +1,16 @@
 @extends('layouts.app')
 
 @section('page_title')
-    <h2>Delegasi Tugas — To-Do Pimpinan</h2>
-    <p>Berikan tugas khusus kepada pegawai dan monitor progres penyelesaiannya</p>
+    @if($tab === 'masuk')
+        <h2>Tugas Masuk — Pimpinan</h2>
+        <p>Daftar tugas yang didelegasikan kepada Anda dari atasan</p>
+    @elseif($tab === 'mandiri')
+        <h2>Tugas Mandiri — Pimpinan</h2>
+        <p>Daftar tugas yang Anda inisiasi sendiri di luar penugasan</p>
+    @else
+        <h2>Delegasi Tugas — Pimpinan</h2>
+        <p>Berikan tugas khusus kepada staf atau bawahan Anda dan monitor progresnya</p>
+    @endif
 @endsection
 
 @push('styles')
@@ -369,13 +377,29 @@
 }">
 
     {{-- ================================
-         SECTION: FORM DELEGASI TUGAS
+         SECTION: TAB NAVIGATION
     ================================= --}}
+    <div style="display:flex; gap:10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <a href="{{ route('pimpinan.tasks', ['tab' => 'delegasi']) }}" class="btn {{ $tab === 'delegasi' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px;">
+            <i class="bi bi-arrow-right-square"></i> Delegasi Keluar
+        </a>
+        <a href="{{ route('pimpinan.tasks', ['tab' => 'masuk']) }}" class="btn {{ $tab === 'masuk' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px;">
+            <i class="bi bi-inbox"></i> Tugas Masuk
+        </a>
+        <a href="{{ route('pimpinan.tasks', ['tab' => 'mandiri']) }}" class="btn {{ $tab === 'mandiri' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px;">
+            <i class="bi bi-person-check"></i> Tugas Mandiri
+        </a>
+    </div>
+
+    {{-- ================================
+         SECTION: FORM TUGAS (Hanya tampil di tab Delegasi/Mandiri)
+    ================================= --}}
+    @if($tab !== 'masuk')
     <div class="section-box">
         <div class="task-form-toggle" @click="formOpen = !formOpen">
             <div class="task-form-toggle-info">
-                <h3 class="section-title"><span class="title-icon"><i class="bi bi-pencil-square"></i></span> Delegasikan Tugas Baru</h3>
-                <p>Tugas yang Anda buat akan otomatis muncul di dashboard pegawai yang ditugaskan.</p>
+                <h3 class="section-title"><span class="title-icon"><i class="bi bi-pencil-square"></i></span> {{ $tab === 'delegasi' ? 'Delegasikan Tugas Baru' : 'Buat Tugas Mandiri' }}</h3>
+                <p>{{ $tab === 'delegasi' ? 'Tugas yang Anda buat akan otomatis muncul di dashboard pegawai yang ditugaskan.' : 'Catat tugas yang Anda inisiasi sendiri di sini.' }}</p>
             </div>
             <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Tugas Baru ▾'"></button>
         </div>
@@ -430,14 +454,16 @@
             <button type="submit" class="btn task-form-submit"><i class="bi bi-send"></i> Kirim Tugas Sekarang</button>
         </form>
     </div>
+    @endif
 
     {{-- ================================
          SECTION: MONITORING KERJA
     ================================= --}}
     <div class="section-box">
-        <h3 class="section-title" style="margin-bottom: 18px;"><span class="title-icon"><i class="bi bi-bar-chart-line"></i></span> Monitoring Kerja Pegawai</h3>
+        <h3 class="section-title" style="margin-bottom: 18px;"><span class="title-icon"><i class="bi bi-bar-chart-line"></i></span> {{ $tab === 'delegasi' ? 'Monitoring Kerja Bawahan' : 'Daftar Tugas Anda' }}</h3>
 
         <form method="GET" action="{{ route('pimpinan.tasks') }}" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+            <input type="hidden" name="tab" value="{{ $tab }}">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul/deskripsi..." style="flex-grow:1; padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
             <select name="status" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
                 <option value="">Semua Status</option>
@@ -471,7 +497,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($delegasiTasks as $t)
+                @forelse($tasks as $t)
                 <tr>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
@@ -504,22 +530,47 @@
                             </span>
                         </div>
                         <div>
-                            @if($t->laporan)
-                                <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
-                                    <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
-                                    @if($t->file_laporan)
-                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                            @if($tab === 'delegasi')
+                                {{-- VIEW AS CREATOR: Review laporan bawahan --}}
+                                @if($t->laporan)
+                                    <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
+                                        <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                        @if($t->file_laporan)
+                                            <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                        @endif
+                                    </div>
+                                    @if($t->status === 'Menunggu Review')
+                                        <form action="{{ route('tasks.review', $t->id) }}" method="POST" style="margin-top: 8px; display: flex; gap: 5px;">
+                                            @csrf
+                                            <button type="submit" name="action" value="approve" class="btn btn-sm" style="padding: 4px 8px; font-size: 10px;"><i class="bi bi-check-circle"></i> Setujui</button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 10px;" onsubmit="return confirm('Minta pegawai merevisi laporan ini?');"><i class="bi bi-arrow-return-left"></i> Revisi</button>
+                                        </form>
                                     @endif
-                                </div>
-                                @if($t->status === 'Menunggu Review')
-                                    <form action="{{ route('tasks.review', $t->id) }}" method="POST" style="margin-top: 8px; display: flex; gap: 5px;">
-                                        @csrf
-                                        <button type="submit" name="action" value="approve" class="btn btn-sm" style="padding: 4px 8px; font-size: 10px;"><i class="bi bi-check-circle"></i> Setujui</button>
-                                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 10px;" onsubmit="return confirm('Minta pegawai merevisi laporan ini?');"><i class="bi bi-arrow-return-left"></i> Revisi</button>
-                                    </form>
+                                @else
+                                    <div style="font-size:11px; color:var(--text-400); font-style:italic;">Belum ada laporan</div>
                                 @endif
                             @else
-                                <div style="font-size:11px; color:var(--text-400); font-style:italic;">Belum ada laporan</div>
+                                {{-- VIEW AS ASSIGNEE: Form submit laporan --}}
+                                @if($t->status === 'Selesai')
+                                    <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
+                                        <i class="bi bi-check2"></i> Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                        @if($t->file_laporan)
+                                            <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                        @endif
+                                    </div>
+                                @elseif($t->status === 'Menunggu Review')
+                                    <div style="color:#1E40AF; font-weight:600; font-size:11px;"><i class="bi bi-hourglass-split"></i> Menunggu Review Pimpinan</div>
+                                    <small style="color:var(--text-500); font-size:10px;">Laporan: {{ $t->laporan }}</small>
+                                @else
+                                    <form action="{{ route('tasks.report', $t->id) }}" method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:5px; margin-top: 8px; background:var(--bg-50); padding:8px; border-radius:6px; border:1px dashed var(--border-300);">
+                                        @csrf
+                                        <input type="text" name="laporan" placeholder="Tulis hasil singkat..." value="{!! $t->status === 'Revisi' ? $t->laporan : '' !!}" required style="padding: 6px; font-size: 11px; border:1px solid var(--border-200); border-radius:4px; outline:none;">
+                                        <div style="display:flex; gap:5px; align-items:center;">
+                                            <input type="file" name="file_laporan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="font-size:10px; width:120px;">
+                                            <button type="submit" class="btn btn-sm" style="flex-grow:1; font-size:10px; padding:4px;">Kirim Laporan</button>
+                                        </div>
+                                    </form>
+                                @endif
                             @endif
                         </div>
 
@@ -545,11 +596,22 @@
                     </td>
                     <td>
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i></button>
-                            <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                            </form>
+                            @if($tab === 'delegasi')
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i></button>
+                                <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            @else
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">👁️ Detail</button>
+                                
+                                @if($tab === 'mandiri')
+                                <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                                @endif
+                            @endif
                         </div>
                     </td>
                 </tr>
@@ -569,7 +631,7 @@
 
         {{-- ======= MOBILE CARD VIEW ======= --}}
         <div class="task-cards-mobile">
-            @forelse($delegasiTasks as $t)
+            @forelse($tasks as $t)
             <div class="task-card">
                 {{-- Card Header --}}
                 <div class="task-card-header">
@@ -614,28 +676,56 @@
                     </div>
 
                     {{-- Laporan --}}
-                    @if($t->laporan)
-                        <div class="task-card-report">
-                            <div class="task-card-report-text">
-                                <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
+                    @if($tab === 'delegasi')
+                        @if($t->laporan)
+                            <div class="task-card-report">
+                                <div class="task-card-report-text">
+                                    <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
+                                </div>
+                                @if($t->file_laporan)
+                                    <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="task-card-report-link">
+                                        <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
+                                    </a>
+                                @endif
                             </div>
-                            @if($t->file_laporan)
-                                <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="task-card-report-link">
-                                    <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
-                                </a>
+                            @if($t->status === 'Menunggu Review')
+                                <form action="{{ route('tasks.review', $t->id) }}" method="POST">
+                                    @csrf
+                                    <div class="task-card-review-actions">
+                                        <button type="submit" name="action" value="approve" class="btn btn-sm"><i class="bi bi-check-circle"></i> Setujui</button>
+                                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" onclick="return confirm('Minta pegawai merevisi laporan ini?');"><i class="bi bi-arrow-return-left"></i> Revisi</button>
+                                    </div>
+                                </form>
                             @endif
-                        </div>
-                        @if($t->status === 'Menunggu Review')
-                            <form action="{{ route('tasks.review', $t->id) }}" method="POST">
+                        @else
+                            <div class="task-card-no-report">Belum ada laporan dari bawahan</div>
+                        @endif
+                    @else
+                        {{-- Mobile VIEW AS ASSIGNEE --}}
+                        @if($t->status === 'Selesai')
+                            <div class="task-card-report">
+                                <div class="task-card-report-text"><i class="bi bi-check2"></i> Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                                @if($t->file_laporan)
+                                    <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="task-card-report-link"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                @endif
+                            </div>
+                        @elseif($t->status === 'Menunggu Review')
+                            <div class="task-card-report">
+                                <div class="task-card-report-text" style="color:#1E40AF;"><i class="bi bi-hourglass-split"></i> Menunggu Review Pimpinan</div>
+                                @if($t->file_laporan)
+                                    <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="task-card-report-link"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                @endif
+                            </div>
+                        @else
+                            <form action="{{ route('tasks.report', $t->id) }}" method="POST" enctype="multipart/form-data" style="background:var(--bg-app); border:1px dashed var(--border-300); border-radius:var(--radius-md); padding:12px; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;">
                                 @csrf
-                                <div class="task-card-review-actions">
-                                    <button type="submit" name="action" value="approve" class="btn btn-sm"><i class="bi bi-check-circle"></i> Setujui</button>
-                                    <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger" onclick="return confirm('Minta pegawai merevisi laporan ini?');"><i class="bi bi-arrow-return-left"></i> Revisi</button>
+                                <input type="text" name="laporan" placeholder="Tulis hasil singkat..." value="{!! $t->status === 'Revisi' ? $t->laporan : '' !!}" required style="width:100%; padding:10px 12px; font-size:13px; border:1px solid var(--border-200); border-radius:var(--radius-sm); outline:none;">
+                                <div style="display:flex; gap:8px; align-items:center;">
+                                    <input type="file" name="file_laporan" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="font-size:11px; flex-shrink:0; max-width:160px;">
+                                    <button type="submit" class="btn btn-sm" style="flex-grow:1;">Kirim Laporan</button>
                                 </div>
                             </form>
                         @endif
-                    @else
-                        <div class="task-card-no-report">Belum ada laporan dari pegawai</div>
                     @endif
 
                     {{-- Catatan / Notes --}}
@@ -668,11 +758,21 @@
                         <span></span>
                     @endif
                     <div class="task-card-actions">
-                        <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i> Edit</button>
-                        <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                        </form>
+                        @if($tab === 'delegasi')
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i> Edit</button>
+                            <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        @else
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">👁️ Detail</button>
+                            @if($tab === 'mandiri')
+                                <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            @endif
+                        @endif
                     </div>
                 </div>
             </div>
@@ -686,20 +786,20 @@
 
         {{-- Desktop Pagination --}}
         <div class="desktop-pagination" style="margin-top: 16px;">
-            {{ $delegasiTasks->links() }}
+            {{ $tasks->links() }}
         </div>
         
         {{-- Mobile Pagination --}}
         <div class="pagination-mobile">
-            <span class="page-info">Halaman {{ $delegasiTasks->currentPage() }} dari {{ $delegasiTasks->lastPage() }}</span>
+            <span class="page-info">Halaman {{ $tasks->currentPage() }} dari {{ $tasks->lastPage() }}</span>
             <div class="page-nav-buttons">
-                @if($delegasiTasks->onFirstPage())
+                @if($tasks->onFirstPage())
                     <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
                 @else
-                    <a href="{{ $delegasiTasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                    <a href="{{ $tasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
                 @endif
-                @if($delegasiTasks->hasMorePages())
-                    <a href="{{ $delegasiTasks->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                @if($tasks->hasMorePages())
+                    <a href="{{ $tasks->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
                 @else
                     <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
                 @endif
@@ -713,27 +813,28 @@
     <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
         <div class="modal-box" @click.away="editModalOpen = false">
             <div class="modal-header">
-                <h3><i class="bi bi-pencil"></i> Edit Tugas Pegawai</h3>
+                <h3>{!! $tab === 'delegasi' ? '<i class="bi bi-pencil"></i> Edit Tugas Pegawai' : '👁️ Detail Tugas' !!}</h3>
                 <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
             </div>
             <form :action="'{{ url('/tasks') }}/' + editId" method="POST">
                 @csrf @method('PUT')
                 <div class="form-group">
                     <label>Judul Pekerjaan / Tugas</label>
-                    <input type="text" name="judul" x-model="editData.judul" required>
+                    <input type="text" name="judul" x-model="editData.judul" {!! $tab === 'delegasi' ? 'required' : 'readonly' !!}>
                 </div>
                 <div class="form-group">
                     <label>Deskripsi Detail Tugas</label>
-                    <textarea name="deskripsi" rows="3" x-model="editData.deskripsi" required></textarea>
+                    <textarea name="deskripsi" rows="3" x-model="editData.deskripsi" {!! $tab === 'delegasi' ? 'required' : 'readonly' !!}></textarea>
                 </div>
                 <div class="form-group">
                     <label>Prioritas</label>
-                    <select name="prioritas" x-model="editData.prioritas" required>
+                    <select name="prioritas" x-model="editData.prioritas" {!! $tab === 'delegasi' ? 'required' : 'disabled' !!}>
                         <option value="Sedang">Sedang</option>
                         <option value="Tinggi">Tinggi</option>
                         <option value="Rendah">Rendah</option>
                     </select>
                 </div>
+                @if($tab === 'delegasi')
                 <div class="form-group">
                     <label>Pegawai yang Ditugaskan</label>
                     <select name="assigned_to" x-model="editData.assigned_to" required>
@@ -742,20 +843,23 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
                 <div class="form-group">
                     <label>Bobot Pekerjaan (1 – 100)</label>
-                    <input type="number" name="bobot" min="1" max="100" x-model="editData.bobot" required>
+                    <input type="number" name="bobot" min="1" max="100" x-model="editData.bobot" {!! $tab === 'delegasi' ? 'required' : 'readonly' !!}>
                 </div>
                 <div class="form-group">
                     <label>Tanggal Mulai & Deadline</label>
                     <div class="modal-form-dates">
-                        <input type="date" name="tgl_mulai" x-model="editData.tgl_mulai" required>
-                        <input type="date" name="tgl_selesai" x-model="editData.tgl_selesai" required>
+                        <input type="date" name="tgl_mulai" x-model="editData.tgl_mulai" {!! $tab === 'delegasi' ? 'required' : 'readonly' !!}>
+                        <input type="date" name="tgl_selesai" x-model="editData.tgl_selesai" {!! $tab === 'delegasi' ? 'required' : 'readonly' !!}>
                     </div>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
+                    @if($tab === 'delegasi')
                     <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
+                    @endif
                 </div>
             </form>
         </div>
