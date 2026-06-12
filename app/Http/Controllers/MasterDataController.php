@@ -20,12 +20,20 @@ class MasterDataController extends Controller {
 
     // -- UNIT KERJA --
     public function storeUnit(Request $request) {
-        $validated = $request->validate(['nama_unit' => 'required', 'kode_unit' => 'required']);
+        $validated = $request->validate([
+            'nama_unit' => 'required', 
+            'kode_unit' => 'required',
+            'kepala_unit_id' => 'nullable|exists:users,id'
+        ]);
         UnitKerja::create($validated);
         return redirect()->back()->with('success', 'Unit Kerja berhasil ditambahkan.');
     }
     public function updateUnit(Request $request, $id) {
-        $validated = $request->validate(['nama_unit' => 'required', 'kode_unit' => 'required']);
+        $validated = $request->validate([
+            'nama_unit' => 'required', 
+            'kode_unit' => 'required',
+            'kepala_unit_id' => 'nullable|exists:users,id'
+        ]);
         UnitKerja::findOrFail($id)->update($validated);
         return redirect()->back()->with('success', 'Unit Kerja berhasil diubah.');
     }
