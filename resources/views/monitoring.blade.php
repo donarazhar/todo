@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta http-equiv="refresh" content="300"> <!-- Auto refresh every 5 minutes -->
+    <meta http-equiv="refresh" content="300; URL={{ request()->fullUrl() }}"> <!-- Auto refresh every 5 minutes -->
     <title>Monitoring & Presentasi - Task&Schedule</title>
     <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -288,6 +287,14 @@
             </div>
         </div>
         <div class="header-clock">
+            <form action="{{ route('monitoring.index') }}" method="GET" style="display: flex; align-items: center; gap: 12px; margin-right: 24px;">
+                <select name="unit_id" onchange="this.form.submit()" style="padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 14px; font-weight: 600; color: var(--text-900); background: rgba(255,255,255,0.9); cursor: pointer; outline: none; min-width: 200px;">
+                    <option value="">Semua Unit Kerja</option>
+                    @foreach($units as $unit)
+                        <option value="{{ $unit->id }}" {{ $unit_id == $unit->id ? 'selected' : '' }}>{{ $unit->nama_unit }}</option>
+                    @endforeach
+                </select>
+            </form>
             <i class="bi bi-clock"></i>
             <span x-text="currentTime"></span>
         </div>
