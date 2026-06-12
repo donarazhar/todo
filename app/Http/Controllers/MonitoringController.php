@@ -39,11 +39,11 @@ class MonitoringController extends Controller
         });
 
         // Ambil data Jadwal Kegiatan
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfNextMonth = Carbon::now()->addMonth()->endOfMonth();
+        // Tampilkan semua jadwal (kapanpun itu diinput) asalkan belum selesai
+        $now = Carbon::now();
 
         $kegiatansQuery = Kegiatan::with(['unitKerja', 'lokasi', 'peserta'])
-            ->whereBetween('waktu_mulai', [$startOfMonth, $endOfNextMonth])
+            ->where('waktu_selesai', '>=', $now)
             ->orderBy('waktu_mulai', 'asc');
 
         if ($unit_id) {

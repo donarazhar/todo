@@ -315,7 +315,7 @@
             <div class="panel-header">
                 <h2>
                     <div class="panel-icon" style="background: #10B981;"><i class="bi bi-calendar-event"></i></div>
-                    Jadwal Kegiatan Bulan Ini
+                    Jadwal Kegiatan Mendatang
                 </h2>
                 <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
             </div>
@@ -357,7 +357,7 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal bulan ini.</td></tr>
+                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
