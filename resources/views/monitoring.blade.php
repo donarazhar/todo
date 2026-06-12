@@ -146,15 +146,19 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            padding: 12px 24px;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
         }
         td {
-            padding: 16px 24px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-100);
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-700);
+            vertical-align: top;
         }
-        tr { transition: background 0.2s ease; cursor: pointer; }
+        tr { transition: background 0.2s ease; }
         tr:hover { background: var(--primary-50); }
 
         /* ACCORDION (DETAILS) */
@@ -165,13 +169,13 @@
             border-bottom: none;
         }
         .pegawai-summary {
-            padding: 20px 24px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-900);
             list-style: none;
             transition: background 0.2s;
@@ -198,76 +202,6 @@
         }
         .pegawai-tasks {
             background: white;
-        }
-
-        /* KEGIATAN CARDS */
-        .kegiatan-list {
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            background: #F8FAFC;
-        }
-        .kegiatan-card {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 20px;
-            border: 1px solid var(--border-200);
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .kegiatan-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        .kegiatan-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .kegiatan-time {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-500);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .kegiatan-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-900);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-        .kegiatan-meta {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .meta-item {
-            font-size: 14px;
-            color: var(--text-700);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .kegiatan-peserta {
-            background: #F1F5F9;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: var(--text-700);
-            line-height: 1.6;
-        }
-        .kegiatan-peserta strong {
-            color: var(--text-900);
-            display: block;
-            margin-bottom: 4px;
-            font-size: 12px;
-            text-transform: uppercase;
         }
 
         /* BADGES */
@@ -379,29 +313,47 @@
                 <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
             </div>
             <div class="panel-body">
-                <div class="kegiatan-list">
-                    @forelse($kegiatans as $k)
-                    <div class="kegiatan-card">
-                        <div class="kegiatan-card-header">
-                            <div class="kegiatan-time">
-                                <i class="bi bi-calendar-check"></i> {{ $k->waktu_mulai->format('d M Y') }} • <i class="bi bi-clock"></i> {{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB
-                            </div>
-                            <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
-                        </div>
-                        <h3 class="kegiatan-title">{{ $k->nama_kegiatan }}</h3>
-                        <div class="kegiatan-meta">
-                            <div class="meta-item"><i class="bi bi-geo-alt-fill" style="color: #EF4444;"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}</div>
-                            <div class="meta-item"><i class="bi bi-building" style="color: #3B82F6;"></i> {{ $k->unitKerja->nama_unit ?? '-' }}</div>
-                        </div>
-                        <div class="kegiatan-peserta">
-                            <strong><i class="bi bi-people-fill"></i> Peserta Terlibat:</strong>
-                            {{ $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : 'Belum ada peserta yang ditugaskan.' }}
-                        </div>
-                    </div>
-                    @empty
-                    <div style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal bulan ini.</div>
-                    @endforelse
-                </div>
+                <table style="table-layout: fixed; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Nama Kegiatan & Lokasi</th>
+                            <th style="width: 25%;">Waktu Pelaksanaan</th>
+                            <th style="width: 30%;">Status & Peserta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($kegiatans as $k)
+                        <tr>
+                            <td>
+                                <div style="font-weight: 800; color: var(--text-900); margin-bottom: 6px; font-size: 14px;">{{ $k->nama_kegiatan }}</div>
+                                <div style="font-size: 12px; color: var(--text-500); display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                                    <i class="bi bi-geo-alt-fill" style="color: #EF4444;"></i> {{ $k->lokasi->nama_lokasi ?? '-' }}
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-500); display: flex; align-items: center; gap: 4px;">
+                                    <i class="bi bi-building" style="color: #3B82F6;"></i> {{ $k->unitKerja->nama_unit ?? '-' }}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 700; color: var(--text-900); font-size: 13px; margin-bottom: 4px;"><i class="bi bi-calendar-check"></i> {{ $k->waktu_mulai->format('d M Y') }}</div>
+                                <div style="font-size: 12px; color: var(--text-500); background: #F1F5F9; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+                                    <i class="bi bi-clock"></i> {{ $k->waktu_mulai->format('H:i') }} - {{ $k->waktu_selesai->format('H:i') }} WIB
+                                </div>
+                            </td>
+                            <td>
+                                <div style="margin-bottom: 8px;">
+                                    <span class="badge {{ $k->status == 'Selesai' ? 'bg-selesai' : ($k->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum') }}">{{ $k->status }}</span>
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-500); background: #F8FAFC; padding: 6px 8px; border-radius: 6px; line-height: 1.5; border: 1px solid var(--border-200);">
+                                    <strong style="display: block; color: var(--text-700); margin-bottom: 2px;">Peserta:</strong>
+                                    {{ $k->peserta->count() > 0 ? $k->peserta->pluck('nama')->join(', ') : '-' }}
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-500);">Tidak ada kegiatan terjadwal bulan ini.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </section>
 
