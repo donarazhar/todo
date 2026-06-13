@@ -120,8 +120,8 @@
 </div>
 
 <!-- Alur 4: Pegawai Melapor -->
-<div class="flow-container">
-    <div class="flow-title"><i class="bi bi-check-circle"></i> Alur 4 — Pegawai Menyelesaikan Tugas & Mengirim Laporan</div>
+<div class="flow-container" style="margin-bottom: 24px;">
+    <div class="flow-title"><i class="bi bi-check-circle"></i> Alur 4 — Pegawai Mengirim Laporan & Pimpinan Review</div>
     <div class="flow-steps">
         <div class="flow-step">
             <div class="step-num">Step 1</div>
@@ -139,20 +139,57 @@
         <div class="flow-arrow">→</div>
         <div class="flow-step">
             <div class="step-num">Step 3</div>
-            <div class="step-icon"><i class="bi bi-file-earmark-text"></i></div>
+            <div class="step-icon"><i class="bi bi-file-earmark-arrow-up"></i></div>
             <div class="step-label">Kirim Laporan</div>
-            <div class="step-desc">Isi hasil kerja</div>
+            <div class="step-desc">Teks & Lampiran File</div>
         </div>
         <div class="flow-arrow">→</div>
         <div class="flow-step">
             <div class="step-num">Step 4</div>
             <div class="step-icon">👁️</div>
             <div class="step-label">Pimpinan Review</div>
-            <div class="step-desc">Lihat di monitoring</div>
+            <div class="step-desc">Setujui / Revisi</div>
         </div>
     </div>
     <div class="flow-note">
-        Pegawai klik "Kirim Laporan" → modal muncul → isi deskripsi hasil → <code>UPDATE tasks SET status='Selesai', laporan=:isi WHERE id=:task_id</code>. Pimpinan melihat perubahan status real-time di halaman Monitoring Kerja Pegawai.
+        Pegawai mengisi form hasil dan melampirkan file → <code>UPDATE tasks SET status='Menunggu Review', laporan=:isi, file_laporan=:file</code>. Pimpinan me-review: Jika disetujui → status='Selesai'. Jika ditolak → status='Revisi' dan menambahkan catatan di tabel <code>task_comments</code>.
+    </div>
+</div>
+
+<!-- Alur 5: Tugas Mandiri & Hierarki Unit -->
+<div class="flow-container">
+    <div class="flow-title"><i class="bi bi-diagram-3"></i> Alur 5 — Tugas Mandiri Pimpinan & Filter Hierarki Unit</div>
+    <div class="flow-steps">
+        <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.4);">
+            <div class="step-num">Step 1</div>
+            <div class="step-icon"><i class="bi bi-person-workspace"></i></div>
+            <div class="step-label">Tugas Mandiri</div>
+            <div class="step-desc">Dibuat oleh Pimpinan</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.4);">
+            <div class="step-num">Step 2</div>
+            <div class="step-icon"><i class="bi bi-building"></i></div>
+            <div class="step-label">Tentukan Unit</div>
+            <div class="step-desc">Pilih target evaluasi</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color: rgba(139, 92, 246, 0.4);">
+            <div class="step-num">Step 3</div>
+            <div class="step-icon"><i class="bi bi-diagram-2"></i></div>
+            <div class="step-label">Filter Hierarki</div>
+            <div class="step-desc">Sub-unit otomatis tampil</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color: rgba(139, 92, 246, 0.4);">
+            <div class="step-num">Step 4</div>
+            <div class="step-icon"><i class="bi bi-images"></i></div>
+            <div class="step-label">Review Bukti</div>
+            <div class="step-desc">Popup gambar / lampiran</div>
+        </div>
+    </div>
+    <div class="flow-note">
+        Pimpinan membuat Tugas Mandiri (untuk dieksekusi sendiri tapi menargetkan unit tertentu). Filter unit secara rekursif akan mencari seluruh <em>descendant</em> (sub-unit di bawahnya) berdasar <code>parent_id</code>. Gambar lampiran tugas/laporan dapat diklik untuk tampil langsung melalui <em>Popup Modal</em> (Alpine.js).
     </div>
 </div>
 @endsection
