@@ -1399,13 +1399,14 @@
                 display: flex;
             }
             .content-area {
-                padding-bottom: 65px; /* Space for bottom nav */
+                /* Space for bottom nav is handled by content-body padding */
             }
             .top-navbar {
                 padding: 0 16px;
             }
             .content-body {
                 padding: 16px;
+                padding-bottom: 100px; /* Space for bottom nav + extra breathing room */
             }
             .role-indicator {
                 font-size: 11px;
