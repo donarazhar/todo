@@ -10,6 +10,7 @@
 
 <div x-data="{ 
     tab: '{{ $activeTab }}',
+    mobileTabOpen: false,
     editModalOpen: false,
     editType: '',
     editId: '',
@@ -61,7 +62,76 @@
             }
         }
 
+        .desktop-tabs {
+            display: flex;
+        }
+        .mobile-tabs-dropdown {
+            display: none;
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .mobile-tab-toggle {
+            width: 100%;
+            background: var(--bg-white);
+            border: 1px solid var(--border-200);
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-900);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .mobile-tab-toggle i {
+            transition: transform 0.3s;
+        }
+        .mobile-tab-toggle i.rotated {
+            transform: rotate(180deg);
+        }
+        .mobile-tab-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-200);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .mobile-tab-btn {
+            padding: 14px 16px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border-100);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-700);
+            width: 100%;
+        }
+        .mobile-tab-btn:last-child {
+            border-bottom: none;
+        }
+        .mobile-tab-btn.active {
+            color: var(--primary-600);
+            font-weight: 700;
+            background: var(--primary-50);
+        }
+
         @media (max-width: 768px) {
+            .desktop-tabs {
+                display: none !important;
+            }
+            .mobile-tabs-dropdown {
+                display: block;
+            }
             .master-table-wrap {
                 display: none !important;
             }
@@ -72,11 +142,29 @@
     </style>
     @endpush
     <!-- Tab Master Data -->
-    <div class="tabs-bar">
+    <div class="tabs-bar desktop-tabs">
         <button class="tab-btn" :class="{ 'active': tab === 'unit' }" @click="tab = 'unit'">Unit Kerja</button>
         <button class="tab-btn" :class="{ 'active': tab === 'pegawai' }" @click="tab = 'pegawai'">Pegawai & Pimpinan</button>
         <button class="tab-btn" :class="{ 'active': tab === 'lokasi' }" @click="tab = 'lokasi'">Lokasi Kegiatan</button>
         <button class="tab-btn" :class="{ 'active': tab === 'jenis' }" @click="tab = 'jenis'">Jenis Kegiatan</button>
+    </div>
+
+    <!-- Mobile Tabs Dropdown -->
+    <div class="mobile-tabs-dropdown" @click.away="mobileTabOpen = false">
+        <button type="button" class="mobile-tab-toggle" @click="mobileTabOpen = !mobileTabOpen">
+            <span x-text="
+                tab === 'unit' ? 'Unit Kerja' :
+                tab === 'pegawai' ? 'Pegawai & Pimpinan' :
+                tab === 'lokasi' ? 'Lokasi Kegiatan' : 'Jenis Kegiatan'
+            "></span>
+            <i class="bi bi-chevron-down" :class="{ 'rotated': mobileTabOpen }"></i>
+        </button>
+        <div class="mobile-tab-menu" x-show="mobileTabOpen" x-transition.opacity style="display: none;">
+            <button class="mobile-tab-btn" :class="{ 'active': tab === 'unit' }" @click="tab = 'unit'; mobileTabOpen = false">Unit Kerja</button>
+            <button class="mobile-tab-btn" :class="{ 'active': tab === 'pegawai' }" @click="tab = 'pegawai'; mobileTabOpen = false">Pegawai & Pimpinan</button>
+            <button class="mobile-tab-btn" :class="{ 'active': tab === 'lokasi' }" @click="tab = 'lokasi'; mobileTabOpen = false">Lokasi Kegiatan</button>
+            <button class="mobile-tab-btn" :class="{ 'active': tab === 'jenis' }" @click="tab = 'jenis'; mobileTabOpen = false">Jenis Kegiatan</button>
+        </div>
     </div>
 
     <!-- Tab: Unit Kerja -->
