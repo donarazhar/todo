@@ -290,12 +290,13 @@
                                             $ext = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
                                             $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                                         @endphp
-                                        <br>
-                                        @if($isImage)
-                                            <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-image"></i> Lihat Gambar</a>
-                                        @else
-                                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
-                                        @endif
+                                        <div style="margin-top: 6px;">
+                                            @if($isImage)
+                                                <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-image"></i> Lihat Gambar</a>
+                                            @else
+                                                <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                             @else
@@ -376,15 +377,17 @@
                                     $ext2 = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
                                     $isImage2 = in_array($ext2, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                                 @endphp
-                                @if($isImage2)
-                                    <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" class="mandiri-card-report-link">
-                                        <i class="bi bi-image"></i> Lihat Gambar
-                                    </a>
-                                @else
-                                    <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="mandiri-card-report-link">
-                                        <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
-                                    </a>
-                                @endif
+                                <div style="margin-top: 6px;">
+                                    @if($isImage2)
+                                        <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" class="mandiri-card-report-link">
+                                            <i class="bi bi-image"></i> Lihat Gambar
+                                        </a>
+                                    @else
+                                        <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="mandiri-card-report-link">
+                                            <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
+                                        </a>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     @else
