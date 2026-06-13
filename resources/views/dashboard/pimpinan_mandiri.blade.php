@@ -130,8 +130,8 @@
         border: 1px solid var(--border-100);
     }
     .mandiri-card-report-text {
-        color: var(--text-600);
-        font-weight: 600;
+        color: var(--text-500);
+        font-weight: normal;
         font-size: 12px;
         line-height: 1.5;
     }
@@ -283,7 +283,7 @@
                         </div>
                         <div>
                             @if($t->laporan)
-                                <div style="color:var(--text-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
+                                <div style="color:var(--text-500); font-weight:normal; font-size:11px; max-width:200px; white-space:normal;">
                                     <i class="bi bi-check2"></i> {{ $t->laporan }}
                                     @if($t->file_laporan)
                                         @php

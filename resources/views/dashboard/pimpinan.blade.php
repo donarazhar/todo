@@ -235,8 +235,8 @@
         border: 1px solid var(--border-100);
     }
     .task-card-report-text {
-        color: var(--text-600);
-        font-weight: 600;
+        color: var(--text-500);
+        font-weight: normal;
         font-size: 12px;
         line-height: 1.5;
     }
@@ -682,7 +682,7 @@
                             @if($tab === 'delegasi')
                                 {{-- VIEW AS CREATOR: Review laporan bawahan --}}
                                 @if($t->laporan)
-                                    <div style="color:var(--text-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
+                                    <div style="color:var(--text-500); font-weight:normal; font-size:11px; max-width:200px; white-space:normal;">
                                         <i class="bi bi-check2"></i> {{ $t->laporan }}
                                         @if($t->file_laporan)
                                             @php
@@ -710,7 +710,7 @@
                             @else
                                 {{-- VIEW AS ASSIGNEE: Form submit laporan --}}
                                 @if($t->status === 'Selesai')
-                                    <div style="color:var(--text-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
+                                    <div style="color:var(--text-500); font-weight:normal; font-size:11px; max-width:200px; white-space:normal;">
                                         <i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}
                                         @if($t->file_laporan)
                                             @php
