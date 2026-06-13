@@ -758,35 +758,40 @@
         {{-- ======= MOBILE CARD VIEW ======= --}}
         <div class="task-cards-mobile">
             @forelse($tasks as $t)
-            <div class="task-card">
-                {{-- Card Header --}}
-                <div class="task-card-header">
-                    <div class="task-card-title">{{ $t->judul }}</div>
-                    <div class="task-card-meta">
-                        <span><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->assignee->unitKerja->nama_unit ?? '-' }})</span></span>
-                        <span>•</span>
-                        <span>Bobot: {{ $t->bobot }}</span>
+            <div class="task-card" x-data="{ expanded: false }" style="border-bottom: 1px solid var(--border-200); padding: 16px 0; border-radius: 0; border-left: none; border-right: none; border-top: none; background: transparent;">
+                {{-- Notification Header (Clickable) --}}
+                <div class="notification-header" @click="expanded = !expanded" style="display: flex; gap: 12px; cursor: pointer;">
+                    <div style="flex-shrink: 0;">
+                        @if($t->assignee && $t->assignee->foto)
+                            <img src="{{ Storage::url($t->assignee->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                        @else
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-800); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">
+                                {{ substr($t->assignee->nama ?? '?', 0, 1) }}
+                            </div>
+                        @endif
                     </div>
-                    @if($t->deskripsi)
-                        <div class="task-card-desc">{{ \Illuminate\Support\Str::limit($t->deskripsi, 100) }}</div>
-                    @endif
-                    <div class="task-card-badges">
-                        @php
-                            $prioClass = $t->prioritas === 'Tinggi' ? 'prio-tinggi' : ($t->prioritas === 'Rendah' ? 'prio-rendah' : 'prio-sedang');
-                            $statusBg = 'bg-proses';
-                            if($t->status === 'Selesai') $statusBg = 'bg-selesai';
-                            elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
-                            elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
-                        @endphp
-                        <span class="prio-badge {{ $prioClass }}">{{ $t->prioritas }}</span>
-                        <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!}>
-                            {{ $t->status }}
-                        </span>
+                    <div style="flex-grow: 1; min-width: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
+                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $t->assignee->nama ?? '-' }}</strong>
+                            @php
+                                $statusBg = 'bg-proses';
+                                if($t->status === 'Selesai') $statusBg = 'bg-selesai';
+                                elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                                elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
+                            @endphp
+                            <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!} style="font-size: 9px; padding: 2px 6px;">{{ $t->status }}</span>
+                        </div>
+                        <div style="color: var(--text-600); font-size: 13.5px; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
+                            <span style="font-weight: 600; color: var(--text-800);">{{ $t->judul }}</span> - {{ $t->deskripsi }}
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-400);">
+                            {{ $t->created_at->diffForHumans() }}
+                        </div>
                     </div>
                 </div>
 
-                {{-- Card Body --}}
-                <div class="task-card-body">
+                {{-- Expanded Card Body --}}
+                <div x-show="expanded" x-transition style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-200);">
                     <div class="task-card-info-grid">
                         <div class="task-card-info-item">
                             <span class="task-card-info-label">Mulai</span>
@@ -797,6 +802,17 @@
                             <span class="task-card-info-value {{ $t->is_overdue ? 'overdue' : '' }}">
                                 {{ $t->tgl_selesai->format('d M Y') }}
                                 @if($t->is_overdue) <i class="bi bi-exclamation-triangle"></i> @endif
+                            </span>
+                        </div>
+                        <div class="task-card-info-item">
+                            <span class="task-card-info-label">Bobot</span>
+                            <span class="task-card-info-value">{{ $t->bobot }}</span>
+                        </div>
+                        <div class="task-card-info-item">
+                            <span class="task-card-info-label">Prioritas</span>
+                            <span class="task-card-info-value">
+                                @php $prioClass = $t->prioritas === 'Tinggi' ? 'prio-tinggi' : ($t->prioritas === 'Rendah' ? 'prio-rendah' : 'prio-sedang'); @endphp
+                                <span class="prio-badge {{ $prioClass }}" style="font-size:10px;">{{ $t->prioritas }}</span>
                             </span>
                         </div>
                     </div>
@@ -874,31 +890,31 @@
                             </form>
                         </div>
                     </details>
-                </div>
 
-                {{-- Card Footer / Actions --}}
-                <div class="task-card-footer">
-                    @if($t->is_overdue)
-                        <span style="color:#E53E3E; font-size:11px; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
-                    @else
-                        <span></span>
-                    @endif
-                    <div class="task-card-actions">
-                        @if($tab === 'delegasi')
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i> Edit</button>
-                            <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                            </form>
+                    {{-- Card Footer / Actions --}}
+                    <div class="task-card-footer" style="margin-top: 16px;">
+                        @if($t->is_overdue)
+                            <span style="color:#E53E3E; font-size:11px; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
                         @else
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">👁️ Detail</button>
-                            @if($tab === 'mandiri')
-                                <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
+                            <span></span>
+                        @endif
+                        <div class="task-card-actions">
+                            @if($tab === 'delegasi')
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'assigned_to' => $t->assigned_to, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d')]) }})"><i class="bi bi-pencil"></i> Edit</button>
+                                <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Tarik kembali/hapus tugas ini?');" style="margin: 0;">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                 </form>
+                            @else
+                                <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">👁️ Detail</button>
+                                @if($tab === 'mandiri')
+                                    <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                @endif
                             @endif
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>
