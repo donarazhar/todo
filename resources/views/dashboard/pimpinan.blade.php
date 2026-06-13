@@ -1086,7 +1086,7 @@
                 </div>
                 
                 <div style="display:flex; justify-content:flex-end; margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" @click="viewModalOpen = false">Tutup View</button>
+                    <button type="button" class="btn btn-secondary" @click="viewModalOpen = false">Tutup Laporan</button>
                 </div>
             </div>
         </div>
