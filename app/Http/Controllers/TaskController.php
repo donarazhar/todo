@@ -70,12 +70,32 @@ class TaskController extends Controller {
 
     public function pimpinanMandiriTasks() {
         $myUnit = Auth::user()->unitKerja;
+        $subUnits = $myUnit ? $myUnit->children : collect();
+        
         $descendantIds = $myUnit ? $myUnit->getAllDescendantIds() : [];
         $allUnitIds = array_merge([Auth::user()->unit_id], $descendantIds);
 
-        $pegawais = User::whereIn('unit_id', $allUnitIds)
-            ->where('id', '!=', Auth::id())
-            ->get();
+        if (request()->filled('filter_unit')) {
+            $selectedUnit = \App\Models\UnitKerja::find(request()->filter_unit);
+            if ($selectedUnit) {
+                $filterUnitIds = array_merge([$selectedUnit->id], $selectedUnit->getAllDescendantIds());
+                // Validasi agar hanya unit yang berada di bawah Pimpinan ini yang bisa difilter
+                $filterUnitIds = array_intersect($filterUnitIds, $allUnitIds);
+                
+                $pegawais = User::whereIn('unit_id', $filterUnitIds)
+                    ->where('id', '!=', Auth::id())
+                    ->get();
+            } else {
+                $pegawais = User::whereIn('unit_id', $allUnitIds)
+                    ->where('id', '!=', Auth::id())
+                    ->get();
+            }
+        } else {
+            $pegawais = User::whereIn('unit_id', $allUnitIds)
+                ->where('id', '!=', Auth::id())
+                ->get();
+        }
+
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
         $query = Task::with(['assignee', 'comments.user'])
@@ -101,7 +121,7 @@ class TaskController extends Controller {
                               ->paginate(15)
                               ->appends(request()->except('page'));
         
-        return view('dashboard.pimpinan_mandiri', compact('mandiriTasks'));
+        return view('dashboard.pimpinan_mandiri', compact('mandiriTasks', 'subUnits'));
     }
 
     public function pegawaiTasks(Request $request) {

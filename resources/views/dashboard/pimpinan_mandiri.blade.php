@@ -193,13 +193,26 @@
 @endpush
 
 @section('content')
-<div style="display: flex; flex-direction: column; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 24px;" x-data="{
+    viewModalOpen: false, 
+    viewData: {},
+    openViewModal(data) {
+        this.viewData = data;
+        this.viewModalOpen = true;
+    }
+}">
     <div class="section-box">
         <h3 class="section-title" style="margin-bottom: 6px;"><span class="title-icon"><i class="bi bi-bullseye"></i></span> Tugas Mandiri Pegawai</h3>
         <p class="mandiri-subtitle">Daftar tugas mandiri yang dibuat dan dikerjakan sendiri oleh pegawai di unit Anda.</p>
 
         <form method="GET" action="{{ route('pimpinan.mandiri') }}" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul/deskripsi..." style="flex-grow:1; padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+            <select name="filter_unit" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
+                <option value="">Semua Unit Kerja</option>
+                @foreach($subUnits as $unit)
+                    <option value="{{ $unit->id }}" {{ request('filter_unit') == $unit->id ? 'selected' : '' }}>{{ $unit->nama_unit }}</option>
+                @endforeach
+            </select>
             <select name="status" style="padding:8px 12px; border:1px solid var(--border-300); border-radius:var(--radius-sm); outline:none;">
                 <option value="">Semua Status</option>
                 <option value="Berlangsung" {{ request('status') == 'Berlangsung' ? 'selected' : '' }}>Berlangsung</option>
@@ -212,7 +225,7 @@
                 <option value="Rendah" {{ request('prioritas') == 'Rendah' ? 'selected' : '' }}>Rendah</option>
             </select>
             <button type="submit" class="btn btn-primary" style="padding:8px 16px;"><i class="bi bi-search"></i> Cari</button>
-            @if(request('search') || request('status') || request('prioritas'))
+            @if(request('search') || request('status') || request('prioritas') || request('filter_unit'))
                 <a href="{{ route('pimpinan.mandiri') }}" class="btn btn-secondary" style="padding:8px 16px; text-decoration:none;"><i class="bi bi-x-lg"></i> Reset</a>
             @endif
             <a href="{{ route('tasks.export', array_merge(request()->all(), ['tab' => 'bawahan_mandiri'])) }}" target="_blank" class="btn btn-success" style="padding:8px 16px; text-decoration:none; margin-left:auto;"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
@@ -227,6 +240,7 @@
                     <th>Detail Tugas</th>
                     <th>Waktu Pelaksanaan</th>
                     <th>Status & Laporan</th>
+                    <th style="width: 10%;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -274,10 +288,15 @@
                             @endif
                         </div>
                     </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; justify-content: center;" @click="openViewModal({{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assignee_nama' => $t->assignee->nama ?? '-', 'assignee_unit' => $t->assignee->unitKerja->nama_unit ?? '-', 'status' => $t->status, 'laporan' => $t->laporan]) }})">
+                            <i class="bi bi-eye"></i> View
+                        </button>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="empty-state">
                             <div class="empty-icon"><i class="bi bi-bullseye"></i></div>
                             <p>Belum ada tugas mandiri dari pegawai.</p>
@@ -350,12 +369,17 @@
 
                 {{-- Card Footer --}}
                 <div class="mandiri-card-footer">
-                    @if($t->is_overdue)
-                        <span style="color:#E53E3E; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
-                    @else
-                        <span style="color:var(--text-400);">Tugas Mandiri</span>
-                    @endif
-                    <span style="color:var(--text-400);">{{ $t->tgl_mulai->format('d/m/Y') }}</span>
+                    <div>
+                        @if($t->is_overdue)
+                            <span style="color:#E53E3E; font-weight:700;"><i class="bi bi-exclamation-triangle"></i> Terlambat</span>
+                        @else
+                            <span style="color:var(--text-400);">Tugas Mandiri</span>
+                        @endif
+                        <span style="color:var(--text-400); margin-left: 8px;">{{ $t->tgl_mulai->format('d/m/Y') }}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 11px;" @click="openViewModal({{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assignee_nama' => $t->assignee->nama ?? '-', 'assignee_unit' => $t->assignee->unitKerja->nama_unit ?? '-', 'status' => $t->status, 'laporan' => $t->laporan]) }})">
+                        <i class="bi bi-eye"></i> View
+                    </button>
                 </div>
             </div>
             @empty
@@ -385,6 +409,62 @@
                 @else
                     <span class="disabled">Next <i class="bi bi-chevron-right"></i></span>
                 @endif
+            </div>
+        </div>
+    </div>
+    
+    {{-- ================================
+         VIEW MODAL (ALPINE JS)
+    ================================= --}}
+    <div class="modal-overlay" :class="{ 'show': viewModalOpen }" x-show="viewModalOpen" style="display: none;" x-transition>
+        <div class="modal-box" @click.away="viewModalOpen = false">
+            <div class="modal-header">
+                <h3><i class="bi bi-eye"></i> Detail Tugas Mandiri</h3>
+                <button type="button" class="modal-close" @click="viewModalOpen = false">×</button>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label>Pegawai</label>
+                    <input type="text" :value="viewData.assignee_nama + ' (' + viewData.assignee_unit + ')'" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Judul Tugas</label>
+                    <input type="text" x-model="viewData.judul" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi Tugas</label>
+                    <textarea rows="3" x-model="viewData.deskripsi" readonly></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Prioritas</label>
+                        <input type="text" x-model="viewData.prioritas" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Bobot</label>
+                        <input type="text" x-model="viewData.bobot" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Mulai</label>
+                        <input type="date" x-model="viewData.tgl_mulai" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Deadline</label>
+                        <input type="date" x-model="viewData.tgl_selesai" readonly>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Status</label>
+                    <input type="text" x-model="viewData.status" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Laporan Pegawai</label>
+                    <textarea rows="2" x-model="viewData.laporan" readonly></textarea>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" @click="viewModalOpen = false">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
