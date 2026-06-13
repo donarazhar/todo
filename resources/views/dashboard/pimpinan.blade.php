@@ -627,8 +627,9 @@
                             @if($tab !== 'mandiri')
                                 @php
                                     $person = $tab === 'masuk' ? $t->creator : $t->assignee;
+                                    $prefix = $tab === 'masuk' ? 'From: ' : 'To: ';
                                 @endphp
-                                <i class="bi bi-person"></i> {{ $person->nama ?? '-' }} 
+                                <i class="bi bi-person"></i> <span style="font-weight: 500; color: var(--text-500); font-size: 10px;">{{ $prefix }}</span>{{ $person->nama ?? '-' }} 
                                 <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $person->unitKerja->nama_unit ?? '-' }})</span>
                                 &nbsp;&bull;&nbsp; 
                             @endif
@@ -783,7 +784,13 @@
                     @endif
                     <div style="flex-grow: 1; min-width: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
-                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $tab === 'mandiri' ? $t->judul : ($person->nama ?? '-') }}</strong>
+                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                @if($tab !== 'mandiri')
+                                    <span style="font-weight: 500; color: var(--text-500); font-size: 12px;">{{ $tab === 'masuk' ? 'From: ' : 'To: ' }}</span>{{ $person->nama ?? '-' }}
+                                @else
+                                    {{ $t->judul }}
+                                @endif
+                            </strong>
                             @php
                                 $statusBg = 'bg-proses';
                                 if($t->status === 'Selesai') $statusBg = 'bg-selesai';
