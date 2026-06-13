@@ -1668,7 +1668,6 @@
                 @yield('content')
             </div>
         </div>
-    </div>
 
     <!-- BOTTOM NAVIGATION (MOBILE ONLY) -->
     <nav class="bottom-nav">
@@ -1716,6 +1715,7 @@
             <span class="icon"><i class="bi bi-grid-fill"></i></span><span class="label">Menu</span>
         </button>
     </nav>
+    </div> <!-- END app-layout -->
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast {{ session('success') ? 'show' : '' }}">
