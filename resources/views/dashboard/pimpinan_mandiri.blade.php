@@ -417,53 +417,54 @@
          VIEW MODAL (ALPINE JS)
     ================================= --}}
     <div class="modal-overlay" :class="{ 'show': viewModalOpen }" x-show="viewModalOpen" style="display: none;" x-transition>
-        <div class="modal-box" @click.away="viewModalOpen = false">
-            <div class="modal-header">
-                <h3><i class="bi bi-eye"></i> Detail Tugas Mandiri</h3>
+        <div class="modal-box" @click.away="viewModalOpen = false" style="padding: 0; overflow: hidden; max-width: 550px;">
+            <div class="modal-header" style="padding: 20px 24px 16px; margin-bottom: 0; border-bottom: 1px solid var(--border-100); background: var(--bg-white);">
+                <h3 style="margin: 0; font-size: 16px;"><i class="bi bi-file-text"></i> Laporan Tugas Mandiri</h3>
                 <button type="button" class="modal-close" @click="viewModalOpen = false">×</button>
             </div>
-            <div>
-                <div class="form-group">
-                    <label>Pegawai</label>
-                    <input type="text" :value="viewData.assignee_nama + ' (' + viewData.assignee_unit + ')'" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Judul Tugas</label>
-                    <input type="text" x-model="viewData.judul" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Deskripsi Tugas</label>
-                    <textarea rows="3" x-model="viewData.deskripsi" readonly></textarea>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label>Prioritas</label>
-                        <input type="text" x-model="viewData.prioritas" readonly>
+            <div style="padding: 24px; background: #fafafa; overflow-y: auto; max-height: calc(90vh - 70px);">
+                
+                <div style="background: var(--bg-white); border: 1px solid var(--border-200); border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px;">
+                    <h2 style="font-size: 18px; font-weight: 700; color: var(--text-900); margin-top: 0; margin-bottom: 8px; line-height: 1.4;" x-text="viewData.judul"></h2>
+                    
+                    <div style="display: flex; gap: 12px; font-size: 12px; color: var(--text-500); margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+                        <span><i class="bi bi-person-badge"></i> <span x-text="viewData.assignee_nama + ' (' + viewData.assignee_unit + ')'"></span></span>
+                        <span>&bull;</span>
+                        <span :class="{'prio-badge prio-tinggi': viewData.prioritas === 'Tinggi', 'prio-badge prio-sedang': viewData.prioritas === 'Sedang', 'prio-badge prio-rendah': viewData.prioritas === 'Rendah'}" x-text="viewData.prioritas" style="padding: 2px 6px; font-size: 10px; border-radius: 4px;"></span>
+                        <span>&bull;</span>
+                        <span style="font-weight: 600; color: var(--text-700);">Bobot: <span x-text="viewData.bobot"></span></span>
                     </div>
-                    <div class="form-group">
-                        <label>Bobot</label>
-                        <input type="text" x-model="viewData.bobot" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Mulai</label>
-                        <input type="date" x-model="viewData.tgl_mulai" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Deadline</label>
-                        <input type="date" x-model="viewData.tgl_selesai" readonly>
+
+                    <div style="font-size: 13.5px; color: var(--text-700); line-height: 1.6; white-space: pre-wrap; margin-bottom: 24px;" x-text="viewData.deskripsi || 'Tidak ada deskripsi tugas.'"></div>
+
+                    <div style="background: var(--bg-app); border: 1px dashed var(--border-300); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                        <div>
+                            <span style="color: var(--text-500); display: block; margin-bottom: 2px;">Mulai</span>
+                            <strong style="color: var(--text-800);" x-text="viewData.tgl_mulai"></strong>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="color: var(--text-500); display: block; margin-bottom: 2px;">Deadline</span>
+                            <strong style="color: var(--text-800);" x-text="viewData.tgl_selesai"></strong>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Status</label>
-                    <input type="text" x-model="viewData.status" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Laporan Pegawai</label>
-                    <textarea rows="2" x-model="viewData.laporan" readonly></textarea>
+
+                <div style="background: var(--bg-white); border: 1px solid var(--border-200); border-radius: var(--radius-md); padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-900); margin: 0;">Status & Laporan</h4>
+                        <span :class="{'badge bg-selesai': viewData.status === 'Selesai', 'badge bg-proses': viewData.status !== 'Selesai'}" x-text="viewData.status"></span>
+                    </div>
+                    
+                    <div style="font-size: 13px; color: var(--text-700); line-height: 1.5; white-space: pre-wrap; background: #f0fdf4; padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--teal-500);" x-show="viewData.laporan">
+                        <span x-text="viewData.laporan"></span>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-400); font-style: italic;" x-show="!viewData.laporan">
+                        Pegawai belum melampirkan laporan pekerjaan.
+                    </div>
                 </div>
                 
                 <div style="display:flex; justify-content:flex-end; margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" @click="viewModalOpen = false">Tutup</button>
+                    <button type="button" class="btn btn-secondary" @click="viewModalOpen = false">Tutup Laporan</button>
                 </div>
             </div>
         </div>
