@@ -86,28 +86,28 @@
 <div class="flow-container" style="margin-bottom: 24px;">
     <div class="flow-title"><i class="bi bi-card-checklist"></i> Alur 3 — Pimpinan Mendelegasikan Tugas (Fitur Utama)</div>
     <div class="flow-steps">
-        <div class="flow-step" style="border-color: rgba(251, 191, 36, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 1</div>
             <div class="step-icon"><i class="bi bi-person-badge"></i></div>
             <div class="step-label">Pimpinan Input</div>
             <div class="step-desc">Judul, deskripsi, bobot</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(251, 191, 36, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 2</div>
             <div class="step-icon"><i class="bi bi-bullseye"></i></div>
             <div class="step-label">Pilih Pegawai</div>
             <div class="step-desc">Siapa yang ditugaskan</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(37, 99, 235, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 3</div>
             <div class="step-icon">⚡</div>
             <div class="step-label">Auto Insert</div>
             <div class="step-desc">Masuk ke tabel tasks</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(37, 99, 235, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 4</div>
             <div class="step-icon"><i class="bi bi-person"></i></div>
             <div class="step-label">Muncul di Pegawai</div>
@@ -115,7 +115,7 @@
         </div>
     </div>
     <div class="flow-note">
-        <strong style="color:#FBBF24;">⚡ Fitur Kunci:</strong> Saat Pimpinan submit, sistem meng-<code>INSERT INTO tasks</code> dengan <code>created_by</code> = pimpinan, <code>assigned_to</code> = pegawai pilihan, dan <code>sumber</code> = 'Pimpinan'. Dashboard pegawai memfilter: <span class="hl-green">SELECT * FROM tasks WHERE assigned_to = :session_user_id</span>. Sehingga tugas otomatis muncul tanpa intervensi manual.
+        <strong style="color:var(--warning-600);">⚡ Fitur Kunci:</strong> Saat Pimpinan submit, sistem meng-<code>INSERT INTO tasks</code> dengan <code>created_by</code> = pimpinan, <code>assigned_to</code> = pegawai pilihan, dan <code>sumber</code> = 'Pimpinan'. Dashboard pegawai memfilter: <span class="hl-green">SELECT * FROM tasks WHERE assigned_to = :session_user_id</span>. Sehingga tugas otomatis muncul tanpa intervensi manual.
     </div>
 </div>
 
@@ -160,28 +160,28 @@
 <div class="flow-container">
     <div class="flow-title"><i class="bi bi-diagram-3"></i> Alur 5 — Tugas Mandiri Pimpinan & Filter Hierarki Unit</div>
     <div class="flow-steps">
-        <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 1</div>
             <div class="step-icon"><i class="bi bi-person-workspace"></i></div>
             <div class="step-label">Tugas Mandiri</div>
             <div class="step-desc">Dibuat oleh Pimpinan</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(16, 185, 129, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 2</div>
             <div class="step-icon"><i class="bi bi-building"></i></div>
             <div class="step-label">Tentukan Unit</div>
             <div class="step-desc">Pilih target evaluasi</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(139, 92, 246, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 3</div>
             <div class="step-icon"><i class="bi bi-diagram-2"></i></div>
             <div class="step-label">Filter Hierarki</div>
             <div class="step-desc">Sub-unit otomatis tampil</div>
         </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border-color: rgba(139, 92, 246, 0.4);">
+        <div class="flow-step">
             <div class="step-num">Step 4</div>
             <div class="step-icon"><i class="bi bi-images"></i></div>
             <div class="step-label">Review Bukti</div>

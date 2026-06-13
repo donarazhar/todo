@@ -97,7 +97,7 @@
     </div>
 
     <!-- Tabel tasks (To-Do) -->
-    <div class="erd-table-card" style="border: 2px solid var(--teal-500);">
+    <div class="erd-table-card">
         <div class="erd-table-header teal"><i class="bi bi-check-circle"></i> tasks (To-Do List)</div>
         <div class="erd-field"><span class="field-name"><i class="bi bi-key-fill"></i> id <span class="key-badge key-pk">PK</span></span><span class="type">INT AUTO_INCREMENT</span></div>
         <div class="erd-field"><span class="field-name">judul</span><span class="type">VARCHAR(200)</span></div>
@@ -116,7 +116,7 @@
     </div>
 
     <!-- Tabel task_comments -->
-    <div class="erd-table-card" style="border: 2px solid var(--teal-500);">
+    <div class="erd-table-card">
         <div class="erd-table-header teal"><i class="bi bi-chat-dots"></i> task_comments</div>
         <div class="erd-field"><span class="field-name"><i class="bi bi-key-fill"></i> id <span class="key-badge key-pk">PK</span></span><span class="type">INT AUTO_INCREMENT</span></div>
         <div class="erd-field"><span class="field-name">task_id <span class="key-badge key-fk">FK</span></span><span class="type">INT → tasks.id</span></div>
