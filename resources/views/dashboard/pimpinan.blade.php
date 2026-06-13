@@ -629,7 +629,7 @@
                                     $person = $tab === 'masuk' ? $t->creator : $t->assignee;
                                     $prefix = $tab === 'masuk' ? 'From: ' : 'To: ';
                                 @endphp
-                                <i class="bi bi-person"></i> <span style="font-weight: 500; color: var(--text-500); font-size: 10px;">{{ $prefix }}</span>{{ $person->nama ?? '-' }} 
+                                <span style="font-weight: 500; color: var(--text-500); font-size: 10px;">{{ $prefix }}</span> <i class="bi bi-person"></i> {{ $person->nama ?? '-' }} 
                                 <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $person->unitKerja->nama_unit ?? '-' }})</span>
                                 &nbsp;&bull;&nbsp; 
                             @endif
