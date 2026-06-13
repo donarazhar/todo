@@ -196,25 +196,29 @@
         padding: 12px 16px;
     }
     .task-card-info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
         margin-bottom: 12px;
+        overflow-x: auto;
+        padding-bottom: 4px;
     }
     .task-card-info-item {
         display: flex;
         flex-direction: column;
         gap: 2px;
+        white-space: nowrap;
     }
     .task-card-info-label {
-        font-size: 10px;
+        font-size: 9px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--text-400);
         font-weight: 700;
     }
     .task-card-info-value {
-        font-size: 13px;
+        font-size: 11.5px;
         font-weight: 600;
         color: var(--text-700);
     }

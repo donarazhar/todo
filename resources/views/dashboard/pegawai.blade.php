@@ -190,25 +190,29 @@
         padding: 12px 16px;
     }
     .pgw-card-info-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
         margin-bottom: 14px;
+        overflow-x: auto;
+        padding-bottom: 4px;
     }
     .pgw-card-info-item {
         display: flex;
         flex-direction: column;
         gap: 2px;
+        white-space: nowrap;
     }
     .pgw-card-info-label {
-        font-size: 10px;
+        font-size: 9px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--text-400);
         font-weight: 700;
     }
     .pgw-card-info-value {
-        font-size: 13px;
+        font-size: 11.5px;
         font-weight: 600;
         color: var(--text-700);
     }
