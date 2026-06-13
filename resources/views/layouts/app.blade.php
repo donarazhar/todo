@@ -1427,9 +1427,6 @@
             .page-header-nav h2 {
                 font-size: 16px;
             }
-            .mobile-user-profile {
-                display: flex !important;
-            }
             .mobile-logout-btn {
                 display: flex !important;
             }
@@ -1636,19 +1633,6 @@
             <!-- TOP NAVBAR -->
             <div class="top-navbar">
                 <button class="hamburger-btn" @click="sidebarOpen = true"><i class="bi bi-list"></i></button>
-                
-                <!-- MOBILE USER PROFILE (Left side on mobile) -->
-                <div class="mobile-user-profile" style="display: none; align-items: center; gap: 8px;">
-                    @if(Auth::user()->foto)
-                        <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300);">
-                    @else
-                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; background: var(--gradient-primary); color: white; border-radius: 50%; font-weight: bold;">{{ substr(Auth::user()->nama, 0, 1) }}</div>
-                    @endif
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 12px; font-weight: 700; color: var(--text-900); line-height: 1.2;">{{ explode(' ', Auth::user()->nama)[0] }}</span>
-                        <span style="font-size: 10px; color: var(--primary-600); font-weight: 600;">{{ Auth::user()->role->nama_role }}</span>
-                    </div>
-                </div>
 
                 <div class="page-header-nav">
                     @yield('page_title')
