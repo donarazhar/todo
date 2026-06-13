@@ -624,12 +624,15 @@
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
                         <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">
-                            @php
-                                $person = $tab === 'masuk' ? $t->creator : $t->assignee;
-                            @endphp
-                            <i class="bi bi-person"></i> {{ $person->nama ?? '-' }} 
-                            <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $person->unitKerja->nama_unit ?? '-' }})</span>
-                            &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}
+                            @if($tab !== 'mandiri')
+                                @php
+                                    $person = $tab === 'masuk' ? $t->creator : $t->assignee;
+                                @endphp
+                                <i class="bi bi-person"></i> {{ $person->nama ?? '-' }} 
+                                <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $person->unitKerja->nama_unit ?? '-' }})</span>
+                                &nbsp;&bull;&nbsp; 
+                            @endif
+                            Bobot: {{ $t->bobot }}
                         </div>
                         <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
                         <div>
@@ -767,6 +770,7 @@
                     @php
                         $person = $tab === 'masuk' ? $t->creator : $t->assignee;
                     @endphp
+                    @if($tab !== 'mandiri')
                     <div style="flex-shrink: 0;">
                         @if($person && $person->foto)
                             <img src="{{ Storage::url($person->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
@@ -776,9 +780,10 @@
                             </div>
                         @endif
                     </div>
+                    @endif
                     <div style="flex-grow: 1; min-width: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
-                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $person->nama ?? '-' }}</strong>
+                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $tab === 'mandiri' ? $t->judul : ($person->nama ?? '-') }}</strong>
                             @php
                                 $statusBg = 'bg-proses';
                                 if($t->status === 'Selesai') $statusBg = 'bg-selesai';
@@ -788,7 +793,7 @@
                             <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!} style="font-size: 9px; padding: 2px 6px;">{{ $t->status }}</span>
                         </div>
                         <div style="color: var(--text-600); font-size: 13.5px; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
-                            <span style="font-weight: 600; color: var(--text-800);">{{ $t->judul }}</span> - {{ $t->deskripsi }}
+                            @if($tab !== 'mandiri') <span style="font-weight: 600; color: var(--text-800);">{{ $t->judul }}</span> - @endif {{ $t->deskripsi }}
                         </div>
                         <div style="font-size: 11px; color: var(--text-400);">
                             {{ $t->created_at->diffForHumans() }}
