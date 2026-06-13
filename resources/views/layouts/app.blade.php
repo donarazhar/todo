@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="description" content="Task&Schedule — Platform manajemen tugas dan penjadwalan terpadu">
     <title>Task&Schedule - Dashboard Overview</title>
-    <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('logo-alazhar.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -47,11 +47,10 @@
             --gradient-card-amber: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
             --gradient-card-purple: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
 
-            --bg-app: #F4F7FB;
-            --gradient-sidebar: linear-gradient(160deg, #071B33 0%, #1E3A8A 30%, #1D4ED8 70%, #2563EB 100%);
-            --bg-sidebar: var(--gradient-sidebar);
-            --bg-sidebar-hover: rgba(255,255,255,0.08);
-            --bg-sidebar-active: rgba(255,255,255,0.14);
+            --bg-app: #F9FAFB;
+            --bg-sidebar: #FFFFFF;
+            --bg-sidebar-hover: rgba(13, 59, 102, 0.05);
+            --bg-sidebar-active: rgba(13, 59, 102, 0.1);
             --bg-white: #FFFFFF;
             --bg-card: #FFFFFF;
 
@@ -336,22 +335,14 @@
             width: 270px;
             min-width: 270px;
             background: var(--bg-sidebar);
-            color: var(--bg-white);
+            color: var(--text-700);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 0;
             position: relative;
             z-index: 100;
-        }
-        .sidebar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(37, 99, 235, 0.3) 0%, transparent 30%, transparent 70%, rgba(37, 99, 235, 0.3) 100%);
+            border-right: 1px solid var(--border-200);
         }
 
         .sidebar-brand {
@@ -359,19 +350,15 @@
             align-items: center;
             gap: 12px;
             padding: 22px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
+            border-bottom: 1px solid var(--border-200);
         }
         .sidebar-brand-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--gradient-teal);
-            border-radius: var(--radius-md);
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
         .sidebar-brand h3 {
             font-size: 17px;
@@ -394,7 +381,7 @@
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 1.2px;
-            color: rgba(255,255,255,0.3);
+            color: var(--text-400);
             margin: 20px 12px 8px 12px;
             font-weight: 700;
         }
@@ -403,7 +390,7 @@
             align-items: center;
             gap: 11px;
             padding: 11px 14px;
-            color: rgba(255,255,255,0.6);
+            color: var(--text-500);
             text-decoration: none;
             border-radius: var(--radius-md);
             font-size: 13.5px;
@@ -415,11 +402,12 @@
         }
         .menu-item:hover {
             background: var(--bg-sidebar-hover);
-            color: rgba(255,255,255,0.95);
+            color: var(--primary-700);
         }
         .menu-item.active {
             background: var(--bg-sidebar-active);
-            color: var(--bg-white);
+            color: var(--primary-900);
+            font-weight: 600;
         }
         .menu-item.active::before {
             content: '';
@@ -440,7 +428,7 @@
 
         .sidebar-user {
             padding: 16px 20px;
-            border-top: 1px solid rgba(255,255,255,0.07);
+            border-top: 1px solid var(--border-200);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -448,8 +436,9 @@
         .user-avatar {
             width: 38px;
             height: 38px;
-            background: var(--gradient-card-blue);
-            border: 2px solid var(--teal-500);
+            background: var(--primary-50);
+            border: 2px solid var(--primary-300);
+            color: var(--primary-700);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -465,16 +454,16 @@
         }
         .user-info span {
             font-size: 11px;
-            color: rgba(255,255,255,0.45);
+            color: var(--text-500);
         }
         .btn-logout {
             margin-left: auto;
             width: 32px;
             height: 32px;
             border-radius: var(--radius-sm);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--border-200);
             background: transparent;
-            color: #FC8181;
+            color: #EF4444;
             font-size: 16px;
             cursor: pointer;
             display: flex;
@@ -1531,8 +1520,8 @@
         <div class="sidebar" :class="{ 'open': sidebarOpen }">
             <div>
                 <div class="sidebar-brand">
-                    <div class="sidebar-brand-icon" style="background: transparent; box-shadow: none;">
-                        <img src="{{ asset('app-icon.png') }}" alt="Icon" style="width: 100%; height: 100%; object-fit: contain;">
+                    <div class="sidebar-brand-icon">
+                        <img src="{{ asset('logo-alazhar.png') }}" alt="Icon" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
                         <h3>Task&Schedule</h3>

@@ -5,7 +5,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable {
     use Notifiable, SoftDeletes;
-    protected $fillable = ['nama', 'username', 'password', 'role_id', 'unit_id'];
+    protected $fillable = ['nama', 'username', 'email', 'google_id', 'password', 'role_id', 'unit_id'];
     protected $hidden = ['password', 'remember_token'];
     protected function casts(): array {
         return ['password' => 'hashed'];

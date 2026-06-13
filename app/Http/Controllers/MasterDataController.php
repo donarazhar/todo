@@ -78,6 +78,7 @@ class MasterDataController extends Controller {
         $validated = $request->validate([
             'nama' => 'required|string',
             'username' => 'required|string|unique:users,username',
+            'email' => 'nullable|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role_id' => 'required|exists:roles,id',
             'unit_id' => 'required|exists:unit_kerjas,id'
@@ -91,6 +92,7 @@ class MasterDataController extends Controller {
         $validated = $request->validate([
             'nama' => 'required|string',
             'username' => 'required|string|unique:users,username,'.$id,
+            'email' => 'nullable|email|unique:users,email,'.$id,
             'role_id' => 'required|exists:roles,id',
             'unit_id' => 'required|exists:unit_kerjas,id',
             'password' => 'nullable|string|min:6'

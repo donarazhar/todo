@@ -124,16 +124,20 @@
                 <div class="master-table-wrap" style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr><th>ID</th><th>Nama Unit Kerja</th><th>Induk Unit</th><th>Kode</th><th>Kepala Unit</th><th>Aksi</th></tr>
+                            <tr><th>ID</th><th>Informasi Unit</th><th>Hierarki & Pimpinan</th><th>Aksi</th></tr>
                         </thead>
                         <tbody>
                             @foreach($units as $unit)
                             <tr>
                                 <td>{{ $unit->id }}</td>
-                                <td><strong>{{ $unit->nama_unit }}</strong></td>
-                                <td style="font-size:12px; color:var(--text-600);"><i class="bi bi-diagram-3"></i> {{ $unit->parent->nama_unit ?? '—' }}</td>
-                                <td><span class="badge bg-belum">{{ $unit->kode_unit }}</span></td>
-                                <td>{{ $unit->kepalaUnit->nama ?? '—' }}</td>
+                                <td>
+                                    <div style="font-weight: 700; color: var(--text-900);">{{ $unit->nama_unit }}</div>
+                                    <div style="font-size: 12px; margin-top: 4px;"><span class="badge bg-belum">{{ $unit->kode_unit }}</span></div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12.5px; color: var(--text-700);"><i class="bi bi-diagram-3" style="color: var(--text-400);"></i> Induk: {{ $unit->parent->nama_unit ?? '—' }}</div>
+                                    <div style="font-size: 12.5px; color: var(--text-700); margin-top: 2px;"><i class="bi bi-person" style="color: var(--text-400);"></i> Kepala: <strong>{{ $unit->kepalaUnit->nama ?? '—' }}</strong></div>
+                                </td>
                                 <td style="display:flex; gap:5px;">
                                     <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}', parent_id: '{{ $unit->parent_id }}' })"><i class="bi bi-pencil"></i></button>
                                     <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
@@ -193,6 +197,11 @@
                         @error('username') <small class="text-error">{{ $message }}</small> @enderror
                     </div>
                     <div class="form-group">
+                        <label>Email (Untuk Google Login)</label>
+                        <input type="email" name="email" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Contoh: pegawai@alazhar.org">
+                        @error('email') <small class="text-error">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="form-group">
                         <label>Password Awal</label>
                         <input type="password" name="password" class="{{ $errors->has('password') ? 'is-invalid' : '' }}" placeholder="Masukkan password" required>
                         @error('password') <small class="text-error">{{ $message }}</small> @enderror
@@ -223,26 +232,30 @@
                 <div class="master-table-wrap" style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr><th>ID</th><th>Nama User</th><th>Username</th><th>Unit Kerja</th><th>Role</th><th>Aksi</th></tr>
+                            <tr><th>ID</th><th>Profil Pegawai</th><th>Unit & Jabatan</th><th>Aksi</th></tr>
                         </thead>
                         <tbody>
                             @foreach($users as $user)
                             <tr>
                                 <td>{{ $user->id }}</td>
-                                <td><strong>{{ $user->nama }}</strong></td>
-                                <td>{{ $user->username }}</td>
-                                <td>{{ $user->unitKerja->nama_unit ?? '—' }}</td>
                                 <td>
-                                    @if($user->role->nama_role == 'Admin')
-                                        <span class="badge bg-belum"><i class="bi bi-shield-lock"></i> Admin</span>
-                                    @elseif($user->role->nama_role == 'Pimpinan')
-                                        <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
-                                    @else
-                                        <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
-                                    @endif
+                                    <div style="font-weight: 700; color: var(--text-900);">{{ $user->nama }}</div>
+                                    <div style="font-size: 12px; color: var(--text-500); margin-top: 2px;"><i class="bi bi-person-badge"></i> {{ $user->username }} &nbsp;&bull;&nbsp; <i class="bi bi-envelope"></i> {{ $user->email ?? '—' }}</div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12.5px; color: var(--text-700); margin-bottom: 6px;"><i class="bi bi-building" style="color: var(--text-400);"></i> {{ $user->unitKerja->nama_unit ?? '—' }}</div>
+                                    <div>
+                                        @if($user->role->nama_role == 'Admin')
+                                            <span class="badge bg-belum"><i class="bi bi-shield-lock"></i> Admin</span>
+                                        @elseif($user->role->nama_role == 'Pimpinan')
+                                            <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
+                                        @else
+                                            <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td style="display:flex; gap:5px;">
-                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i></button>
+                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', email: '{{ addslashes($user->email ?? '') }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i></button>
                                     <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
@@ -259,7 +272,7 @@
                     @forelse($users as $user)
                     <div class="task-card">
                         <div class="task-card-title">{{ $user->nama }}</div>
-                        <div class="task-card-subtitle">{{ $user->username }} | ID: {{ $user->id }}</div>
+                        <div class="task-card-subtitle">{{ $user->username }} | Email: {{ $user->email ?? '—' }} | ID: {{ $user->id }}</div>
                         <div style="font-size: 12px; color: var(--text-600); margin-bottom: 8px;"><i class="bi bi-building"></i> {{ $user->unitKerja->nama_unit ?? '—' }}</div>
                         <div>
                             @if($user->role->nama_role == 'Admin')
@@ -271,7 +284,7 @@
                             @endif
                         </div>
                         <div class="task-card-actions">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', email: '{{ addslashes($user->email ?? '') }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
                             <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
@@ -487,6 +500,10 @@
                 <div class="form-group">
                     <label>Username</label>
                     <input type="text" name="username" x-model="editData.username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email (Untuk Google Login)</label>
+                    <input type="email" name="email" x-model="editData.email" placeholder="Contoh: pegawai@alazhar.org">
                 </div>
                 <div class="form-group">
                     <label>Password Baru (Kosongkan jika tidak diubah)</label>
