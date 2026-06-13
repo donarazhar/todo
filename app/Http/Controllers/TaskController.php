@@ -20,8 +20,8 @@ class TaskController extends Controller {
         $descendantIds = $myUnit ? $myUnit->getAllDescendantIds() : [];
         $allUnitIds = array_merge([Auth::user()->unit_id], $descendantIds);
 
-        if (optional($myUnit)->nama_unit === 'Sekretariat') {
-            // Kepala Sekretariat hanya bisa menugaskan Kabag (Pimpinan di child units langsung)
+        if (optional($myUnit)->parent_id === null) {
+            // Pimpinan level tertinggi (Induk: -) hanya bisa menugaskan Pimpinan di child units langsung
             $childUnits = $myUnit->children()->pluck('id')->toArray();
             $pegawais = User::whereIn('unit_id', $childUnits)
                 ->whereHas('role', function($q) {

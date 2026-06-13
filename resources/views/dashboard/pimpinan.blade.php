@@ -460,7 +460,7 @@
         <a href="{{ route('pimpinan.tasks', ['tab' => 'delegasi']) }}" class="btn {{ $tab === 'delegasi' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px; flex-shrink: 0;">
             <i class="bi bi-arrow-right-square"></i> Delegasi Keluar
         </a>
-        @if(optional(Auth::user()->unitKerja)->nama_unit !== 'Sekretariat')
+        @if(optional(Auth::user()->unitKerja)->parent_id !== null)
         <a href="{{ route('pimpinan.tasks', ['tab' => 'masuk']) }}" class="btn {{ $tab === 'masuk' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px; flex-shrink: 0;">
             <i class="bi bi-inbox"></i> Tugas Masuk
         </a>

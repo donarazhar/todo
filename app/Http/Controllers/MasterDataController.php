@@ -7,6 +7,7 @@ use App\Models\UnitKerja;
 use App\Models\LokasiKegiatan;
 use App\Models\JenisKegiatan;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class MasterDataController extends Controller {
     public function index() {
@@ -81,10 +82,16 @@ class MasterDataController extends Controller {
             'email' => 'nullable|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role_id' => 'required|exists:roles,id',
-            'unit_id' => 'required|exists:unit_kerjas,id'
+            'unit_id' => 'required|exists:unit_kerjas,id',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         $data = $validated;
         $data['password'] = Hash::make($data['password']);
+        
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('profile-photos', 'public');
+        }
+
         User::create($data);
         return redirect()->back()->with('success', 'Pegawai / Pimpinan berhasil ditambahkan.');
     }
@@ -95,13 +102,22 @@ class MasterDataController extends Controller {
             'email' => 'nullable|email|unique:users,email,'.$id,
             'role_id' => 'required|exists:roles,id',
             'unit_id' => 'required|exists:unit_kerjas,id',
-            'password' => 'nullable|string|min:6'
+            'password' => 'nullable|string|min:6',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         $user = User::findOrFail($id);
-        $data = collect($validated)->except('password')->toArray();
+        $data = collect($validated)->except(['password', 'foto'])->toArray();
         if($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
+        
+        if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('profile-photos', 'public');
+        }
+
         $user->update($data);
         return redirect()->back()->with('success', 'Data user berhasil diubah.');
     }

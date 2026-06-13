@@ -184,7 +184,7 @@
         <div class="split-container">
             <div class="section-box">
                 <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Pegawai / Pimpinan</h3>
-                <form action="{{ route('master.user.store') }}" method="POST">
+                <form action="{{ route('master.user.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label>Nama Lengkap</label>
@@ -205,6 +205,11 @@
                         <label>Password Awal</label>
                         <input type="password" name="password" class="{{ $errors->has('password') ? 'is-invalid' : '' }}" placeholder="Masukkan password" required>
                         @error('password') <small class="text-error">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label>Foto Profil (Opsional)</label>
+                        <input type="file" name="foto" accept="image/*" class="{{ $errors->has('foto') ? 'is-invalid' : '' }}" style="padding: 6px 14px;">
+                        @error('foto') <small class="text-error">{{ $message }}</small> @enderror
                     </div>
                     <div class="form-group">
                         <label>Unit Kerja</label>
@@ -239,8 +244,19 @@
                             <tr>
                                 <td>{{ $user->id }}</td>
                                 <td>
-                                    <div style="font-weight: 700; color: var(--text-900);">{{ $user->nama }}</div>
-                                    <div style="font-size: 12px; color: var(--text-500); margin-top: 2px;"><i class="bi bi-person-badge"></i> {{ $user->username }} &nbsp;&bull;&nbsp; <i class="bi bi-envelope"></i> {{ $user->email ?? '—' }}</div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        @if($user->foto)
+                                            <img src="{{ Storage::url($user->foto) }}" alt="Foto" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-100); flex-shrink: 0;">
+                                        @else
+                                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-50); color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid var(--primary-100); flex-shrink: 0;">
+                                                {{ substr($user->nama, 0, 1) }}
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div style="font-weight: 700; color: var(--text-900);">{{ $user->nama }}</div>
+                                            <div style="font-size: 12px; color: var(--text-500); margin-top: 2px;"><i class="bi bi-person-badge"></i> {{ $user->username }} &nbsp;&bull;&nbsp; <i class="bi bi-envelope"></i> {{ $user->email ?? '—' }}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
                                     <div style="font-size: 12.5px; color: var(--text-700); margin-bottom: 6px;"><i class="bi bi-building" style="color: var(--text-400);"></i> {{ $user->unitKerja->nama_unit ?? '—' }}</div>
@@ -491,7 +507,7 @@
             </form>
 
             <!-- Form untuk User -->
-            <form x-show="editType === 'user'" :action="'{{ url('/master-data/user') }}/' + editId" method="POST">
+            <form x-show="editType === 'user'" :action="'{{ url('/master-data/user') }}/' + editId" method="POST" enctype="multipart/form-data">
                 @csrf @method('PUT')
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -508,6 +524,10 @@
                 <div class="form-group">
                     <label>Password Baru (Kosongkan jika tidak diubah)</label>
                     <input type="password" name="password" placeholder="***">
+                </div>
+                <div class="form-group">
+                    <label>Ubah Foto Profil (Biarkan kosong jika tidak diubah)</label>
+                    <input type="file" name="foto" accept="image/*" style="padding: 6px 14px;">
                 </div>
                 <div class="form-group">
                     <label>Unit Kerja</label>

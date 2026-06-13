@@ -1322,7 +1322,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,0.4);
+            color: var(--text-400);
             text-decoration: none;
             font-size: 10.5px;
             font-weight: 600;
@@ -1334,10 +1334,10 @@
             font-family: inherit;
         }
         .b-nav-item:hover {
-            color: rgba(255,255,255,0.8);
+            color: var(--primary-600);
         }
         .b-nav-item.active {
-            color: var(--teal-400);
+            color: var(--primary-700);
         }
         .b-nav-item .icon {
             font-size: 22px;
@@ -1530,7 +1530,7 @@
                 </div>
                                 <div class="sidebar-menu">
                     <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <span class="menu-icon"><i class="bi bi-house"></i></span>
+                        <span class="menu-icon"><i class="bi {{ request()->routeIs('dashboard') ? 'bi-house-fill' : 'bi-house' }}"></i></span>
                         <span>Dashboard Overview</span>
                     </a>
 
@@ -1538,11 +1538,11 @@
                     <div class="admin-feature">
                         <div class="menu-section-title">Fitur Administrator</div>
                         <a href="{{ route('master.index') }}" class="menu-item {{ request()->routeIs('master.index') ? 'active' : '' }}">
-                            <span class="menu-icon"><i class="bi bi-folder2-open"></i></span>
+                            <span class="menu-icon"><i class="bi {{ request()->routeIs('master.index') ? 'bi-folder-fill' : 'bi-folder2-open' }}"></i></span>
                             <span>Pengelolaan Master Data</span>
                         </a>
                         <a href="{{ route('kegiatan.index') }}" class="menu-item {{ request()->routeIs('kegiatan.index') ? 'active' : '' }}">
-                            <span class="menu-icon"><i class="bi bi-calendar-event"></i></span>
+                            <span class="menu-icon"><i class="bi {{ request()->routeIs('kegiatan.index') ? 'bi-calendar-event-fill' : 'bi-calendar-event' }}"></i></span>
                             <span>Manajemen Penjadwalan</span>
                         </a>
                     </div>
@@ -1552,14 +1552,14 @@
                     <div class="pimpinan-feature">
                         <div class="menu-section-title">Fitur Pimpinan</div>
                         <a href="{{ route('pimpinan.tasks') }}" class="menu-item {{ request()->routeIs('pimpinan.tasks') ? 'active' : '' }}">
-                            <span class="menu-icon"><i class="bi bi-journal-text"></i></span>
+                            <span class="menu-icon"><i class="bi {{ request()->routeIs('pimpinan.tasks') ? 'bi-file-earmark-text-fill' : 'bi-file-earmark-text' }}"></i></span>
                             <span style="flex-grow: 1;">Delegasi To-Do List</span>
                             @if(isset($notifPimpinan) && $notifPimpinan > 0)
                                 <span style="background: #E53E3E; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);">{{ $notifPimpinan }}</span>
                             @endif
                         </a>
                         <a href="{{ route('pimpinan.mandiri') }}" class="menu-item {{ request()->routeIs('pimpinan.mandiri') ? 'active' : '' }}">
-                            <span class="menu-icon"><i class="bi bi-bullseye"></i></span>
+                            <span class="menu-icon"><i class="bi {{ request()->routeIs('pimpinan.mandiri') ? 'bi-check-circle-fill' : 'bi-check-circle' }}"></i></span>
                             <span>Todo Mandiri Pegawai</span>
                         </a>
                     </div>
@@ -1569,14 +1569,14 @@
                     <div class="pegawai-feature">
                         <div class="menu-section-title">Fitur Pegawai</div>
                         <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
-                            <span class="menu-icon"><i class="bi bi-person-badge"></i></span>
+                            <span class="menu-icon"><i class="bi {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'bi-person-badge-fill' : 'bi-person-badge' }}"></i></span>
                             <span style="flex-grow: 1;">Delegasi Pimpinan</span>
                             @if(isset($notifPegawai) && $notifPegawai > 0)
                                 <span style="background: #E53E3E; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);">{{ $notifPegawai }}</span>
                             @endif
                         </a>
                         <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'active' : '' }}">
-                            <span class="menu-icon"><i class="bi bi-person"></i></span>
+                            <span class="menu-icon"><i class="bi {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'bi-person-fill' : 'bi-person' }}"></i></span>
                             <span>To-Do Mandiri</span>
                         </a>
                     </div>
@@ -1596,7 +1596,11 @@
                     @endif
                 </div></div>
             <div class="sidebar-user">
-                <div class="user-avatar" id="avatar-initial">{{ substr(Auth::user()->nama, 0, 1) }}</div>
+                @if(Auth::user()->foto)
+                    <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300); flex-shrink: 0;">
+                @else
+                    <div class="user-avatar" id="avatar-initial">{{ substr(Auth::user()->nama, 0, 1) }}</div>
+                @endif
                 <div class="user-info">
                     <h4 id="user-display-name">{{ Auth::user()->nama }}</h4>
                     <span id="user-display-role">{{ Auth::user()->role->nama_role }}</span>
@@ -1640,42 +1644,42 @@
     <!-- BOTTOM NAVIGATION (MOBILE ONLY) -->
     <nav class="bottom-nav">
         <a href="{{ route('dashboard') }}" class="b-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <span class="icon"><i class="bi bi-house"></i></span><span class="label">Home</span>
+            <span class="icon"><i class="bi {{ request()->routeIs('dashboard') ? 'bi-house-fill' : 'bi-house' }}"></i></span><span class="label">Home</span>
         </a>
         
         @if(Auth::user()->role->nama_role === 'Admin')
             <a href="{{ route('master.index') }}" class="b-nav-item {{ request()->routeIs('master.index') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-folder2-open"></i></span><span class="label">Master</span>
+                <span class="icon"><i class="bi {{ request()->routeIs('master.index') ? 'bi-folder-fill' : 'bi-folder2-open' }}"></i></span><span class="label">Master</span>
             </a>
             <a href="{{ route('kegiatan.index') }}" class="b-nav-item {{ request()->routeIs('kegiatan.index') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-calendar-event"></i></span><span class="label">Jadwal</span>
+                <span class="icon"><i class="bi {{ request()->routeIs('kegiatan.index') ? 'bi-calendar-event-fill' : 'bi-calendar-event' }}"></i></span><span class="label">Jadwal</span>
             </a>
             <!-- Skipping docs in bottom nav to save space, Admin can use tablet/desktop -->
         @endif
         
         @if(Auth::user()->role->nama_role === 'Pimpinan')
             <a href="{{ route('pimpinan.tasks') }}" class="b-nav-item {{ request()->routeIs('pimpinan.tasks') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-journal-text"></i>
+                <span class="icon"><i class="bi {{ request()->routeIs('pimpinan.tasks') ? 'bi-file-earmark-text-fill' : 'bi-file-earmark-text' }}"></i>
                     @if(isset($notifPimpinan) && $notifPimpinan > 0)
                         <span class="b-nav-badge">{{ $notifPimpinan }}</span>
                     @endif
                 </span><span class="label">Delegasi</span>
             </a>
             <a href="{{ route('pimpinan.mandiri') }}" class="b-nav-item {{ request()->routeIs('pimpinan.mandiri') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-bullseye"></i></span><span class="label">Mandiri</span>
+                <span class="icon"><i class="bi {{ request()->routeIs('pimpinan.mandiri') ? 'bi-check-circle-fill' : 'bi-check-circle' }}"></i></span><span class="label">Mandiri</span>
             </a>
         @endif
         
         @if(Auth::user()->role->nama_role === 'Pegawai')
             <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-person-badge"></i>
+                <span class="icon"><i class="bi {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'bi-person-badge-fill' : 'bi-person-badge' }}"></i>
                     @if(isset($notifPegawai) && $notifPegawai > 0)
                         <span class="b-nav-badge">{{ $notifPegawai }}</span>
                     @endif
                 </span><span class="label">Delegasi</span>
             </a>
             <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-person"></i></span><span class="label">Mandiri</span>
+                <span class="icon"><i class="bi {{ request()->routeIs('pegawai.tasks') && request('tab') === 'mandiri' ? 'bi-person-fill' : 'bi-person' }}"></i></span><span class="label">Mandiri</span>
             </a>
         @endif
         
