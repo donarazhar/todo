@@ -11,6 +11,76 @@
        PEGAWAI PAGE – RESPONSIVE STYLES
     ============================ */
 
+    /* --- Wizard Styles --- */
+    .wizard-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        position: relative;
+    }
+    .wizard-header::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: var(--border-200);
+        z-index: 0;
+    }
+    .wizard-step-indicator {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+    }
+    .wizard-step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--bg-200);
+        color: var(--text-500);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        border: 2px solid var(--bg-200);
+        transition: all 0.3s ease;
+    }
+    .wizard-step-indicator.active .wizard-step-circle {
+        background: var(--primary-600);
+        color: white;
+        border-color: var(--primary-600);
+    }
+    .wizard-step-indicator.completed .wizard-step-circle {
+        background: var(--primary-500);
+        color: white;
+        border-color: var(--primary-500);
+    }
+    .wizard-step-title {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-500);
+        text-align: center;
+    }
+    .wizard-step-indicator.active .wizard-step-title {
+        color: var(--primary-600);
+    }
+    .wizard-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-100);
+    }
+    .wizard-body {
+        min-height: 200px;
+    }
+
     /* --- Priority Badges --- */
     .prio-badge {
         padding: 2px 8px;
@@ -374,6 +444,9 @@
        SMALL MOBILE (≤ 480px)
     ============================ */
     @media (max-width: 480px) {
+        .wizard-step-title {
+            display: none;
+        }
         .pgw-card-info-grid {
             grid-template-columns: 1fr 1fr;
             gap: 8px;
@@ -392,6 +465,7 @@
 @section('content')
 <div style="display: flex; flex-direction: column; gap: 24px;" x-data="{ 
     formOpen: false,
+    step: 1,
     editModalOpen: false, 
     editId: '', 
     editData: {},
@@ -407,49 +481,92 @@
 ================================= --}}
 @if($tab === 'mandiri')
 <div class="section-box">
-    <div class="pgw-form-toggle" @click="formOpen = !formOpen">
+    <div class="pgw-form-toggle" @click="formOpen = !formOpen; if(!formOpen) step = 1;">
         <div class="pgw-form-toggle-info">
             <h3 class="section-title"><span class="title-icon"><i class="bi bi-pencil"></i></span> Tambah To-Do Mandiri</h3>
             <p>Buat tugas mandiri untuk mencatat pekerjaan pribadi Anda.</p>
         </div>
         <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Tugas Mandiri ▾'"></button>
     </div>
-    <div x-show="formOpen" x-transition style="display: none;">
-        <form action="{{ route('tasks.store') }}" method="POST" class="pgw-form-grid">
+    <div x-show="formOpen" x-transition style="display: none; margin-top:20px;">
+        <form action="{{ route('tasks.store') }}" method="POST">
             @csrf
-            <div class="pgw-form-left">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Judul Pekerjaan</label>
-                    <input type="text" name="judul" required>
+            <input type="hidden" name="assigned_to" value="{{ Auth::id() }}">
+            
+            <div class="wizard-header">
+                <div class="wizard-step-indicator" :class="{'active': step === 1, 'completed': step > 1}">
+                    <div class="wizard-step-circle">1</div>
+                    <div class="wizard-step-title">Info Utama</div>
                 </div>
-                <div class="form-group" style="margin-bottom:0; display:flex; flex-direction:column; flex-grow:1;">
-                    <label>Deskripsi</label>
-                    <textarea name="deskripsi" rows="3" required></textarea>
+                <div class="wizard-step-indicator" :class="{'active': step === 2, 'completed': step > 2}">
+                    <div class="wizard-step-circle">2</div>
+                    <div class="wizard-step-title">Prioritas & Bobot</div>
                 </div>
-            </div>
-            <div class="pgw-form-right">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Prioritas</label>
-                    <select name="prioritas" required>
-                        <option value="Sedang">Sedang</option>
-                        <option value="Tinggi">Tinggi</option>
-                        <option value="Rendah">Rendah</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Bobot</label>
-                    <input type="number" name="bobot" min="1" max="100" value="30" required>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Mulai</label>
-                    <input type="date" name="tgl_mulai" value="{{ date('Y-m-d') }}" required>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Selesai</label>
-                    <input type="date" name="tgl_selesai" required>
+                <div class="wizard-step-indicator" :class="{'active': step === 3}">
+                    <div class="wizard-step-circle">3</div>
+                    <div class="wizard-step-title">Waktu Pelaksanaan</div>
                 </div>
             </div>
-            <button type="submit" class="btn pgw-form-submit"><i class="bi bi-plus-lg"></i> Tambah To-Do Mandiri</button>
+
+            <div class="wizard-body">
+                <div class="step-1" x-show="step === 1" x-transition>
+                    <div class="form-group">
+                        <label>Judul Pekerjaan</label>
+                        <input type="text" name="judul" required>
+                    </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Deskripsi</label>
+                        <textarea name="deskripsi" rows="3" required></textarea>
+                    </div>
+                </div>
+
+                <div class="step-2" x-show="step === 2" x-transition style="display:none;">
+                    <div class="form-group">
+                        <label>Prioritas</label>
+                        <select name="prioritas" required>
+                            <option value="Sedang">Sedang</option>
+                            <option value="Tinggi">Tinggi</option>
+                            <option value="Rendah">Rendah</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Bobot (1–100)</label>
+                        <input type="number" name="bobot" min="1" max="100" value="30" required>
+                    </div>
+                </div>
+
+                <div class="step-3" x-show="step === 3" x-transition style="display:none;">
+                    <div class="form-group">
+                        <label>Mulai</label>
+                        <input type="date" name="tgl_mulai" value="{{ date('Y-m-d') }}" required>
+                    </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Selesai</label>
+                        <input type="date" name="tgl_selesai" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-actions">
+                <div>
+                    <button type="button" class="btn btn-secondary" x-show="step > 1" @click="step--"><i class="bi bi-arrow-left"></i> Kembali</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" x-show="step < 3" @click="
+                        let currentStep = $el.closest('form').querySelector('.step-' + step);
+                        let inputs = currentStep.querySelectorAll('input[required], select[required], textarea[required]');
+                        let valid = true;
+                        inputs.forEach(i => {
+                            if(!i.checkValidity()) {
+                                i.reportValidity();
+                                valid = false;
+                            }
+                        });
+                        if(valid) step++;
+                    ">Lanjut <i class="bi bi-arrow-right"></i></button>
+                    <button type="submit" class="btn btn-success" x-show="step === 3"><i class="bi bi-send"></i> Tambah To-Do Mandiri</button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
@@ -492,6 +609,7 @@
         <table>
             <thead>
                 <tr>
+                    <th style="width: 5%;">No</th>
                     <th>Detail Tugas</th>
                     <th>Bobot</th>
                     <th>Deadline</th>
@@ -502,6 +620,7 @@
             <tbody>
                 @forelse($tasks as $t)
                 <tr>
+                    <td style="text-align: center; font-weight: 600; color: var(--text-500);">{{ $tasks->firstItem() + $loop->index }}</td>
                     <td>
                         <strong>{{ $t->judul }}</strong><br>
                         <small style="color:var(--text-500);">{{ $t->deskripsi }}</small>
@@ -598,7 +717,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="empty-state">
                             <div class="empty-icon">{!! $tab === 'pimpinan' ? '<i class="bi bi-person-badge"></i>' : '<i class="bi bi-person"></i>' !!}</div>
                             <p>Belum ada tugas {!! $tab === 'pimpinan' ? 'dari pimpinan' : 'mandiri' !!}.</p>
@@ -745,17 +864,17 @@
     
     {{-- Mobile Pagination --}}
     <div class="pagination-mobile">
-        <span class="page-info">Halaman {{ $tasks->currentPage() }} dari {{ $tasks->lastPage() }}</span>
+        <span class="page-info">Page {{ $tasks->currentPage() }} / {{ $tasks->lastPage() }}</span>
         <div class="page-nav-buttons">
             @if($tasks->onFirstPage())
-                <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                <span class="disabled"><i class="bi bi-chevron-left"></i> Prev</span>
             @else
-                <a href="{{ $tasks->appends(['tab' => request('tab')])->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                <a href="{{ $tasks->appends(['tab' => request('tab')])->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Prev</a>
             @endif
             @if($tasks->hasMorePages())
-                <a href="{{ $tasks->appends(['tab' => request('tab')])->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                <a href="{{ $tasks->appends(['tab' => request('tab')])->nextPageUrl() }}">Next <i class="bi bi-chevron-right"></i></a>
             @else
-                <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                <span class="disabled">Next <i class="bi bi-chevron-right"></i></span>
             @endif
         </div>
     </div>

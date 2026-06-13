@@ -19,6 +19,76 @@
        PIMPINAN PAGE – RESPONSIVE STYLES
     ============================ */
 
+    /* --- Wizard Styles --- */
+    .wizard-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        position: relative;
+    }
+    .wizard-header::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: var(--border-200);
+        z-index: 0;
+    }
+    .wizard-step-indicator {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+    }
+    .wizard-step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--bg-200);
+        color: var(--text-500);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        border: 2px solid var(--bg-200);
+        transition: all 0.3s ease;
+    }
+    .wizard-step-indicator.active .wizard-step-circle {
+        background: var(--primary-600);
+        color: white;
+        border-color: var(--primary-600);
+    }
+    .wizard-step-indicator.completed .wizard-step-circle {
+        background: var(--primary-500);
+        color: white;
+        border-color: var(--primary-500);
+    }
+    .wizard-step-title {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-500);
+        text-align: center;
+    }
+    .wizard-step-indicator.active .wizard-step-title {
+        color: var(--primary-600);
+    }
+    .wizard-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-100);
+    }
+    .wizard-body {
+        min-height: 200px;
+    }
+
     /* --- Task Form Section --- */
     .task-form-toggle {
         display: flex;
@@ -349,6 +419,9 @@
        SMALL MOBILE (≤ 480px)
     ============================ */
     @media (max-width: 480px) {
+        .wizard-step-title {
+            display: none;
+        }
         .task-card-info-grid {
             grid-template-columns: 1fr;
             gap: 8px;
@@ -366,6 +439,7 @@
 @section('content')
 <div style="display: flex; flex-direction: column; gap: 24px;" x-data="{
     formOpen: false,
+    step: 1,
     editModalOpen: false, 
     editId: '', 
     editData: {},
@@ -379,14 +453,19 @@
     {{-- ================================
          SECTION: TAB NAVIGATION
     ================================= --}}
-    <div style="display:flex; gap:10px; margin-bottom: 20px; flex-wrap: wrap;">
-        <a href="{{ route('pimpinan.tasks', ['tab' => 'delegasi']) }}" class="btn {{ $tab === 'delegasi' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px;">
+    <div style="display:flex; gap:10px; margin-bottom: 20px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;" class="tabs-scroll">
+        <style>
+            .tabs-scroll::-webkit-scrollbar { display: none; }
+        </style>
+        <a href="{{ route('pimpinan.tasks', ['tab' => 'delegasi']) }}" class="btn {{ $tab === 'delegasi' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px; flex-shrink: 0;">
             <i class="bi bi-arrow-right-square"></i> Delegasi Keluar
         </a>
-        <a href="{{ route('pimpinan.tasks', ['tab' => 'masuk']) }}" class="btn {{ $tab === 'masuk' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px;">
+        @if(optional(Auth::user()->unitKerja)->nama_unit !== 'Sekretariat')
+        <a href="{{ route('pimpinan.tasks', ['tab' => 'masuk']) }}" class="btn {{ $tab === 'masuk' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px; flex-shrink: 0;">
             <i class="bi bi-inbox"></i> Tugas Masuk
         </a>
-        <a href="{{ route('pimpinan.tasks', ['tab' => 'mandiri']) }}" class="btn {{ $tab === 'mandiri' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px;">
+        @endif
+        <a href="{{ route('pimpinan.tasks', ['tab' => 'mandiri']) }}" class="btn {{ $tab === 'mandiri' ? 'btn-primary' : 'btn-secondary' }}" style="padding:10px 20px; flex-shrink: 0;">
             <i class="bi bi-person-check"></i> Tugas Mandiri
         </a>
     </div>
@@ -396,25 +475,44 @@
     ================================= --}}
     @if($tab !== 'masuk')
     <div class="section-box">
-        <div class="task-form-toggle" @click="formOpen = !formOpen">
+        <div class="task-form-toggle" @click="formOpen = !formOpen; if(!formOpen) step = 1;">
             <div class="task-form-toggle-info">
                 <h3 class="section-title"><span class="title-icon"><i class="bi bi-pencil-square"></i></span> {{ $tab === 'delegasi' ? 'Delegasikan Tugas Baru' : 'Buat Tugas Mandiri' }}</h3>
                 <p>{{ $tab === 'delegasi' ? 'Tugas yang Anda buat akan otomatis muncul di dashboard pegawai yang ditugaskan.' : 'Catat tugas yang Anda inisiasi sendiri di sini.' }}</p>
             </div>
             <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Tugas Baru ▾'"></button>
         </div>
-        <form action="{{ route('tasks.store') }}" method="POST" x-show="formOpen" x-transition style="display: none;">
+        <form action="{{ route('tasks.store') }}" method="POST" x-show="formOpen" x-transition style="display: none; margin-top:20px;">
             @csrf
-            <div class="task-form-grid">
-                <div>
+            
+            <div class="wizard-header">
+                <div class="wizard-step-indicator" :class="{'active': step === 1, 'completed': step > 1}">
+                    <div class="wizard-step-circle">1</div>
+                    <div class="wizard-step-title">Info Utama</div>
+                </div>
+                <div class="wizard-step-indicator" :class="{'active': step === 2, 'completed': step > 2}">
+                    <div class="wizard-step-circle">2</div>
+                    <div class="wizard-step-title">Prioritas & Penugasan</div>
+                </div>
+                <div class="wizard-step-indicator" :class="{'active': step === 3}">
+                    <div class="wizard-step-circle">3</div>
+                    <div class="wizard-step-title">Waktu Pelaksanaan</div>
+                </div>
+            </div>
+
+            <div class="wizard-body">
+                <div class="step-1" x-show="step === 1" x-transition>
                     <div class="form-group">
                         <label>Judul Pekerjaan / Tugas</label>
                         <input type="text" name="judul" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-top:15px;">
                         <label>Deskripsi Detail Tugas</label>
                         <textarea name="deskripsi" rows="3" required></textarea>
                     </div>
+                </div>
+
+                <div class="step-2" x-show="step === 2" x-transition style="display:none;">
                     <div class="form-group">
                         <label>Prioritas</label>
                         <select name="prioritas" required>
@@ -423,35 +521,57 @@
                             <option value="Rendah">Rendah</option>
                         </select>
                     </div>
-                </div>
-                <div>
-                    <div class="task-form-row">
-                        <div class="form-group">
-                            <label>Pegawai yang Ditugaskan</label>
-                            <select name="assigned_to" required>
-                                @foreach($pegawais as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Bobot (1–100)</label>
-                            <input type="number" name="bobot" min="1" max="100" value="50" required>
-                        </div>
+                    @if($tab === 'delegasi')
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Pegawai yang Ditugaskan</label>
+                        <select name="assigned_to" required>
+                            <option value="" disabled selected>-- Pilih Pegawai --</option>
+                            @foreach($pegawais as $p)
+                                <option value="{{ $p->id }}">{{ $p->nama }} ({{ $p->unitKerja->nama_unit ?? '-' }})</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="task-form-row">
-                        <div class="form-group">
-                            <label>Tanggal Mulai</label>
-                            <input type="date" name="tgl_mulai" value="{{ date('Y-m-d') }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Deadline Penyelesaian</label>
-                            <input type="date" name="tgl_selesai" required>
-                        </div>
+                    @else
+                    <input type="hidden" name="assigned_to" value="{{ Auth::id() }}">
+                    @endif
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Bobot (1–100)</label>
+                        <input type="number" name="bobot" min="1" max="100" value="50" required>
+                    </div>
+                </div>
+
+                <div class="step-3" x-show="step === 3" x-transition style="display:none;">
+                    <div class="form-group">
+                        <label>Tanggal Mulai</label>
+                        <input type="date" name="tgl_mulai" value="{{ date('Y-m-d') }}" required>
+                    </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Deadline Penyelesaian</label>
+                        <input type="date" name="tgl_selesai" required>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn task-form-submit"><i class="bi bi-send"></i> Kirim Tugas Sekarang</button>
+
+            <div class="wizard-actions">
+                <div>
+                    <button type="button" class="btn btn-secondary" x-show="step > 1" @click="step--"><i class="bi bi-arrow-left"></i> Kembali</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" x-show="step < 3" @click="
+                        let currentStep = $el.closest('form').querySelector('.step-' + step);
+                        let inputs = currentStep.querySelectorAll('input[required], select[required], textarea[required]');
+                        let valid = true;
+                        inputs.forEach(i => {
+                            if(!i.checkValidity()) {
+                                i.reportValidity();
+                                valid = false;
+                            }
+                        });
+                        if(valid) step++;
+                    ">Lanjut <i class="bi bi-arrow-right"></i></button>
+                    <button type="submit" class="btn btn-success" x-show="step === 3"><i class="bi bi-send"></i> Kirim Tugas</button>
+                </div>
+            </div>
         </form>
     </div>
     @endif
@@ -490,6 +610,7 @@
             <table>
                 <thead>
                 <tr>
+                    <th style="width: 5%;">No</th>
                     <th>Detail Tugas</th>
                     <th>Waktu Pelaksanaan</th>
                     <th>Status & Laporan</th>
@@ -499,9 +620,14 @@
             <tbody>
                 @forelse($tasks as $t)
                 <tr>
+                    <td style="text-align: center; font-weight: 600; color: var(--text-500);">{{ $tasks->firstItem() + $loop->index }}</td>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
-                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;"><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
+                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">
+                            <i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} 
+                            <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->assignee->unitKerja->nama_unit ?? '-' }})</span>
+                            &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}
+                        </div>
                         <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
                         <div>
                             @php
@@ -617,7 +743,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="empty-state">
                             <div class="empty-icon"><i class="bi bi-card-checklist"></i></div>
                             <p>Belum ada tugas yang didelegasikan.</p>
@@ -637,7 +763,7 @@
                 <div class="task-card-header">
                     <div class="task-card-title">{{ $t->judul }}</div>
                     <div class="task-card-meta">
-                        <span><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }}</span>
+                        <span><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->assignee->unitKerja->nama_unit ?? '-' }})</span></span>
                         <span>•</span>
                         <span>Bobot: {{ $t->bobot }}</span>
                     </div>
@@ -791,17 +917,17 @@
         
         {{-- Mobile Pagination --}}
         <div class="pagination-mobile">
-            <span class="page-info">Halaman {{ $tasks->currentPage() }} dari {{ $tasks->lastPage() }}</span>
+            <span class="page-info">Page {{ $tasks->currentPage() }} / {{ $tasks->lastPage() }}</span>
             <div class="page-nav-buttons">
                 @if($tasks->onFirstPage())
-                    <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                    <span class="disabled"><i class="bi bi-chevron-left"></i> Prev</span>
                 @else
-                    <a href="{{ $tasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                    <a href="{{ $tasks->appends(['tab' => request('tab', 'delegasi')])->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Prev</a>
                 @endif
                 @if($tasks->hasMorePages())
-                    <a href="{{ $tasks->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                    <a href="{{ $tasks->appends(['tab' => request('tab', 'delegasi')])->nextPageUrl() }}">Next <i class="bi bi-chevron-right"></i></a>
                 @else
-                    <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                    <span class="disabled">Next <i class="bi bi-chevron-right"></i></span>
                 @endif
             </div>
         </div>
@@ -839,7 +965,7 @@
                     <label>Pegawai yang Ditugaskan</label>
                     <select name="assigned_to" x-model="editData.assigned_to" required>
                         @foreach($pegawais as $p)
-                            <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                            <option value="{{ $p->id }}">{{ $p->nama }} ({{ $p->unitKerja->nama_unit ?? '-' }})</option>
                         @endforeach
                     </select>
                 </div>

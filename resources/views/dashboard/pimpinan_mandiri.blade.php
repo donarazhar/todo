@@ -215,7 +215,7 @@
             @if(request('search') || request('status') || request('prioritas'))
                 <a href="{{ route('pimpinan.mandiri') }}" class="btn btn-secondary" style="padding:8px 16px; text-decoration:none;"><i class="bi bi-x-lg"></i> Reset</a>
             @endif
-            <a href="{{ route('tasks.export', array_merge(request()->all(), ['tab' => 'mandiri'])) }}" target="_blank" class="btn btn-success" style="padding:8px 16px; text-decoration:none; margin-left:auto;"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+            <a href="{{ route('tasks.export', array_merge(request()->all(), ['tab' => 'bawahan_mandiri'])) }}" target="_blank" class="btn btn-success" style="padding:8px 16px; text-decoration:none; margin-left:auto;"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
         </form>
 
         {{-- ======= DESKTOP TABLE VIEW ======= --}}
@@ -223,6 +223,7 @@
             <table>
                 <thead>
                 <tr>
+                    <th style="width: 5%;">No</th>
                     <th>Detail Tugas</th>
                     <th>Waktu Pelaksanaan</th>
                     <th>Status & Laporan</th>
@@ -231,9 +232,14 @@
             <tbody>
                 @forelse($mandiriTasks as $t)
                 <tr>
+                    <td style="text-align: center; font-weight: 600; color: var(--text-500);">{{ $mandiriTasks->firstItem() + $loop->index }}</td>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
-                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;"><i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}</div>
+                        <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">
+                            <i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} 
+                            <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->assignee->unitKerja->nama_unit ?? '-' }})</span>
+                            &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}
+                        </div>
                         <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
                         <div>
                             @php
@@ -271,7 +277,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="3">
+                    <td colspan="4">
                         <div class="empty-state">
                             <div class="empty-icon"><i class="bi bi-bullseye"></i></div>
                             <p>Belum ada tugas mandiri dari pegawai.</p>
@@ -367,17 +373,17 @@
         
         {{-- Mobile Pagination --}}
         <div class="pagination-mobile">
-            <span class="page-info">Halaman {{ $mandiriTasks->currentPage() }} dari {{ $mandiriTasks->lastPage() }}</span>
+            <span class="page-info">Page {{ $mandiriTasks->currentPage() }} / {{ $mandiriTasks->lastPage() }}</span>
             <div class="page-nav-buttons">
                 @if($mandiriTasks->onFirstPage())
-                    <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                    <span class="disabled"><i class="bi bi-chevron-left"></i> Prev</span>
                 @else
-                    <a href="{{ $mandiriTasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                    <a href="{{ $mandiriTasks->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Prev</a>
                 @endif
                 @if($mandiriTasks->hasMorePages())
-                    <a href="{{ $mandiriTasks->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                    <a href="{{ $mandiriTasks->nextPageUrl() }}">Next <i class="bi bi-chevron-right"></i></a>
                 @else
-                    <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                    <span class="disabled">Next <i class="bi bi-chevron-right"></i></span>
                 @endif
             </div>
         </div>

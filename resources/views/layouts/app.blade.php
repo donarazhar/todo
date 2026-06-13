@@ -770,6 +770,18 @@
         .page-link:hover { background: var(--border-100); }
         .page-item:first-child .page-link, .page-item:last-child .page-link { font-weight: bold; }
 
+        .pagination-mobile { display: none; margin-top: 16px; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-100); box-shadow: var(--shadow-sm); }
+        .pagination-mobile .page-info { font-size: 12px; font-weight: 700; color: var(--text-500); }
+        .pagination-mobile .page-nav-buttons { display: flex; gap: 8px; }
+        .pagination-mobile .page-nav-buttons a, .pagination-mobile .page-nav-buttons span { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11.5px; font-weight: 600; text-decoration: none; border: 1px solid var(--border-200); color: var(--text-700); background: var(--bg-white); transition: all var(--transition-fast); display: flex; align-items: center; gap: 4px; }
+        .pagination-mobile .page-nav-buttons a:hover { background: var(--border-100); }
+        .pagination-mobile .page-nav-buttons span.disabled { color: var(--text-400); background: var(--bg-app); cursor: not-allowed; border-color: var(--border-100); }
+        
+        @media (max-width: 768px) {
+            .pagination-mobile { display: flex; }
+            .desktop-pagination { display: none !important; }
+        }
+
         /* ============================
            SPLIT / GRID LAYOUTS
         ============================ */

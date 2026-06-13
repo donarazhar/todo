@@ -10,7 +10,7 @@ class KegiatanController extends Controller {
         return redirect()->back()->with('success', 'Kegiatan berhasil dihapus.'); 
     }
     public function index() {
-        $kegiatans = Kegiatan::with(['jenis', 'lokasi', 'creator'])->orderBy('waktu_mulai', 'asc')->paginate(15);
+        $kegiatans = Kegiatan::with(['jenis', 'lokasi', 'creator'])->orderBy('created_at', 'desc')->paginate(15);
         
         $jenis_kegiatans = \App\Models\JenisKegiatan::all();
         $unit_kerjas = \App\Models\UnitKerja::all();

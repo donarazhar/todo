@@ -7,6 +7,76 @@
 
 @push('styles')
 <style>
+    /* --- Wizard Styles --- */
+    .wizard-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        position: relative;
+    }
+    .wizard-header::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: var(--border-200);
+        z-index: 0;
+    }
+    .wizard-step-indicator {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+    }
+    .wizard-step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--bg-200);
+        color: var(--text-500);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        border: 2px solid var(--bg-200);
+        transition: all 0.3s ease;
+    }
+    .wizard-step-indicator.active .wizard-step-circle {
+        background: var(--primary-600);
+        color: white;
+        border-color: var(--primary-600);
+    }
+    .wizard-step-indicator.completed .wizard-step-circle {
+        background: var(--primary-500);
+        color: white;
+        border-color: var(--primary-500);
+    }
+    .wizard-step-title {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-500);
+        text-align: center;
+    }
+    .wizard-step-indicator.active .wizard-step-title {
+        color: var(--primary-600);
+    }
+    .wizard-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-100);
+    }
+    .wizard-body {
+        min-height: 200px;
+    }
+
     .admin-cards-mobile {
         display: none;
         flex-direction: column;
@@ -59,6 +129,7 @@
 @section('content')
 <div style="display: flex; flex-direction: column; gap: 24px;" x-data="{ 
             formOpen: false,
+            step: 1,
             allUsers: {{ json_encode($allUsers) }},
             createUnitId: '',
             editModalOpen: false, 
@@ -80,20 +151,36 @@
             }
         }">
     <div class="section-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" @click="formOpen = !formOpen">
+        <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" @click="formOpen = !formOpen; if(!formOpen) step = 1;">
             <h3 class="section-title" style="margin: 0;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Buat Kegiatan Baru</h3>
             <button type="button" class="btn btn-sm btn-secondary" x-text="formOpen ? 'Tutup Form ▴' : 'Buat Kegiatan ▾'"></button>
         </div>
         <form action="{{ route('kegiatan.store') }}" method="POST" x-show="formOpen" x-transition style="margin-top: 20px; display: none;">
             @csrf
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                <div>
+
+            <div class="wizard-header">
+                <div class="wizard-step-indicator" :class="{'active': step === 1, 'completed': step > 1}">
+                    <div class="wizard-step-circle">1</div>
+                    <div class="wizard-step-title">Info Dasar</div>
+                </div>
+                <div class="wizard-step-indicator" :class="{'active': step === 2, 'completed': step > 2}">
+                    <div class="wizard-step-circle">2</div>
+                    <div class="wizard-step-title">Waktu & Lokasi</div>
+                </div>
+                <div class="wizard-step-indicator" :class="{'active': step === 3}">
+                    <div class="wizard-step-circle">3</div>
+                    <div class="wizard-step-title">Peserta</div>
+                </div>
+            </div>
+
+            <div class="wizard-body">
+                <div class="step-1" x-show="step === 1" x-transition>
                     <div class="form-group">
                         <label>Nama Kegiatan</label>
                         <input type="text" name="nama_kegiatan" class="{{ $errors->has('nama_kegiatan') ? 'is-invalid' : '' }}" required>
                         @error('nama_kegiatan') <small class="text-error">{{ $message }}</small> @enderror
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-top:15px;">
                         <label>Jenis Kegiatan</label>
                         <select name="jenis_id" required>
                             @foreach($jenis_kegiatans as $jenis)
@@ -101,7 +188,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-top:15px;">
                         <label>Unit Pelaksana</label>
                         <select name="unit_id" required x-model="createUnitId">
                             <option value="" disabled selected>Pilih Unit Pelaksana</option>
@@ -110,6 +197,9 @@
                             @endforeach
                         </select>
                     </div>
+                </div>
+
+                <div class="step-2" x-show="step === 2" x-transition style="display:none;">
                     <div class="form-group">
                         <label>Lokasi</label>
                         <select name="lokasi_id" required>
@@ -118,22 +208,24 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
-                <div>
-                    <div class="form-group">
-                        <label>Waktu Mulai & Selesai</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <input type="datetime-local" name="waktu_mulai" required>
-                            <input type="datetime-local" name="waktu_selesai" required>
-                        </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Waktu Mulai</label>
+                        <input type="datetime-local" name="waktu_mulai" required>
                     </div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label>Waktu Selesai</label>
+                        <input type="datetime-local" name="waktu_selesai" required>
+                    </div>
+                </div>
+
+                <div class="step-3" x-show="step === 3" x-transition style="display:none;">
                     <div class="form-group">
                         <label>Pegawai & Pimpinan Terlibat</label>
-                        <div class="checkbox-list" style="height: 180px; max-height: 180px;">
+                        <div class="checkbox-list" style="height: 180px; max-height: 180px; overflow-y:auto; border:1px solid var(--border-300); border-radius:var(--radius-sm); padding:10px;">
                             <template x-for="u in filteredCreateUsers" :key="u.id">
-                                <label>
+                                <label style="display:block; margin-bottom:8px;">
                                     <input type="checkbox" name="user_ids[]" :value="u.id">
-                                    <span x-text="u.nama + ' (' + u.role + ')'"></span>
+                                    <span x-text="u.nama + ' (' + u.role + ')'" style="margin-left:5px;"></span>
                                 </label>
                             </template>
                             <template x-if="filteredCreateUsers.length === 0">
@@ -143,7 +235,27 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn" style="width:100%; margin-top: 10px;"><i class="bi bi-calendar-event"></i> Publikasikan Jadwal</button>
+
+            <div class="wizard-actions">
+                <div>
+                    <button type="button" class="btn btn-secondary" x-show="step > 1" @click="step--"><i class="bi bi-arrow-left"></i> Kembali</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" x-show="step < 3" @click="
+                        let currentStep = $el.closest('form').querySelector('.step-' + step);
+                        let inputs = currentStep.querySelectorAll('input[required], select[required], textarea[required]');
+                        let valid = true;
+                        inputs.forEach(i => {
+                            if(!i.checkValidity()) {
+                                i.reportValidity();
+                                valid = false;
+                            }
+                        });
+                        if(valid) step++;
+                    ">Lanjut <i class="bi bi-arrow-right"></i></button>
+                    <button type="submit" class="btn btn-success" x-show="step === 3"><i class="bi bi-calendar-event"></i> Publikasikan</button>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -155,6 +267,7 @@
             <table style="min-width: 800px;">
             <thead>
                 <tr>
+                    <th style="width: 5%;">No</th>
                     <th>Detail Kegiatan</th>
                     <th>Waktu Pelaksanaan</th>
                     <th>Peserta Terlibat</th>
@@ -165,6 +278,7 @@
             <tbody>
                 @foreach($kegiatans as $keg)
                 <tr>
+                    <td style="text-align: center; font-weight: 600; color: var(--text-500);">{{ $kegiatans->firstItem() + $loop->index }}</td>
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $keg->nama_kegiatan }}</div>
                         <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;"><i class="bi bi-building"></i> {{ $keg->unitKerja->nama_unit ?? '-' }}</div>
@@ -256,17 +370,17 @@
         
         {{-- Mobile Pagination --}}
         <div class="pagination-mobile">
-            <span class="page-info">Halaman {{ $kegiatans->currentPage() }} dari {{ $kegiatans->lastPage() }}</span>
+            <span class="page-info">Page {{ $kegiatans->currentPage() }} / {{ $kegiatans->lastPage() }}</span>
             <div class="page-nav-buttons">
                 @if($kegiatans->onFirstPage())
-                    <span class="disabled"><i class="bi bi-chevron-left"></i> Sebelumnya</span>
+                    <span class="disabled"><i class="bi bi-chevron-left"></i> Prev</span>
                 @else
-                    <a href="{{ $kegiatans->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Sebelumnya</a>
+                    <a href="{{ $kegiatans->previousPageUrl() }}"><i class="bi bi-chevron-left"></i> Prev</a>
                 @endif
                 @if($kegiatans->hasMorePages())
-                    <a href="{{ $kegiatans->nextPageUrl() }}">Selanjutnya <i class="bi bi-chevron-right"></i></a>
+                    <a href="{{ $kegiatans->nextPageUrl() }}">Next <i class="bi bi-chevron-right"></i></a>
                 @else
-                    <span class="disabled">Selanjutnya <i class="bi bi-chevron-right"></i></span>
+                    <span class="disabled">Next <i class="bi bi-chevron-right"></i></span>
                 @endif
             </div>
         </div>

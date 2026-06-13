@@ -20,15 +20,26 @@ class TaskController extends Controller {
         $descendantIds = $myUnit ? $myUnit->getAllDescendantIds() : [];
         $allUnitIds = array_merge([Auth::user()->unit_id], $descendantIds);
 
-        $pegawais = User::whereIn('unit_id', $allUnitIds)
-            ->where('id', '!=', Auth::id())
-            ->get();
+        if (optional($myUnit)->nama_unit === 'Sekretariat') {
+            // Kepala Sekretariat hanya bisa menugaskan Kabag (Pimpinan di child units langsung)
+            $childUnits = $myUnit->children()->pluck('id')->toArray();
+            $pegawais = User::whereIn('unit_id', $childUnits)
+                ->whereHas('role', function($q) {
+                    $q->where('nama_role', 'Pimpinan');
+                })
+                ->where('id', '!=', Auth::id())
+                ->get();
+        } else {
+            $pegawais = User::whereIn('unit_id', $allUnitIds)
+                ->where('id', '!=', Auth::id())
+                ->get();
+        }
         $pegawaiIds = $pegawais->pluck('id')->toArray();
 
         $query = Task::with(['assignee', 'creator', 'comments.user']);
 
         if ($tab === 'delegasi') {
-            $query->where('created_by', Auth::id());
+            $query->where('created_by', Auth::id())->where('sumber', 'Pimpinan');
         } elseif ($tab === 'masuk') {
             $query->where('assigned_to', Auth::id())->where('sumber', 'Pimpinan');
         } elseif ($tab === 'mandiri') {
@@ -50,7 +61,7 @@ class TaskController extends Controller {
             $query->where('prioritas', $request->prioritas);
         }
 
-        $tasks = $query->orderBy('tgl_mulai', 'desc')
+        $tasks = $query->orderBy('created_at', 'desc')
                        ->paginate(15)
                        ->appends($request->except('page'));
             
@@ -86,7 +97,7 @@ class TaskController extends Controller {
             $query->where('prioritas', request()->prioritas);
         }
 
-        $mandiriTasks = $query->orderBy('tgl_mulai', 'desc')
+        $mandiriTasks = $query->orderBy('created_at', 'desc')
                               ->paginate(15)
                               ->appends(request()->except('page'));
         
@@ -117,7 +128,7 @@ class TaskController extends Controller {
             $query->where('prioritas', $request->prioritas);
         }
 
-        $tasks = $query->orderBy('tgl_selesai', 'asc')
+        $tasks = $query->orderBy('created_at', 'desc')
                        ->paginate(15)
                        ->appends($request->except('page'));
 
@@ -230,7 +241,7 @@ class TaskController extends Controller {
                          ->where('sumber', $sumber);
             $title = $sumber === 'Pimpinan' ? "Laporan Tugas Delegasi Pimpinan" : "Laporan Tugas Mandiri";
         } elseif (Auth::user()->role->nama_role === 'Pimpinan') {
-            if ($sumber === 'Mandiri') {
+            if ($tab === 'bawahan_mandiri') {
                 $pegawais = User::whereHas('role', function($q) {
                     $q->where('nama_role', 'Pegawai');
                 })->where('unit_id', Auth::user()->unit_id)->pluck('id')->toArray();
@@ -239,9 +250,15 @@ class TaskController extends Controller {
                              ->where('sumber', 'Mandiri')
                              ->whereIn('assigned_to', $pegawais);
                 $title = "Laporan Tugas Mandiri Pegawai";
+            } elseif ($tab === 'mandiri') {
+                $query = Task::with(['assignee'])
+                             ->where('assigned_to', Auth::id())
+                             ->where('sumber', 'Mandiri');
+                $title = "Laporan Tugas Mandiri Pimpinan";
             } else {
                 $query = Task::with(['assignee'])
-                             ->where('created_by', Auth::id());
+                             ->where('created_by', Auth::id())
+                             ->where('sumber', 'Pimpinan');
                 $title = "Laporan Tugas Delegasi Pimpinan";
             }
         } else {
@@ -255,7 +272,7 @@ class TaskController extends Controller {
             $query->where('prioritas', $request->prioritas);
         }
 
-        $tasks = $query->orderBy('tgl_mulai', 'desc')->get();
+        $tasks = $query->orderBy('created_at', 'desc')->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.tasks_pdf', compact('tasks', 'title'));
         return $pdf->download('Laporan_Tugas_' . date('Y-m-d_Hi') . '.pdf');
