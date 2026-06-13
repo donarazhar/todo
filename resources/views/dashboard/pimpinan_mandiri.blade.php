@@ -284,7 +284,7 @@
                         <div>
                             @if($t->laporan)
                                 <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
-                                    <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                    <i class="bi bi-check2"></i> {{ $t->laporan }}
                                     @if($t->file_laporan)
                                         @php
                                             $ext = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
@@ -369,7 +369,7 @@
                     @if($t->laporan)
                         <div class="mandiri-card-report">
                             <div class="mandiri-card-report-text">
-                                <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
+                                <i class="bi bi-check2"></i> {{ $t->laporan }}
                             </div>
                             @if($t->file_laporan)
                                 @php

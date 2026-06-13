@@ -683,7 +683,7 @@
                                 {{-- VIEW AS CREATOR: Review laporan bawahan --}}
                                 @if($t->laporan)
                                     <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
-                                        <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                        <i class="bi bi-check2"></i> {{ $t->laporan }}
                                         @if($t->file_laporan)
                                             @php
                                                 $ext = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
@@ -711,7 +711,7 @@
                                 {{-- VIEW AS ASSIGNEE: Form submit laporan --}}
                                 @if($t->status === 'Selesai')
                                     <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
-                                        <i class="bi bi-check2"></i> Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
+                                        <i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}
                                         @if($t->file_laporan)
                                             @php
                                                 $ext2 = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
@@ -874,7 +874,7 @@
                         @if($t->laporan)
                             <div class="task-card-report">
                                 <div class="task-card-report-text">
-                                    <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
+                                    <i class="bi bi-check2"></i> {{ $t->laporan }}
                                 </div>
                                 @if($t->file_laporan)
                                             @php
@@ -904,7 +904,7 @@
                         {{-- Mobile VIEW AS ASSIGNEE --}}
                         @if($t->status === 'Selesai')
                             <div class="task-card-report">
-                                <div class="task-card-report-text"><i class="bi bi-check2"></i> Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                                <div class="task-card-report-text"><i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}</div>
                                 @if($t->file_laporan)
                                     @php
                                         $ext4 = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));

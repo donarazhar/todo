@@ -841,7 +841,7 @@
                 {{-- Laporan / Report Status --}}
                 @if($t->status === 'Selesai')
                     <div class="pgw-card-report-done">
-                        <div class="pgw-card-report-text done"><i class="bi bi-check2"></i> Terkirim: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                        <div class="pgw-card-report-text done"><i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}</div>
                         @if($t->file_laporan)
                             @php
                                 $ext3 = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
@@ -857,7 +857,7 @@
                 @elseif($t->status === 'Menunggu Review')
                     <div class="pgw-card-report-done">
                         <div class="pgw-card-report-text waiting"><i class="bi bi-hourglass-split"></i> Menunggu Review Pimpinan</div>
-                        <div class="pgw-card-report-sub">Laporan: {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}</div>
+                        <div class="pgw-card-report-sub">Laporan: {{ $t->laporan }}</div>
                         @if($t->file_laporan)
                             @php
                                 $ext4 = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
