@@ -459,11 +459,6 @@
         this.viewModalOpen = true;
     }
 }">
-        this.editId = id;
-        this.editData = data;
-        this.editModalOpen = true;
-    }
-}">
 
     {{-- ================================
          SECTION: TAB NAVIGATION
