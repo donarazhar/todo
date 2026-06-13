@@ -623,7 +623,13 @@
                     <td style="text-align: center; font-weight: 600; color: var(--text-500);">{{ $tasks->firstItem() + $loop->index }}</td>
                     <td>
                         <strong>{{ $t->judul }}</strong><br>
-                        <small style="color:var(--text-500);">{{ $t->deskripsi }}</small>
+                        @if($tab === 'pimpinan')
+                            <div style="font-size:11px; color:var(--primary-500); font-weight:600; margin-top:2px; margin-bottom:4px;">
+                                <span style="font-weight: 500; color: var(--text-500); font-size: 10px; text-transform:uppercase;">FROM:</span> <i class="bi bi-person" style="margin-left:2px;"></i> {{ $t->creator->nama ?? '-' }} 
+                                <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->creator->unitKerja->nama_unit ?? '-' }})</span>
+                            </div>
+                        @endif
+                        <small style="color:var(--text-500);">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</small>
                         <div style="margin-top: 4px;">
                             @php
                                 $prioClass = $t->prioritas === 'Tinggi' ? 'prio-tinggi' : ($t->prioritas === 'Rendah' ? 'prio-rendah' : 'prio-sedang');
@@ -732,30 +738,49 @@
     {{-- ======= MOBILE CARD VIEW ======= --}}
     <div class="pgw-cards-mobile">
         @forelse($tasks as $t)
-        <div class="pgw-card">
-            {{-- Card Header --}}
-            <div class="pgw-card-header">
-                <div class="pgw-card-title">{{ $t->judul }}</div>
-                @if($t->deskripsi)
-                    <div class="pgw-card-desc">{{ \Illuminate\Support\Str::limit($t->deskripsi, 120) }}</div>
+        <div class="pgw-card" x-data="{ expanded: false }" style="border-bottom: 1px solid var(--border-200); padding: 16px 0; border-radius: 0; border-left: none; border-right: none; border-top: none; background: transparent; box-shadow: none;">
+            {{-- Notification Header --}}
+            <div class="notification-header" @click="expanded = !expanded" style="display: flex; gap: 12px; cursor: pointer;">
+                @if($tab === 'pimpinan')
+                    <div style="flex-shrink: 0;">
+                        @if($t->creator && $t->creator->foto)
+                            <img src="{{ Storage::url($t->creator->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                        @else
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-800); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">
+                                {{ substr($t->creator->nama ?? '?', 0, 1) }}
+                            </div>
+                        @endif
+                    </div>
                 @endif
-                <div class="pgw-card-badges">
-                    @php
-                        $prioClass = $t->prioritas === 'Tinggi' ? 'prio-tinggi' : ($t->prioritas === 'Rendah' ? 'prio-rendah' : 'prio-sedang');
-                        $statusBg = 'bg-proses';
-                        if($t->status === 'Selesai') $statusBg = 'bg-selesai';
-                        elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
-                        elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
-                    @endphp
-                    <span class="prio-badge {{ $prioClass }}">{{ $t->prioritas }}</span>
-                    <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!}>
-                        {{ $t->status }}
-                    </span>
+                <div style="flex-grow: 1; min-width: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
+                        <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            @if($tab === 'pimpinan')
+                                <span style="font-weight: 500; color: var(--text-500); font-size: 12px;">From: </span>{{ $t->creator->nama ?? '-' }}
+                            @else
+                                {{ $t->judul }}
+                            @endif
+                        </strong>
+                        @php
+                            $statusBg = 'bg-proses';
+                            if($t->status === 'Selesai') $statusBg = 'bg-selesai';
+                            elseif($t->status === 'Menunggu Review') $statusBg = 'bg-proses';
+                            elseif($t->status === 'Revisi') $statusBg = 'bg-belum';
+                        @endphp
+                        <span class="badge {{ $statusBg }}" {!! $t->status === 'Revisi' ? 'style="background:#FEE2E2; color:#991B1B;"' : ($t->status === 'Menunggu Review' ? 'style="background:#DBEAFE; color:#1E40AF;"' : '') !!} style="font-size: 9px; padding: 2px 6px;">{{ $t->status }}</span>
+                    </div>
+                    <div style="color: var(--text-600); font-size: 13.5px; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
+                        @if($tab === 'pimpinan') <span style="font-weight: 600; color: var(--text-800);">{{ $t->judul }}</span> - @endif {{ $t->deskripsi }}
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-400);">
+                        {{ $t->created_at->diffForHumans() }}
+                    </div>
                 </div>
             </div>
 
-            {{-- Card Body --}}
-            <div class="pgw-card-body">
+            {{-- Expanded Card Body --}}
+            <div x-show="expanded" x-transition style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-200);">
+                <div class="pgw-card-body" style="padding: 0;">
                 {{-- Info Grid: Bobot, Deadline, Mulai --}}
                 <div class="pgw-card-info-grid">
                     <div class="pgw-card-info-item">
@@ -847,6 +872,7 @@
                     </form>
                     @endif
                 </div>
+            </div>
             </div>
         </div>
         @empty
