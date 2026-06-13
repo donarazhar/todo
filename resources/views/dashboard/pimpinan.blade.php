@@ -685,7 +685,16 @@
                                     <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
                                         <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
                                         @if($t->file_laporan)
-                                            <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                            @php
+                                                $ext = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
+                                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                            @endphp
+                                            <br>
+                                            @if($isImage)
+                                                <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-image"></i> Lihat Gambar</a>
+                                            @else
+                                                <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                            @endif
                                         @endif
                                     </div>
                                     @if($t->status === 'Menunggu Review')
