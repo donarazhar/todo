@@ -1431,9 +1431,6 @@
             .page-header-nav h2 {
                 font-size: 16px;
             }
-            .mobile-logout-btn {
-                display: flex !important;
-            }
         }
 
         /* ============================
@@ -1650,14 +1647,6 @@
                     <button @click="darkMode = !darkMode" class="btn btn-secondary" style="padding: 6px 10px; border-radius: var(--radius-full);" title="Toggle Dark Mode">
                         <i class="bi" :class="darkMode ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
                     </button>
-                    
-                    <!-- Mobile Logout Button (Right side) -->
-                    <button class="mobile-logout-btn btn btn-secondary" style="display: none; padding: 6px 10px; border-radius: var(--radius-full); color: #E53E3E; border: 1px solid rgba(229, 62, 62, 0.2);" title="Logout" onclick="event.preventDefault(); document.getElementById('logout-form-top').submit();">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </button>
-                    <form id="logout-form-top" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
 
                     <div class="role-indicator">
                         <div class="role-dot"></div>
