@@ -1714,6 +1714,13 @@
         <button type="button" class="b-nav-item" @click="sidebarOpen = true">
             <span class="icon"><i class="bi bi-grid-fill"></i></span><span class="label">Menu</span>
         </button>
+        
+        <a href="#" class="b-nav-item text-danger" onclick="event.preventDefault(); document.getElementById('logout-form-bottom').submit();">
+            <span class="icon"><i class="bi bi-box-arrow-right" style="color: #E53E3E;"></i></span><span class="label" style="color: #E53E3E;">Logout</span>
+        </a>
+        <form id="logout-form-bottom" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
     </nav>
     </div> <!-- END app-layout -->
 
