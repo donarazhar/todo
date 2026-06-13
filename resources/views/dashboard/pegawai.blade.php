@@ -625,7 +625,7 @@
                         <strong>{{ $t->judul }}</strong><br>
                         @if($tab === 'pimpinan')
                             <div style="font-size:11px; color:var(--primary-500); font-weight:600; margin-top:2px; margin-bottom:4px;">
-                                <span style="font-weight: 500; color: var(--text-500); font-size: 10px; text-transform:uppercase;">FROM:</span> <i class="bi bi-person" style="margin-left:2px;"></i> {{ $t->creator->nama ?? '-' }} 
+                                <span style="font-weight: 500; color: var(--text-500); font-size: 10.5px;">From:</span> <i class="bi bi-person" style="margin-left:2px;"></i> {{ $t->creator->nama ?? '-' }} 
                                 <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->creator->unitKerja->nama_unit ?? '-' }})</span>
                             </div>
                         @endif
