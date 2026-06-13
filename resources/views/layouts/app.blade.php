@@ -1405,8 +1405,9 @@
         /* MOBILE (< 768px) */
         @media(max-width: 768px) {
             .sidebar {
-                padding-bottom: 80px; /* Ensure bottom content clears the bottom nav */
-                z-index: 9999 !important;
+                bottom: calc(60px + env(safe-area-inset-bottom));
+                height: auto;
+                padding-bottom: 0;
             }
             .hamburger-btn {
                 display: none; /* Hide hamburger, use bottom nav */
