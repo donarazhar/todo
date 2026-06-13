@@ -199,6 +199,12 @@
     openViewModal(data) {
         this.viewData = data;
         this.viewModalOpen = true;
+    },
+    imageModalOpen: false,
+    imageModalSrc: '',
+    openImageModal(src) {
+        this.imageModalSrc = src;
+        this.imageModalOpen = true;
     }
 }">
     <div class="section-box">
@@ -280,7 +286,16 @@
                                 <div style="color:var(--teal-600); font-weight:600; font-size:11px; max-width:200px; white-space:normal;">
                                     <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 50) }}
                                     @if($t->file_laporan)
-                                        <br><a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                        @php
+                                            $ext = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
+                                            $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                        @endphp
+                                        <br>
+                                        @if($isImage)
+                                            <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-image"></i> Lihat Gambar</a>
+                                        @else
+                                            <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" style="font-size:11px; color:var(--primary-600); text-decoration:none;"><i class="bi bi-file-earmark-text"></i> Lihat Lampiran</a>
+                                        @endif
                                     @endif
                                 </div>
                             @else
@@ -357,9 +372,19 @@
                                 <i class="bi bi-check2"></i> {{ \Illuminate\Support\Str::limit($t->laporan, 80) }}
                             </div>
                             @if($t->file_laporan)
-                                <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="mandiri-card-report-link">
-                                    <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
-                                </a>
+                                @php
+                                    $ext2 = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
+                                    $isImage2 = in_array($ext2, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                @endphp
+                                @if($isImage2)
+                                    <a href="#" @click.prevent="openImageModal('{{ asset('storage/' . $t->file_laporan) }}')" class="mandiri-card-report-link">
+                                        <i class="bi bi-image"></i> Lihat Gambar
+                                    </a>
+                                @else
+                                    <a href="{{ asset('storage/' . $t->file_laporan) }}" target="_blank" class="mandiri-card-report-link">
+                                        <i class="bi bi-file-earmark-text"></i> Lihat Lampiran
+                                    </a>
+                                @endif
                             @endif
                         </div>
                     @else
@@ -467,6 +492,16 @@
                     <button type="button" class="btn btn-secondary" @click="viewModalOpen = false">Tutup Laporan</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ============================
+         IMAGE MODAL (ALPINE JS)
+    ============================ -->
+    <div class="modal-overlay" :class="{ 'show': imageModalOpen }" x-show="imageModalOpen" style="display: none; background: rgba(0,0,0,0.8); z-index: 9999; padding: 20px; align-items: center !important;" x-transition>
+        <div @click.away="imageModalOpen = false" style="position: relative; max-width: 100%; max-height: 100%; display: flex; justify-content: center; align-items: center;">
+            <button type="button" @click="imageModalOpen = false" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 32px; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">&times;</button>
+            <img :src="imageModalSrc" style="max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain;">
         </div>
     </div>
 </div>
