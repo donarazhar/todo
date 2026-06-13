@@ -234,7 +234,7 @@
         line-height: 1.5;
     }
     .pgw-card-report-text.done {
-        color: var(--teal-600);
+        color: var(--text-600);
     }
     .pgw-card-report-text.waiting {
         color: #1E40AF;
@@ -674,7 +674,7 @@
                     <td>
                         @if($t->status === 'Selesai')
                             <div style="margin-bottom: 8px;">
-                                <span style="color:var(--teal-600); font-weight:600; font-size:12px;"><i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}</span>
+                                <span style="color:var(--text-600); font-weight:600; font-size:12px;"><i class="bi bi-check2"></i> Terkirim: {{ $t->laporan }}</span>
                                 @if($t->file_laporan)
                                     @php
                                         $ext = strtolower(pathinfo($t->file_laporan, PATHINFO_EXTENSION));
