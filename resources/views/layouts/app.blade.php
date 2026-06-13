@@ -1407,12 +1407,6 @@
             .hamburger-btn {
                 display: none; /* Hide hamburger, use bottom nav */
             }
-            .mobile-sidebar-user {
-                display: flex !important;
-            }
-            .desktop-sidebar-user {
-                display: none !important;
-            }
             /* Sidebar works identically to tablet view by inheriting from max-width: 1024px */
             .bottom-nav {
                 display: flex;
@@ -1551,18 +1545,6 @@
                     </div>
                 </div>
                 
-                <div class="sidebar-user mobile-sidebar-user" style="display: none; margin-top: 0; border-top: none; border-bottom: 1px solid var(--border-200); padding-top: 0;">
-                    @if(Auth::user()->foto)
-                        <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300); flex-shrink: 0;">
-                    @else
-                        <div class="user-avatar" id="avatar-initial">{{ substr(Auth::user()->nama, 0, 1) }}</div>
-                    @endif
-                    <div class="user-info">
-                        <h4 id="user-display-name">{{ Auth::user()->nama }}</h4>
-                        <span id="user-display-role">{{ Auth::user()->role->nama_role }}</span>
-                    </div>
-                </div>
-                
                                 <div class="sidebar-menu">
                     <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <span class="menu-icon"><i class="bi {{ request()->routeIs('dashboard') ? 'bi-house-fill' : 'bi-house' }}"></i></span>
@@ -1632,8 +1614,8 @@
                 </div>
             </div>
 
-            <!-- DESKTOP / TABLET SIDEBAR USER (Bottom) -->
-            <div class="sidebar-user desktop-sidebar-user">
+            <!-- DESKTOP / TABLET / MOBILE SIDEBAR USER (Bottom) -->
+            <div class="sidebar-user">
                 @if(Auth::user()->foto)
                     <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300); flex-shrink: 0;">
                 @else
