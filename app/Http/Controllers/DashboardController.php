@@ -11,8 +11,8 @@ class DashboardController extends Controller {
         $user = Auth::user();
         $role = $user->role->nama_role;
 
-        $kegiatans = Kegiatan::with('lokasi')->orderBy('waktu_mulai', 'asc')->get();
-        $totalKegiatan = $kegiatans->count();
+        $totalKegiatan = Kegiatan::count();
+        $kegiatans = Kegiatan::with('lokasi')->orderBy('waktu_mulai', 'asc')->paginate(5);
 
         // Tasks query based on role
         if ($role === 'Admin') {

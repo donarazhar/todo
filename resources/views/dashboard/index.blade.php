@@ -263,55 +263,58 @@
         text-decoration: none;
     }
     
-    .horizontal-scroll {
+    .vertical-list-kegiatan {
         display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
+        flex-direction: column;
         gap: 16px;
         padding: 0 20px 24px 20px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-    .horizontal-scroll::-webkit-scrollbar {
-        display: none;
     }
     
     .h-card {
-        min-width: 280px;
         background: var(--bg-white);
         border-radius: var(--radius-lg);
         border: 1px solid var(--border-100);
-        scroll-snap-align: start;
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        flex-direction: row;
+        align-items: center;
+        padding: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        transition: transform 0.2s;
+    }
+    .h-card:hover {
+        transform: translateY(-2px);
     }
     .h-card-img {
-        height: 120px;
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-md);
         background: linear-gradient(135deg, #10B981 0%, #047857 100%);
-        position: relative;
         display: flex;
-        align-items: flex-end;
-        padding: 12px;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .h-card-img i {
+        font-size: 28px;
+        color: rgba(255,255,255,0.8);
     }
     .h-card-img.alt-1 { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); }
     .h-card-img.alt-2 { background: linear-gradient(135deg, #F59E0B 0%, #B45309 100%); }
     
-    .h-card-img .h-badge {
-        background: rgba(0,0,0,0.3);
-        backdrop-filter: blur(4px);
-        color: white;
+    .h-badge {
+        background: var(--primary-50);
+        color: var(--primary-700);
         padding: 4px 8px;
         border-radius: 4px;
         font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
-        position: absolute;
-        top: 12px; left: 12px;
+        display: inline-block;
+        margin-bottom: 4px;
     }
     .h-card-content {
-        padding: 16px;
+        padding: 0 16px;
+        flex: 1;
     }
     .h-subtitle {
         font-size: 11px;
@@ -530,28 +533,36 @@
         <h3>Recommended for You</h3>
         <a href="{{ route('monitoring.index') }}" class="see-all">See All Agenda</a>
     </div>
-    <div class="horizontal-scroll">
+    <div class="vertical-list-kegiatan">
         @if(count($kegiatans) > 0)
-            @foreach($kegiatans->take(4) as $index => $keg)
+            @foreach($kegiatans as $index => $keg)
                 @php
                     $colors = ['alt-1', 'alt-2', '', 'alt-1'];
                     $colorClass = $colors[$index % 4];
                 @endphp
                 <div class="h-card">
                     <div class="h-card-img {{ $colorClass }}">
-                        <div class="h-badge">{{ $keg->status }}</div>
-                        <i class="bi bi-calendar-event" style="font-size: 40px; color: rgba(255,255,255,0.4); position: absolute; right: 16px; bottom: 16px;"></i>
+                        <i class="bi bi-calendar-event"></i>
                     </div>
                     <div class="h-card-content">
-                        <div class="h-subtitle">{{ $keg->waktu_mulai->format('d M Y') }}</div>
-                        <div class="h-title">{{ \Illuminate\Support\Str::limit($keg->nama_kegiatan, 25) }}</div>
-                        <div class="h-desc"><i class="bi bi-geo-alt"></i> {{ \Illuminate\Support\Str::limit($keg->lokasi->nama_lokasi ?? 'Lokasi belum diatur', 30) }}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="h-subtitle">{{ $keg->waktu_mulai->format('d M Y') }}</div>
+                            <div class="h-badge">{{ $keg->status }}</div>
+                        </div>
+                        <div class="h-title">{{ $keg->nama_kegiatan }}</div>
+                        <div class="h-desc"><i class="bi bi-geo-alt"></i> {{ $keg->lokasi->nama_lokasi ?? 'Lokasi belum diatur' }}</div>
                     </div>
                 </div>
             @endforeach
+            
+            <div style="margin-top: 16px;">
+                {{ $kegiatans->links() }}
+            </div>
         @else
             <div class="h-card">
-                <div class="h-card-img"></div>
+                <div class="h-card-img">
+                    <i class="bi bi-info-circle"></i>
+                </div>
                 <div class="h-card-content">
                     <div class="h-subtitle">Info</div>
                     <div class="h-title">Belum ada kegiatan</div>
