@@ -624,8 +624,11 @@
                     <td>
                         <div style="font-weight:700; color:var(--text-900); font-size:13.5px; margin-bottom:4px;">{{ $t->judul }}</div>
                         <div style="font-size:11.5px; color:var(--primary-500); font-weight:600; margin-bottom:2px;">
-                            <i class="bi bi-person"></i> {{ $t->assignee->nama ?? '-' }} 
-                            <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $t->assignee->unitKerja->nama_unit ?? '-' }})</span>
+                            @php
+                                $person = $tab === 'masuk' ? $t->creator : $t->assignee;
+                            @endphp
+                            <i class="bi bi-person"></i> {{ $person->nama ?? '-' }} 
+                            <span style="font-size:10px; color:var(--text-400); font-weight:500;">({{ $person->unitKerja->nama_unit ?? '-' }})</span>
                             &nbsp;&bull;&nbsp; Bobot: {{ $t->bobot }}
                         </div>
                         <div style="font-size:11.5px; color:var(--text-500); margin-bottom: 6px;">{{ \Illuminate\Support\Str::limit($t->deskripsi, 60) }}</div>
@@ -761,18 +764,21 @@
             <div class="task-card" x-data="{ expanded: false }" style="border-bottom: 1px solid var(--border-200); padding: 16px 0; border-radius: 0; border-left: none; border-right: none; border-top: none; background: transparent;">
                 {{-- Notification Header (Clickable) --}}
                 <div class="notification-header" @click="expanded = !expanded" style="display: flex; gap: 12px; cursor: pointer;">
+                    @php
+                        $person = $tab === 'masuk' ? $t->creator : $t->assignee;
+                    @endphp
                     <div style="flex-shrink: 0;">
-                        @if($t->assignee && $t->assignee->foto)
-                            <img src="{{ Storage::url($t->assignee->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                        @if($person && $person->foto)
+                            <img src="{{ Storage::url($person->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
                         @else
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-800); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">
-                                {{ substr($t->assignee->nama ?? '?', 0, 1) }}
+                                {{ substr($person->nama ?? '?', 0, 1) }}
                             </div>
                         @endif
                     </div>
                     <div style="flex-grow: 1; min-width: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
-                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $t->assignee->nama ?? '-' }}</strong>
+                            <strong style="color: var(--text-900); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $person->nama ?? '-' }}</strong>
                             @php
                                 $statusBg = 'bg-proses';
                                 if($t->status === 'Selesai') $statusBg = 'bg-selesai';
