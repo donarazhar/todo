@@ -319,8 +319,75 @@
                 </h2>
                 <div class="badge" style="background: #D1FAE5; color: #047857;">Total: {{ $kegiatans->count() }} Kegiatan</div>
             </div>
-            <div class="panel-body">
-                <table style="table-layout: fixed; width: 100%;">
+            <div class="panel-body" style="display: flex; flex-direction: column; gap: 24px; padding: 24px;">
+                
+                <!-- KALENDER GRID -->
+                <div>
+                    <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--text-900);">Kalender {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</h3>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center;">
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Sen</div>
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Sel</div>
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Rab</div>
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Kam</div>
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Jum</div>
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Sab</div>
+                        <div style="font-weight: 700; color: var(--text-500); font-size: 12px; padding-bottom: 8px;">Min</div>
+                        
+                        @php
+                            $now = \Carbon\Carbon::now();
+                            $startOfMonth = $now->copy()->startOfMonth();
+                            $daysInMonth = $now->daysInMonth;
+                            $startDayOfWeek = $startOfMonth->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
+                            
+                            $kegiatanMap = [];
+                            foreach($kegiatans as $keg) {
+                                $date = $keg->waktu_mulai->format('Y-m-d');
+                                if(!isset($kegiatanMap[$date])) $kegiatanMap[$date] = [];
+                                $kegiatanMap[$date][] = $keg;
+                            }
+                        @endphp
+                        
+                        @for ($i = 1; $i < $startDayOfWeek; $i++)
+                            <div style="background: var(--bg-app); border-radius: 8px; min-height: 80px;"></div>
+                        @endfor
+                        
+                        @for ($day = 1; $day <= $daysInMonth; $day++)
+                            @php
+                                $currentDate = $now->copy()->day($day);
+                                $dateStr = $currentDate->format('Y-m-d');
+                                $isToday = $dateStr === \Carbon\Carbon::today()->format('Y-m-d');
+                                $events = $kegiatanMap[$dateStr] ?? [];
+                            @endphp
+                            <div style="background: {{ $isToday ? 'var(--primary-50)' : '#fff' }}; border: 1px solid {{ $isToday ? 'var(--primary-200)' : 'var(--border-200)' }}; border-radius: 8px; min-height: 80px; padding: 8px; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                                <div style="font-weight: {{ $isToday ? '800' : '600' }}; color: {{ $isToday ? 'var(--primary-700)' : 'var(--text-900)' }}; font-size: 14px;">{{ $day }}</div>
+                                @foreach($events as $event)
+                                    @php
+                                        $bg = '#F1F5F9'; $color = '#475569';
+                                        if ($event->status == 'Selesai') { $bg = '#ECFDF5'; $color = '#047857'; }
+                                        elseif ($event->status == 'Berlangsung') { $bg = '#FEF3C7'; $color = '#92400E'; }
+                                    @endphp
+                                    <div style="background: {{ $bg }}; color: {{ $color }}; font-size: 10px; font-weight: 600; padding: 4px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $event->nama_kegiatan }}">
+                                        {{ $event->nama_kegiatan }}
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endfor
+                        
+                        @php
+                            $totalCells = ($startDayOfWeek - 1) + $daysInMonth;
+                            $remainingInRow = 7 - ($totalCells % 7);
+                            if ($remainingInRow == 7) $remainingInRow = 0;
+                        @endphp
+                        @for ($i = 0; $i < $remainingInRow; $i++)
+                            <div style="background: var(--bg-app); border-radius: 8px; min-height: 80px;"></div>
+                        @endfor
+                    </div>
+                </div>
+
+                <!-- DAFTAR AGENDA TERDEKAT -->
+                <div>
+                    <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--text-900);">Daftar Agenda Terdekat</h3>
+                    <table style="table-layout: fixed; width: 100%;">
                     <thead>
                         <tr>
                             <th style="width: 45%;">Nama Kegiatan & Lokasi</th>
@@ -361,6 +428,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </section>
 

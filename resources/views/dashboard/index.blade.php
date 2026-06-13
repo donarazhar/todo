@@ -1,761 +1,590 @@
 @extends('layouts.app')
 
+@section('page_title')
+    <!-- No page title needed here since we have a hero banner -->
+@endsection
+
 @push('styles')
 <style>
-    /* ============================
-       DASHBOARD ENHANCEMENTS
-    ============================ */
-    .dashboard-header {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 32px;
-        animation: fadeInDown 0.6s ease-out forwards;
+    /* Reset & Base Dashboard Layout */
+    .content-body {
+        padding: 0 !important; /* Remove padding from content-body for full width banner */
+        background: var(--bg-app);
     }
     
-    .dashboard-header h2 {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--text-900);
-        letter-spacing: -0.03em;
-        line-height: 1.2;
-    }
-    
-    .dashboard-header p {
-        font-size: 15px;
-        color: var(--text-500);
-        max-width: 600px;
-        line-height: 1.6;
+    .dashboard-container {
+        padding-bottom: 80px;
     }
 
-    /* Enhanced Stat Cards */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 24px;
-        margin-bottom: 32px;
-    }
-    
-    .stat-card-premium {
-        border-radius: var(--radius-xl);
-        padding: 24px;
-        color: white;
+    /* ============================
+       HERO BANNER
+    ============================ */
+    .hero-banner {
+        background: linear-gradient(135deg, #0B2545 0%, #133E7C 100%);
+        padding: 40px 24px 70px 24px;
         position: relative;
         overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 160px;
-        box-shadow: var(--shadow-md);
-        animation: fadeInUp 0.6s ease-out both;
+        border-bottom-left-radius: 32px;
+        border-bottom-right-radius: 32px;
     }
-    
-    .stats-grid .stat-card-premium:nth-child(1) { animation-delay: 0.1s; }
-    .stats-grid .stat-card-premium:nth-child(2) { animation-delay: 0.2s; }
-    .stats-grid .stat-card-premium:nth-child(3) { animation-delay: 0.3s; }
-    .stats-grid .stat-card-premium:nth-child(4) { animation-delay: 0.4s; }
 
-    .stat-card-premium:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: var(--shadow-xl);
-    }
-    
-    .stat-card-premium::before {
+    /* Abstract Pattern Background */
+    .hero-banner::before {
         content: '';
         position: absolute;
-        top: -30px;
-        right: -30px;
-        width: 120px;
-        height: 120px;
+        top: -50px; right: -50px;
+        width: 250px; height: 250px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
-        transition: transform 0.6s ease;
+    }
+    .hero-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -80px; left: -20px;
+        width: 200px; height: 200px;
+        border: 2px solid rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+    .hero-abstract-shape {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        width: 150px;
+        height: 150px;
+        background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="80" height="80" rx="15" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4" transform="rotate(45 50 50)"/><circle cx="50" cy="50" r="20" fill="rgba(255,255,255,0.05)"/></svg>') no-repeat center;
+        background-size: contain;
+        opacity: 0.8;
+        pointer-events: none;
     }
 
-    .stat-card-premium:hover::before {
-        transform: scale(1.2);
+    .hero-text {
+        position: relative;
+        z-index: 2;
+    }
+    .hero-text h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 4px;
+        letter-spacing: -0.02em;
+    }
+    .hero-text p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
     }
 
-    .stat-card-premium .stat-icon-wrap {
-        width: 48px;
-        height: 48px;
-        border-radius: var(--radius-md);
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(8px);
+    /* Search Bar Overlapping */
+    .search-wrapper {
+        margin: -25px 24px 24px 24px;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        border-radius: var(--radius-full);
+    }
+    .search-input {
+        width: 100%;
+        padding: 16px 20px 16px 48px;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 14px;
+        color: var(--text-800);
+        background: var(--bg-white);
+        outline: none;
+    }
+    .search-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-400);
+        font-size: 18px;
+    }
+
+    /* ============================
+       ICON GRID
+    ============================ */
+    .icon-grid-container {
+        padding: 0 16px;
+        margin-bottom: 24px;
+    }
+    .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px 8px;
+    }
+    .icon-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        gap: 8px;
+        transition: transform 0.2s ease;
+    }
+    .icon-item:hover {
+        transform: translateY(-2px);
+    }
+    .icon-circle {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        margin-bottom: 16px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        font-size: 22px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     }
-
-    .stat-card-premium h3 {
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        opacity: 0.9;
-        margin-bottom: 4px;
+    .icon-item span {
+        font-size: 11px;
         font-weight: 600;
+        color: var(--text-700);
+        text-align: center;
+        line-height: 1.2;
     }
 
-    .stat-card-premium .value {
-        font-size: 36px;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1;
-        margin-bottom: 4px;
+    /* Icon colors */
+    .bg-blue-soft { background: #E0E7FF; color: #4338CA; }
+    .bg-green-soft { background: #DCFCE7; color: #15803D; }
+    .bg-amber-soft { background: #FEF3C7; color: #B45309; }
+    .bg-purple-soft { background: #F3E8FF; color: #7E22CE; }
+    .bg-rose-soft { background: #FFE4E6; color: #BE123C; }
+    .bg-teal-soft { background: #CCFBF1; color: #0F766E; }
+
+    /* ============================
+       STATUS CARD (JakOne style)
+    ============================ */
+    .status-card-wrapper {
+        padding: 0 20px;
+        margin-bottom: 32px;
     }
-
-    .sc-blue-premium { background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); }
-    .sc-amber-premium { background: linear-gradient(135deg, #B45309 0%, #F59E0B 100%); }
-    .sc-teal-premium { background: linear-gradient(135deg, #0F766E 0%, #10B981 100%); }
-    .sc-purple-premium { background: linear-gradient(135deg, #5B21B6 0%, #8B5CF6 100%); }
-
-    /* Enhanced Section Boxes */
-    .split-container-premium {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr;
-        gap: 32px;
-        animation: fadeInUp 0.8s ease-out 0.5s both;
-    }
-
-    .section-box-premium {
+    .status-card {
         background: var(--bg-white);
-        border-radius: var(--radius-xl);
-        padding: 32px;
-        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
-        border: 1px solid rgba(0,0,0,0.02);
-        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid var(--border-100);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    .status-info {
         display: flex;
         flex-direction: column;
+        gap: 4px;
+    }
+    .status-title {
+        font-size: 12px;
+        color: var(--text-500);
+        font-weight: 600;
+    }
+    .status-value {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--text-900);
+    }
+    .status-btn {
+        background: #F3F4F6;
+        color: #111827;
+        border: none;
+        padding: 8px 16px;
+        border-radius: var(--radius-full);
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .status-btn:hover {
+        background: #E5E7EB;
     }
 
-    .section-box-premium:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
-    }
-
-    .section-title-premium {
+    /* ============================
+       EXPLORE BY CATEGORY (2x2 Grid)
+    ============================ */
+    .section-title {
         font-size: 18px;
         font-weight: 800;
         color: var(--text-900);
+        margin: 0 20px 16px 20px;
+        letter-spacing: -0.01em;
+    }
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 0 20px;
+        margin-bottom: 32px;
+    }
+    .cat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-100);
+        border-radius: var(--radius-md);
+        padding: 16px;
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid var(--border-100);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
-
-    .section-title-premium .icon-bg {
-        width: 36px;
-        height: 36px;
-        background: var(--primary-50);
-        border-radius: var(--radius-md);
+    .cat-icon {
+        font-size: 20px;
+    }
+    .cat-text {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        color: var(--primary-600);
+        flex-direction: column;
     }
-
-    /* Enhanced Progress Bars */
-    .progress-item {
-        background: var(--bg-app);
-        padding: 16px;
-        border-radius: var(--radius-lg);
-        margin-bottom: 16px;
-        border: 1px solid var(--border-100);
-        transition: all 0.3s ease;
+    .cat-title {
+        font-size: 12px;
+        color: var(--text-500);
+        font-weight: 500;
     }
-
-    .progress-item:hover {
-        background: var(--bg-white);
-        border-color: var(--primary-200);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .progress-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-
-    .progress-user {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .progress-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: var(--gradient-primary);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .progress-name {
-        font-size: 14px;
-        font-weight: 700;
+    .cat-val {
+        font-size: 16px;
+        font-weight: 800;
         color: var(--text-800);
     }
 
-    .progress-stats {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-500);
+    /* ============================
+       RECOMMENDED FOR YOU (Horizontal)
+    ============================ */
+    .section-header-flex {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 8px;
+        margin: 0 20px 12px 20px;
     }
-
-    .progress-badge {
-        padding: 4px 8px;
-        border-radius: var(--radius-md);
-        font-size: 12px;
-        font-weight: 700;
+    .section-header-flex h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text-900);
+        margin: 0;
     }
-
-    .pb-teal { background: var(--teal-50); color: var(--teal-700); }
-    .pb-blue { background: var(--primary-50); color: var(--primary-700); }
-    .pb-amber { background: #FEF3C7; color: #92400E; }
-
-    .progress-bar-premium {
-        height: 10px;
-        background: var(--border-200);
-        border-radius: var(--radius-full);
-        overflow: hidden;
-        position: relative;
-    }
-
-    .progress-fill-premium {
-        height: 100%;
-        border-radius: var(--radius-full);
-        position: relative;
-        width: 0; /* Will be set via inline style */
-        transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .see-all {
+        font-size: 13px;
+        color: var(--primary-600);
+        font-weight: 600;
+        text-decoration: none;
     }
     
-    .progress-fill-premium::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-        animation: shimmer 2s infinite;
-    }
-
-    /* Enhanced Table */
-    .table-responsive {
+    .horizontal-scroll {
+        display: flex;
         overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding: 0 20px 24px 20px;
         -webkit-overflow-scrolling: touch;
-        margin: 0 -32px;
-        padding: 0 32px;
+        scrollbar-width: none;
     }
-
-    .table-premium {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 8px;
-        margin-top: -8px;
+    .horizontal-scroll::-webkit-scrollbar {
+        display: none;
     }
-
-    .table-premium th {
-        background: transparent;
-        color: var(--text-500);
-        font-size: 12px;
+    
+    .h-card {
+        min-width: 280px;
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-100);
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .h-card-img {
+        height: 120px;
+        background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        padding: 12px;
+    }
+    .h-card-img.alt-1 { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); }
+    .h-card-img.alt-2 { background: linear-gradient(135deg, #F59E0B 0%, #B45309 100%); }
+    
+    .h-card-img .h-badge {
+        background: rgba(0,0,0,0.3);
+        backdrop-filter: blur(4px);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 12px 16px;
-        border: none;
-        border-bottom: 2px solid var(--border-200);
+        position: absolute;
+        top: 12px; left: 12px;
     }
-
-    .table-premium td {
-        background: var(--bg-white);
+    .h-card-content {
         padding: 16px;
-        font-size: 14px;
-        color: var(--text-700);
-        border-top: 1px solid var(--border-100);
-        border-bottom: 1px solid var(--border-100);
-        transition: background 0.3s ease;
     }
-
-    .table-premium td:first-child {
-        border-left: 1px solid var(--border-100);
-        border-top-left-radius: var(--radius-lg);
-        border-bottom-left-radius: var(--radius-lg);
-    }
-
-    .table-premium td:last-child {
-        border-right: 1px solid var(--border-100);
-        border-top-right-radius: var(--radius-lg);
-        border-bottom-right-radius: var(--radius-lg);
-    }
-
-    .table-premium tr {
-        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .table-premium tr:hover td {
-        background: var(--primary-50);
-        cursor: pointer;
-    }
-    
-    .table-premium tr:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .keg-name {
-        font-weight: 700;
-        color: var(--text-900);
+    .h-subtitle {
+        font-size: 11px;
+        color: var(--text-400);
+        text-transform: uppercase;
+        font-weight: 600;
         margin-bottom: 4px;
-        display: block;
     }
-
-    .keg-loc {
+    .h-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-900);
+        margin-bottom: 8px;
+    }
+    .h-desc {
         font-size: 12px;
         color: var(--text-500);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .badge-premium {
-        padding: 6px 12px;
-        border-radius: var(--radius-full);
-        font-size: 12px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .badge-premium::before {
-        content: '';
-        width: 6px; height: 6px;
-        border-radius: 50%;
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+        line-height: 1.4;
     }
 
     /* ============================
-       RESPONSIVE BREAKPOINTS
+       VERTICAL STACK (Leaderboard/Tasks)
     ============================ */
-    @media (max-width: 1200px) {
-        .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        .split-container-premium { grid-template-columns: 1fr; }
+    .vertical-stack {
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
-
-    @media (max-width: 768px) {
-        .dashboard-header h2 { font-size: 24px; }
-        .dashboard-header p { font-size: 14px; }
-        
-        /* 2x2 Grid for Mobile (Clean & Professional) */
-        .stats-grid { 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px;
-        }
-        
-        .stat-card-premium {
-            min-height: auto;
-            padding: 16px;
-            flex-direction: column;
-            align-items: flex-start;
-            border-radius: var(--radius-lg);
-        }
-        
-        .stat-card-premium .stat-icon-wrap {
-            width: 36px;
-            height: 36px;
-            font-size: 18px;
-            margin-bottom: 12px;
-            margin-right: 0;
-            border-radius: var(--radius-sm);
-        }
-
-        .stat-card-premium .value {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        .stat-card-premium h3 {
-            font-size: 10px;
-            line-height: 1.3;
-        }
-        
-        .stat-card-premium::before {
-            top: -30px; right: -20px;
-            width: 80px; height: 80px;
-        }
-        
-        .split-container-premium {
-            gap: 24px;
-        }
-        
-        .section-box-premium {
-            padding: 20px;
-            border-radius: var(--radius-lg);
-        }
-        
-        .table-responsive {
-            margin: 0 -20px;
-            padding: 0 20px;
-        }
-        
-        .table-premium td {
-            font-size: 13px;
-            padding: 12px 10px;
-        }
+    .v-card {
+        display: flex;
+        background: var(--bg-white);
+        border: 1px solid var(--border-100);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
+    .v-img {
+        width: 100px;
+        background: var(--primary-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: var(--primary-500);
+    }
+    .v-img.teal { background: #CCFBF1; color: #0D9488; }
+    .v-img.amber { background: #FEF3C7; color: #D97706; }
     
-    @media (max-width: 480px) {
-        .progress-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
+    .v-content {
+        padding: 16px;
+        flex: 1;
+    }
+    .v-subtitle {
+        font-size: 11px;
+        color: var(--text-500);
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    .v-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--text-900);
+        margin-bottom: 6px;
+    }
+    .v-desc {
+        font-size: 12px;
+        color: var(--text-600);
+        line-height: 1.4;
+    }
+
+    /* Desktop Adjustments */
+    @media(min-width: 768px) {
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
-        
-        /* Mobile Card View for Tables */
-        .table-premium thead {
-            display: none;
+        .hero-banner {
+            border-radius: var(--radius-xl);
+            margin: 20px;
         }
-        .table-premium tbody tr {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 12px;
-            border: 1px solid var(--border-200);
-            border-radius: var(--radius-lg);
-            padding: 12px;
-            background: var(--bg-white);
+        .icon-grid {
+            grid-template-columns: repeat(8, 1fr);
         }
-        .table-premium tbody td {
-            border: none !important;
-            padding: 6px 0 !important;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .table-premium tbody td:first-child {
-            flex-direction: column;
-            align-items: flex-start;
-            border-bottom: 1px solid var(--border-100) !important;
-            padding-bottom: 10px !important;
-            margin-bottom: 6px;
-            border-radius: 0;
-        }
-        .table-premium tbody td::before {
-            content: attr(data-label);
-            font-weight: 700;
-            font-size: 11px;
-            color: var(--text-500);
-            text-transform: uppercase;
-        }
-        .table-premium tbody td:first-child::before {
-            display: none;
+        .category-grid {
+            grid-template-columns: repeat(4, 1fr);
         }
     }
 </style>
 @endpush
 
 @section('content')
-<div class="dashboard-header">
-    <h2>Dashboard Overview</h2>
-    @if(Auth::user()->role->nama_role === 'Admin')
-        <p>Ringkasan performa dan jadwal kegiatan seluruh divisi secara real-time.</p>
-    @elseif(Auth::user()->role->nama_role === 'Pimpinan')
-        <p>Ringkasan performa unit kerja dan progres penyelesaian tugas pegawai Anda.</p>
-    @else
-        <p>Ringkasan progres kerja dan to-do list pribadi Anda.</p>
-    @endif
-</div>
+<div class="dashboard-container">
+    
+    <!-- HERO BANNER -->
+    <div class="hero-banner">
+        <div class="hero-abstract-shape"></div>
+        <div class="hero-text">
+            <h1>Hello, {{ Auth::user()->nama }}!</h1>
+            <p>Welcome to your {{ Auth::user()->role->nama_role }} Dashboard</p>
+        </div>
+    </div>
 
-<div class="stats-grid">
-    <div class="stat-card-premium sc-blue-premium">
-        <div class="stat-icon-wrap"><i class="bi bi-calendar-event"></i></div>
-        <div>
-            <div class="value">{{ $totalKegiatan }}</div>
-            <h3>Total Kegiatan</h3>
-        </div>
+    <!-- SEARCH BAR -->
+    <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" class="search-input" placeholder="Looking for features or tasks?">
     </div>
-    
-    <div class="stat-card-premium sc-amber-premium">
-        <div class="stat-icon-wrap"><i class="bi bi-hourglass-split"></i></div>
-        <div>
-            <div class="value">{{ $tugasBerlangsung }}</div>
-            <h3>Tugas Berlangsung</h3>
-        </div>
-    </div>
-    
-    <div class="stat-card-premium sc-teal-premium">
-        <div class="stat-icon-wrap"><i class="bi bi-check-circle"></i></div>
-        <div>
-            <div class="value">{{ $tugasSelesai }}</div>
-            <h3>Tugas Selesai</h3>
-        </div>
-    </div>
-    
-    <div class="stat-card-premium sc-purple-premium">
-        <div class="stat-icon-wrap"><i class="bi bi-lightning-charge"></i></div>
-        <div>
-            <div class="value">{{ $efisiensi }}%</div>
-            <h3>Efisiensi Kerja</h3>
-        </div>
-    </div>
-</div>
 
-<div class="split-container-premium">
-    @if(Auth::user()->role->nama_role !== 'Pegawai')
-    <div class="section-box-premium">
-        <h3 class="section-title-premium">
-            <div class="icon-bg"><i class="bi bi-graph-up"></i></div>
-            Progress Kerja Pegawai
-        </h3>
-        
-        <div>
-            @if(count($pegawaiProgress) > 0)
-                @foreach($pegawaiProgress as $prog)
-                <div class="progress-item">
-                    <div class="progress-header">
-                        <div class="progress-user">
-                            <div class="progress-avatar">{{ substr($prog['nama'], 0, 1) }}</div>
-                            <span class="progress-name">{{ $prog['nama'] }}</span>
-                        </div>
-                        <div class="progress-stats">
-                            <span>{{ $prog['bobotSelesai'] }}/{{ $prog['totalBobot'] }}</span>
-                            @php 
-                                $badgeClass = $prog['persen'] >= 80 ? 'pb-teal' : ($prog['persen'] >= 40 ? 'pb-blue' : 'pb-amber'); 
-                                $fillClass = $prog['persen'] >= 80 ? 'sc-teal-premium' : ($prog['persen'] >= 40 ? 'sc-blue-premium' : 'sc-amber-premium');
-                            @endphp
-                            <span class="progress-badge {{ $badgeClass }}">{{ $prog['persen'] }}%</span>
-                        </div>
-                    </div>
-                    <div class="progress-bar-premium">
-                        <!-- Added inline style for immediate rendering, but with transition -->
-                        <div class="progress-fill-premium {{ $fillClass }}" style="width: {{ $prog['persen'] }}%"></div>
-                    </div>
-                </div>
-                @endforeach
-            @else
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="bi bi-people"></i></div>
-                    <p>Belum ada data progres kerja pegawai saat ini.</p>
-                </div>
+    <!-- ICON GRID -->
+    <div class="icon-grid-container">
+        <div class="icon-grid">
+            <!-- Global Home -->
+            <a href="{{ route('dashboard') }}" class="icon-item">
+                <div class="icon-circle bg-blue-soft"><i class="bi bi-house-door"></i></div>
+                <span>Home</span>
+            </a>
+
+            @if(Auth::user()->role->nama_role === 'Admin')
+                <a href="{{ route('master.index') }}" class="icon-item">
+                    <div class="icon-circle bg-amber-soft"><i class="bi bi-database"></i></div>
+                    <span>Master</span>
+                </a>
+                <a href="{{ route('kegiatan.index') }}" class="icon-item">
+                    <div class="icon-circle bg-teal-soft"><i class="bi bi-calendar-check"></i></div>
+                    <span>Jadwal</span>
+                </a>
+                <a href="{{ route('monitoring.index') }}" class="icon-item">
+                    <div class="icon-circle bg-purple-soft"><i class="bi bi-display"></i></div>
+                    <span>Monitoring</span>
+                </a>
+                <a href="{{ route('docs.erd') }}" class="icon-item">
+                    <div class="icon-circle bg-rose-soft"><i class="bi bi-diagram-3"></i></div>
+                    <span>ERD Docs</span>
+                </a>
+                <a href="{{ route('docs.alur') }}" class="icon-item">
+                    <div class="icon-circle bg-green-soft"><i class="bi bi-bezier2"></i></div>
+                    <span>App Flow</span>
+                </a>
+            @elseif(Auth::user()->role->nama_role === 'Pimpinan')
+                <a href="{{ route('pimpinan.tasks') }}" class="icon-item">
+                    <div class="icon-circle bg-amber-soft"><i class="bi bi-send"></i></div>
+                    <span>Delegasi</span>
+                </a>
+                <a href="{{ route('pimpinan.mandiri') }}" class="icon-item">
+                    <div class="icon-circle bg-green-soft"><i class="bi bi-check-circle"></i></div>
+                    <span>Mandiri</span>
+                </a>
+                <a href="{{ route('monitoring.index') }}" class="icon-item">
+                    <div class="icon-circle bg-purple-soft"><i class="bi bi-display"></i></div>
+                    <span>Monitoring</span>
+                </a>
+            @elseif(Auth::user()->role->nama_role === 'Pegawai')
+                <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="icon-item">
+                    <div class="icon-circle bg-amber-soft"><i class="bi bi-inbox"></i></div>
+                    <span>Delegasi</span>
+                </a>
+                <a href="{{ route('pegawai.tasks', ['tab' => 'mandiri']) }}" class="icon-item">
+                    <div class="icon-circle bg-green-soft"><i class="bi bi-check-circle"></i></div>
+                    <span>Mandiri</span>
+                </a>
+                <a href="{{ route('monitoring.index') }}" class="icon-item">
+                    <div class="icon-circle bg-purple-soft"><i class="bi bi-display"></i></div>
+                    <span>Monitoring</span>
+                </a>
             @endif
         </div>
     </div>
-    @endif
 
-    <div class="section-box-premium" style="{{ Auth::user()->role->nama_role === 'Pegawai' ? 'grid-column: 1 / -1;' : '' }}">
-        <h3 class="section-title-premium">
-            <div class="icon-bg"><i class="bi bi-calendar-week"></i></div>
-            Jadwal Kegiatan Terdekat
-        </h3>
-        
-        <div class="table-responsive">
-            @if(count($kegiatans) > 0)
-                <table class="table-premium">
-                    <thead>
-                        <tr>
-                            <th>Informasi Kegiatan</th>
-                            <th>Waktu Pelaksanaan</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($kegiatans as $keg)
-                        <tr>
-                            <td data-label="Kegiatan">
-                                <span class="keg-name">{{ $keg->nama_kegiatan }}</span>
-                                <span class="keg-loc"><i class="bi bi-geo-alt-fill"></i> {{ $keg->lokasi->nama_lokasi ?? 'Lokasi Belum Ditentukan' }}</span>
-                            </td>
-                            <td data-label="Waktu">
-                                <span style="font-weight: 600; color: var(--text-800);">{{ $keg->waktu_mulai->format('d M Y') }}</span><br>
-                                <span style="font-size: 13px; color: var(--text-500);">{{ $keg->waktu_mulai->format('H:i') }} WIB</span>
-                            </td>
-                            <td data-label="Status">
-                                @php
-                                    $statusClass = $keg->status == 'Selesai' ? 'bg-selesai' : ($keg->status == 'Berlangsung' ? 'bg-proses' : 'bg-belum');
-                                @endphp
-                                <span class="badge-premium {{ $statusClass }}">
-                                    {{ $keg->status }}
-                                </span>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="bi bi-calendar-event"></i></div>
-                    <p>Tidak ada jadwal kegiatan dalam waktu dekat.</p>
-                </div>
-            @endif
+    <!-- STATUS CARD -->
+    <div class="status-card-wrapper">
+        <div class="status-card">
+            <div class="status-info">
+                <span class="status-title">Work Efficiency</span>
+                <span class="status-value">{{ $efisiensi }}% Completed</span>
+            </div>
+            <a href="#" class="status-btn">View Stats</a>
         </div>
     </div>
-</div>
 
-<!-- KALENDER INTEGRASI -->
-<div class="section-box-premium" style="margin-top: 32px;">
-    <div class="section-title-premium" style="margin-bottom: 16px;">
-        <div class="icon-bg"><i class="bi bi-calendar-week"></i></div>
-        Kalender {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}
+    <!-- EXPLORE BY CATEGORY (STATS) -->
+    <h3 class="section-title">Explore Analytics</h3>
+    <div class="category-grid">
+        <div class="cat-card">
+            <div class="cat-icon" style="color: #3B82F6;"><i class="bi bi-calendar2-event"></i></div>
+            <div class="cat-text">
+                <span class="cat-val">{{ $totalKegiatan }}</span>
+                <span class="cat-title">Kegiatan</span>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-icon" style="color: #F59E0B;"><i class="bi bi-hourglass-split"></i></div>
+            <div class="cat-text">
+                <span class="cat-val">{{ $tugasBerlangsung }}</span>
+                <span class="cat-title">Berlangsung</span>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-icon" style="color: #10B981;"><i class="bi bi-check-circle"></i></div>
+            <div class="cat-text">
+                <span class="cat-val">{{ $tugasSelesai }}</span>
+                <span class="cat-title">Selesai</span>
+            </div>
+        </div>
+        <div class="cat-card">
+            <div class="cat-icon" style="color: #8B5CF6;"><i class="bi bi-lightning-charge"></i></div>
+            <div class="cat-text">
+                <span class="cat-val">{{ count($pegawaiProgress ?? []) }}</span>
+                <span class="cat-title">Pegawai Aktif</span>
+            </div>
+        </div>
     </div>
-    <div class="calendar-wrapper">
-        <div class="calendar-grid" id="calendar-grid">
-            <div class="calendar-day-head">Sen</div>
-            <div class="calendar-day-head">Sel</div>
-            <div class="calendar-day-head">Rab</div>
-            <div class="calendar-day-head">Kam</div>
-            <div class="calendar-day-head">Jum</div>
-            <div class="calendar-day-head">Sab</div>
-            <div class="calendar-day-head">Min</div>
-            
-            @php
-                $now = \Carbon\Carbon::now();
-                $startOfMonth = $now->copy()->startOfMonth();
-                $daysInMonth = $now->daysInMonth;
-                $startDayOfWeek = $startOfMonth->dayOfWeekIso; // 1 (Mon) - 7 (Sun)
-                
-                $kegiatanMap = [];
-                foreach($kegiatans as $keg) {
-                    $date = $keg->waktu_mulai->format('Y-m-d');
-                    if(!isset($kegiatanMap[$date])) $kegiatanMap[$date] = [];
-                    $kegiatanMap[$date][] = $keg;
-                }
-            @endphp
-            
-            {{-- Empty cells before start of month --}}
-            @for ($i = 1; $i < $startDayOfWeek; $i++)
-                <div class="calendar-cell empty"></div>
-            @endfor
-            
-            {{-- Days of the month --}}
-            @for ($day = 1; $day <= $daysInMonth; $day++)
+
+    <!-- RECOMMENDED FOR YOU (UPCOMING EVENTS) -->
+    <div class="section-header-flex">
+        <h3>Recommended for You</h3>
+        <a href="{{ route('monitoring.index') }}" class="see-all">See All Agenda</a>
+    </div>
+    <div class="horizontal-scroll">
+        @if(count($kegiatans) > 0)
+            @foreach($kegiatans->take(4) as $index => $keg)
                 @php
-                    $currentDate = $now->copy()->day($day);
-                    $dateStr = $currentDate->format('Y-m-d');
-                    $isToday = $dateStr === \Carbon\Carbon::today()->format('Y-m-d');
-                    $events = $kegiatanMap[$dateStr] ?? [];
+                    $colors = ['alt-1', 'alt-2', '', 'alt-1'];
+                    $colorClass = $colors[$index % 4];
                 @endphp
-                <div class="calendar-cell {{ $isToday ? 'today' : '' }}">
-                    <div class="day-num">{{ $day }}</div>
-                    @foreach($events as $event)
-                        @php
-                            $status = $event->status;
-                            $eventClass = '';
-                            if ($status == 'Selesai') $eventClass = 'teal';
-                            elseif ($status == 'Berlangsung') $eventClass = 'amber';
-                        @endphp
-                        <div class="calendar-event {{ $eventClass }}" title="{{ $event->nama_kegiatan }}">
-                            {{ $event->nama_kegiatan }}
-                        </div>
-                    @endforeach
-                </div>
-            @endfor
-            
-            {{-- Empty cells after end of month --}}
-            @php
-                $totalCells = ($startDayOfWeek - 1) + $daysInMonth;
-                $remainingInRow = 7 - ($totalCells % 7);
-                if ($remainingInRow == 7) $remainingInRow = 0;
-            @endphp
-            @for ($i = 0; $i < $remainingInRow; $i++)
-                <div class="calendar-cell empty"></div>
-            @endfor
-        </div>
-
-        {{-- ======= MOBILE AGENDA VIEW (hidden on desktop) ======= --}}
-        <div class="calendar-agenda-mobile">
-            @php
-                $hasEvents = false;
-                for ($day = 1; $day <= $daysInMonth; $day++) {
-                    $currentDate = $now->copy()->day($day);
-                    $dateStr = $currentDate->format('Y-m-d');
-                    if (isset($kegiatanMap[$dateStr]) && count($kegiatanMap[$dateStr]) > 0) {
-                        $hasEvents = true;
-                        break;
-                    }
-                }
-            @endphp
-            
-            @if($hasEvents)
-                @for ($day = 1; $day <= $daysInMonth; $day++)
-                    @php
-                        $currentDate = $now->copy()->day($day);
-                        $dateStr = $currentDate->format('Y-m-d');
-                        $isToday = $dateStr === \Carbon\Carbon::today()->format('Y-m-d');
-                        $events = $kegiatanMap[$dateStr] ?? [];
-                    @endphp
-                    @if(count($events) > 0)
-                    <div class="agenda-item">
-                        <div class="agenda-date {{ $isToday ? 'today' : '' }}">
-                            <div class="day">{{ $day }}</div>
-                            <div class="month">{{ $currentDate->translatedFormat('M') }}</div>
-                        </div>
-                        <div class="agenda-events">
-                            @foreach($events as $event)
-                                @php
-                                    $eventClass = '';
-                                    if ($event->status == 'Selesai') $eventClass = 'teal';
-                                    elseif ($event->status == 'Berlangsung') $eventClass = 'amber';
-                                @endphp
-                                <div class="agenda-event-item {{ $eventClass }}">
-                                    <i class="bi bi-calendar-event" style="margin-right:4px"></i> {{ $event->nama_kegiatan }}
-                                </div>
-                            @endforeach
-                        </div>
+                <div class="h-card">
+                    <div class="h-card-img {{ $colorClass }}">
+                        <div class="h-badge">{{ $keg->status }}</div>
+                        <i class="bi bi-calendar-event" style="font-size: 40px; color: rgba(255,255,255,0.4); position: absolute; right: 16px; bottom: 16px;"></i>
                     </div>
-                    @endif
-                @endfor
-            @else
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="bi bi-calendar-event"></i></div>
-                    <p>Tidak ada kegiatan bulan ini.</p>
+                    <div class="h-card-content">
+                        <div class="h-subtitle">{{ $keg->waktu_mulai->format('d M Y') }}</div>
+                        <div class="h-title">{{ \Illuminate\Support\Str::limit($keg->nama_kegiatan, 25) }}</div>
+                        <div class="h-desc"><i class="bi bi-geo-alt"></i> {{ \Illuminate\Support\Str::limit($keg->lokasi->nama_lokasi ?? 'Lokasi belum diatur', 30) }}</div>
+                    </div>
                 </div>
-            @endif
-        </div>
+            @endforeach
+        @else
+            <div class="h-card">
+                <div class="h-card-img"></div>
+                <div class="h-card-content">
+                    <div class="h-subtitle">Info</div>
+                    <div class="h-title">Belum ada kegiatan</div>
+                    <div class="h-desc">Saat ini tidak ada kegiatan terjadwal di sistem.</div>
+                </div>
+            </div>
+        @endif
     </div>
+
+    <!-- VERTICAL STACK (LEADERBOARD) -->
+    @if(Auth::user()->role->nama_role !== 'Pegawai' && count($pegawaiProgress) > 0)
+    <div class="section-header-flex" style="margin-top: 16px;">
+        <h3>Leaderboard Pegawai</h3>
+    </div>
+    <div class="vertical-stack">
+        @foreach(collect($pegawaiProgress)->sortByDesc('persen')->take(3) as $index => $prog)
+            @php
+                $colors = ['teal', 'amber', ''];
+                $colorClass = $colors[$index % 3];
+            @endphp
+            <div class="v-card">
+                <div class="v-img {{ $colorClass }}">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="v-content">
+                    <div class="v-subtitle">Peringkat {{ $index + 1 }}</div>
+                    <div class="v-title">{{ $prog['nama'] }}</div>
+                    <div class="v-desc">Penyelesaian: {{ $prog['bobotSelesai'] }}/{{ $prog['totalBobot'] }} ({{ $prog['persen'] }}%)</div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    @endif
+
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add subtle entrance animation for progress bars
-        const fills = document.querySelectorAll('.progress-fill-premium');
-        fills.forEach(fill => {
-            const targetWidth = fill.style.width;
-            fill.style.width = '0';
-            setTimeout(() => {
-                fill.style.width = targetWidth;
-            }, 300);
-        });
-    });
-</script>
-@endpush
