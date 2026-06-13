@@ -714,7 +714,7 @@
                         @endif
 
                         <div style="display:flex; gap:5px; align-items: center; white-space: nowrap;">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">{!! $tab === 'pimpinan' ? '👁️ Detail' : '<i class="bi bi-pencil"></i> Edit' !!}</button>
+                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">{!! $tab === 'pimpinan' ? '👁️ View' : '<i class="bi bi-pencil"></i> Edit' !!}</button>
                             
                             @if($tab === 'mandiri')
                             <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
@@ -868,7 +868,7 @@
                     <span style="color:var(--text-400); font-size:11px;">{{ $t->tgl_mulai->format('d/m/Y') }} — {{ $t->tgl_selesai->format('d/m/Y') }}</span>
                 @endif
                 <div class="pgw-card-actions">
-                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">{!! $tab === 'pimpinan' ? '👁️ Detail' : '<i class="bi bi-pencil"></i> Edit' !!}</button>
+                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal({{ $t->id }}, {{ \Illuminate\Support\Js::from(['judul' => $t->judul, 'deskripsi' => $t->deskripsi, 'prioritas' => $t->prioritas, 'bobot' => $t->bobot, 'tgl_mulai' => $t->tgl_mulai->format('Y-m-d'), 'tgl_selesai' => $t->tgl_selesai->format('Y-m-d'), 'assigned_to' => $t->assigned_to]) }})">{!! $tab === 'pimpinan' ? '👁️ View' : '<i class="bi bi-pencil"></i> Edit' !!}</button>
                     @if($tab === 'mandiri')
                     <form action="{{ route('tasks.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus tugas mandiri ini?');" style="margin: 0;">
                         @csrf @method('DELETE')
@@ -916,7 +916,7 @@
 <div class="modal-overlay" :class="{ 'show': editModalOpen }" x-show="editModalOpen" style="display: none;" x-transition>
     <div class="modal-box" @click.away="editModalOpen = false">
         <div class="modal-header">
-            <h3>{!! $tab === 'pimpinan' ? '👁️ Detail Tugas' : '<i class="bi bi-pencil"></i> Edit Tugas' !!}</h3>
+            <h3>{!! $tab === 'pimpinan' ? '👁️ View Tugas' : '<i class="bi bi-pencil"></i> Edit Tugas' !!}</h3>
             <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
         </div>
         <form :action="'{{ url('/tasks') }}/' + editId" method="POST">
