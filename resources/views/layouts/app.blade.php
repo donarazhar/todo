@@ -1430,6 +1430,9 @@
             .mobile-user-profile {
                 display: flex !important;
             }
+            .mobile-logout-btn {
+                display: flex !important;
+            }
         }
 
         /* ============================
@@ -1633,26 +1636,37 @@
             <!-- TOP NAVBAR -->
             <div class="top-navbar">
                 <button class="hamburger-btn" @click="sidebarOpen = true"><i class="bi bi-list"></i></button>
+                
+                <!-- MOBILE USER PROFILE (Left side on mobile) -->
+                <div class="mobile-user-profile" style="display: none; align-items: center; gap: 8px;">
+                    @if(Auth::user()->foto)
+                        <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300);">
+                    @else
+                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; background: var(--gradient-primary); color: white; border-radius: 50%; font-weight: bold;">{{ substr(Auth::user()->nama, 0, 1) }}</div>
+                    @endif
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-900); line-height: 1.2;">{{ explode(' ', Auth::user()->nama)[0] }}</span>
+                        <span style="font-size: 10px; color: var(--primary-600); font-weight: 600;">{{ Auth::user()->role->nama_role }}</span>
+                    </div>
+                </div>
+
                 <div class="page-header-nav">
                     @yield('page_title')
                 </div>
+                
                 <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
-                    <!-- MOBILE USER PROFILE -->
-                    <div class="mobile-user-profile" style="display: none; align-items: center; gap: 8px;">
-                        @if(Auth::user()->foto)
-                            <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300);">
-                        @else
-                            <div class="user-avatar" style="width: 32px; height: 32px; font-size: 14px; margin-bottom: 0; display: flex; align-items: center; justify-content: center; background: var(--gradient-primary); color: white; border-radius: 50%; font-weight: bold;">{{ substr(Auth::user()->nama, 0, 1) }}</div>
-                        @endif
-                        <div style="display: flex; flex-direction: column;">
-                            <span style="font-size: 12px; font-weight: 700; color: var(--text-900); line-height: 1.2;">{{ explode(' ', Auth::user()->nama)[0] }}</span>
-                            <span style="font-size: 10px; color: var(--primary-600); font-weight: 600;">{{ Auth::user()->role->nama_role }}</span>
-                        </div>
-                    </div>
-
                     <button @click="darkMode = !darkMode" class="btn btn-secondary" style="padding: 6px 10px; border-radius: var(--radius-full);" title="Toggle Dark Mode">
                         <i class="bi" :class="darkMode ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
                     </button>
+                    
+                    <!-- Mobile Logout Button (Right side) -->
+                    <button class="mobile-logout-btn btn btn-secondary" style="display: none; padding: 6px 10px; border-radius: var(--radius-full); color: #E53E3E; border: 1px solid rgba(229, 62, 62, 0.2);" title="Logout" onclick="event.preventDefault(); document.getElementById('logout-form-top').submit();">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                    <form id="logout-form-top" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+
                     <div class="role-indicator">
                         <div class="role-dot"></div>
                         Akses: <span id="current-role-txt">{{ Auth::user()->role->nama_role }}</span>
@@ -1714,13 +1728,6 @@
         <button type="button" class="b-nav-item" @click="sidebarOpen = true">
             <span class="icon"><i class="bi bi-grid-fill"></i></span><span class="label">Menu</span>
         </button>
-        
-        <a href="#" class="b-nav-item text-danger" onclick="event.preventDefault(); document.getElementById('logout-form-bottom').submit();">
-            <span class="icon"><i class="bi bi-box-arrow-right" style="color: #E53E3E;"></i></span><span class="label" style="color: #E53E3E;">Logout</span>
-        </a>
-        <form id="logout-form-bottom" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
     </nav>
     </div> <!-- END app-layout -->
 
