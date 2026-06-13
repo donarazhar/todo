@@ -1407,12 +1407,7 @@
             .hamburger-btn {
                 display: none; /* Hide hamburger, use bottom nav */
             }
-            .sidebar {
-                display: none !important; /* Completely hide sidebar */
-            }
-            .sidebar-backdrop {
-                display: none !important;
-            }
+            /* Sidebar works identically to tablet view by inheriting from max-width: 1024px */
             .bottom-nav {
                 display: flex;
             }
@@ -1717,12 +1712,9 @@
             </a>
         @endif
         
-        <form method="POST" action="{{ route('logout') }}" style="display:contents;">
-            @csrf
-            <button type="submit" class="b-nav-item">
-                <span class="icon"><i class="bi bi-box-arrow-right"></i></span><span class="label">Logout</span>
-            </button>
-        </form>
+        <button type="button" class="b-nav-item" @click="sidebarOpen = true">
+            <span class="icon"><i class="bi bi-grid-fill"></i></span><span class="label">Menu</span>
+        </button>
     </nav>
 
     <!-- TOAST NOTIFICATION -->
