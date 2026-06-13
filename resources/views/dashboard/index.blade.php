@@ -13,7 +13,8 @@
     }
     
     .dashboard-container {
-        padding-bottom: 80px;
+        padding-bottom: 120px;
+        min-height: 100vh;
     }
 
     /* ============================
