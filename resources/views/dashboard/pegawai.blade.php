@@ -430,8 +430,8 @@
         /* Modal fullscreen on mobile */
         .modal-box {
             max-width: 100% !important;
-            margin: 12px;
-            max-height: 90vh;
+            margin: 12px 12px 80px 12px;
+            max-height: calc(100vh - 100px);
             overflow-y: auto;
             border-radius: var(--radius-lg) !important;
         }
