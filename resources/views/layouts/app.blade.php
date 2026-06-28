@@ -1584,7 +1584,7 @@
                     </div>
                     @endif
 
-                    @if(Auth::user()->role->nama_role === 'Pegawai')
+                    @if(Auth::user()->role->nama_role === 'Pegawai' || Auth::user()->role->nama_role === 'Admin')
                     <div class="pegawai-feature">
                         <div class="menu-section-title">Fitur Pegawai</div>
                         <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="menu-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
@@ -1694,7 +1694,7 @@
             </a>
         @endif
         
-        @if(Auth::user()->role->nama_role === 'Pegawai')
+        @if(Auth::user()->role->nama_role === 'Pegawai' || Auth::user()->role->nama_role === 'Admin')
             <a href="{{ route('pegawai.tasks', ['tab' => 'pimpinan']) }}" class="b-nav-item {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'active' : '' }}">
                 <span class="icon"><i class="bi {{ request()->routeIs('pegawai.tasks') && request('tab', 'pimpinan') === 'pimpinan' ? 'bi-person-badge-fill' : 'bi-person-badge' }}"></i>
                     @if(isset($notifPegawai) && $notifPegawai > 0)

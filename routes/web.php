@@ -64,8 +64,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pimpinan/mandiri', [TaskController::class, 'pimpinanMandiriTasks'])->name('pimpinan.mandiri');
     });
 
-    // Pegawai Only
-    Route::middleware(['role:Pegawai'])->group(function () {
+    // Pegawai Only (Admin can also access as superadmin)
+    Route::middleware(['role:Pegawai,Admin'])->group(function () {
         Route::get('/pegawai/tasks', [TaskController::class, 'pegawaiTasks'])->name('pegawai.tasks');
     });
     
