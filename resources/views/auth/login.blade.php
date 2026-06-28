@@ -91,6 +91,7 @@
             font-weight: 800;
             letter-spacing: -0.5px;
             color: var(--primary-color);
+            text-align: center;
         }
 
         .welcome-title {
@@ -206,7 +207,10 @@
         <div class="header">
             <div class="logo-container">
                 <img src="{{ asset('logo-alazhar.png') }}" alt="YPI Al Azhar Logo" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain;">
-                <div class="logo-text">Al Azhar Task<span style="color: #9ca3af; font-weight: 500; margin: 0 2px;">&</span><span style="color: #2563eb;">Schedule System</span></div>
+                <div class="logo-text">
+                    Al Azhar Task<span style="color: #9ca3af; font-weight: 500; margin: 0 4px;">&</span><br>
+                    <span style="color: #2563eb;">Schedule System</span>
+                </div>
             </div>
 
             <p class="welcome-subtitle" style="margin-top: -12px;">Kelola tugas dan jadwal organisasi Anda dengan lebih mudah dan cepat!</p>
