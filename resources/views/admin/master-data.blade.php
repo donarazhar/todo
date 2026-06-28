@@ -4,7 +4,15 @@
 <div class="page-header">
     <div>
         <h2>Pengelolaan Master Data</h2>
-        <p>Kelola data unit kerja, pegawai, lokasi kegiatan, dan jenis kegiatan</p>
+        <p>Kelola data lokasi kegiatan dan jenis kegiatan</p>
+    </div>
+</div>
+
+<div class="alert alert-info" style="margin-bottom: 24px; padding: 16px; background-color: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 4px; display: flex; gap: 12px; align-items: flex-start;">
+    <i class="bi bi-info-circle-fill" style="color: #3b82f6; font-size: 1.25rem;"></i>
+    <div>
+        <h4 style="margin: 0 0 4px 0; color: #1e3a8a; font-size: 14px; font-weight: 700;">Informasi Sistem</h4>
+        <p style="margin: 0; color: #1e3a8a; font-size: 13px;">Data <strong>Pegawai</strong> dan <strong>Unit Kerja</strong> kini dikelola secara terpusat melalui SSO <strong>PresensiGPS</strong>. Anda tidak perlu lagi menambah atau mengubah data pegawai di sini.</p>
     </div>
 </div>
 
@@ -143,8 +151,6 @@
     @endpush
     <!-- Tab Master Data -->
     <div class="tabs-bar desktop-tabs">
-        <button class="tab-btn" :class="{ 'active': tab === 'unit' }" @click="tab = 'unit'">Unit Kerja</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'pegawai' }" @click="tab = 'pegawai'">Pegawai & Pimpinan</button>
         <button class="tab-btn" :class="{ 'active': tab === 'lokasi' }" @click="tab = 'lokasi'">Lokasi Kegiatan</button>
         <button class="tab-btn" :class="{ 'active': tab === 'jenis' }" @click="tab = 'jenis'">Jenis Kegiatan</button>
     </div>
@@ -153,259 +159,17 @@
     <div class="mobile-tabs-dropdown" @click.away="mobileTabOpen = false">
         <button type="button" class="mobile-tab-toggle" @click="mobileTabOpen = !mobileTabOpen">
             <span x-text="
-                tab === 'unit' ? 'Unit Kerja' :
-                tab === 'pegawai' ? 'Pegawai & Pimpinan' :
                 tab === 'lokasi' ? 'Lokasi Kegiatan' : 'Jenis Kegiatan'
             "></span>
             <i class="bi bi-chevron-down" :class="{ 'rotated': mobileTabOpen }"></i>
         </button>
         <div class="mobile-tab-menu" x-show="mobileTabOpen" x-transition.opacity style="display: none;">
-            <button class="mobile-tab-btn" :class="{ 'active': tab === 'unit' }" @click="tab = 'unit'; mobileTabOpen = false">Unit Kerja</button>
-            <button class="mobile-tab-btn" :class="{ 'active': tab === 'pegawai' }" @click="tab = 'pegawai'; mobileTabOpen = false">Pegawai & Pimpinan</button>
             <button class="mobile-tab-btn" :class="{ 'active': tab === 'lokasi' }" @click="tab = 'lokasi'; mobileTabOpen = false">Lokasi Kegiatan</button>
             <button class="mobile-tab-btn" :class="{ 'active': tab === 'jenis' }" @click="tab = 'jenis'; mobileTabOpen = false">Jenis Kegiatan</button>
         </div>
     </div>
 
-    <!-- Tab: Unit Kerja -->
-    <div class="tab-content" :class="{ 'active': tab === 'unit' }" x-show="tab === 'unit'">
-        <div class="split-container">
-            <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Unit Kerja</h3>
-                <form action="{{ route('master.unit.store') }}" method="POST">
-                    @csrf
-                    <div class="form-group">
-                        <label>Nama Unit Kerja</label>
-                        <input type="text" name="nama_unit" class="{{ $errors->has('nama_unit') ? 'is-invalid' : '' }}" placeholder="Contoh: Divisi Perencanaan" required>
-                        @error('nama_unit') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Kode Unit</label>
-                        <input type="text" name="kode_unit" class="{{ $errors->has('kode_unit') ? 'is-invalid' : '' }}" placeholder="Contoh: UNIT-REN" required>
-                        @error('kode_unit') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Induk Unit Kerja (Opsional)</label>
-                        <select name="parent_id" class="{{ $errors->has('parent_id') ? 'is-invalid' : '' }}">
-                            <option value="">— Tidak Ada Induk (Level Tertinggi) —</option>
-                            @foreach($allUnits as $u)
-                                <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
-                            @endforeach
-                        </select>
-                        @error('parent_id') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Kepala Unit</label>
-                        <select name="kepala_unit_id" class="{{ $errors->has('kepala_unit_id') ? 'is-invalid' : '' }}">
-                            <option value="">— Pilih Pimpinan (Opsional) —</option>
-                            @foreach($allUsers->where('role.nama_role', 'Pimpinan') as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                            @endforeach
-                        </select>
-                        @error('kepala_unit_id') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <button type="submit" class="btn" style="width:100%;">Simpan Unit Kerja</button>
-                </form>
-            </div>
-            <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-card-checklist"></i></span> Daftar Unit Kerja</h3>
-                <div class="master-table-wrap" style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Informasi Unit</th><th>Hierarki & Pimpinan</th><th>Aksi</th></tr>
-                        </thead>
-                        <tbody>
-                            @foreach($units as $unit)
-                            <tr>
-                                <td>{{ $unit->id }}</td>
-                                <td>
-                                    <div style="font-weight: 700; color: var(--text-900);">{{ $unit->nama_unit }}</div>
-                                    <div style="font-size: 12px; margin-top: 4px;"><span class="badge bg-belum">{{ $unit->kode_unit }}</span></div>
-                                </td>
-                                <td>
-                                    <div style="font-size: 12.5px; color: var(--text-700);"><i class="bi bi-diagram-3" style="color: var(--text-400);"></i> Induk: {{ $unit->parent->nama_unit ?? '—' }}</div>
-                                    <div style="font-size: 12.5px; color: var(--text-700); margin-top: 2px;"><i class="bi bi-person" style="color: var(--text-400);"></i> Kepala: <strong>{{ $unit->kepalaUnit->nama ?? '—' }}</strong></div>
-                                </td>
-                                <td style="display:flex; gap:5px;">
-                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}', parent_id: '{{ $unit->parent_id }}' })"><i class="bi bi-pencil"></i></button>
-                                    <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
 
-                {{-- Mobile Card View: Unit Kerja --}}
-                <div class="master-cards-mobile">
-                    @forelse($units as $unit)
-                    <div class="task-card">
-                        <div class="task-card-title">{{ $unit->nama_unit }}</div>
-                        <div class="task-card-subtitle">Kode: <span class="badge bg-belum">{{ $unit->kode_unit }}</span> | ID: {{ $unit->id }}</div>
-                        <div style="font-size: 12px; color: var(--text-600); margin-bottom: 4px;"><i class="bi bi-diagram-3"></i> Induk: {{ $unit->parent->nama_unit ?? '—' }}</div>
-                        <div style="font-size: 12px; color: var(--text-600);"><i class="bi bi-person"></i> Kepala: {{ $unit->kepalaUnit->nama ?? '—' }}</div>
-                        <div class="task-card-actions">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('unit', {{ $unit->id }}, { nama_unit: '{{ addslashes($unit->nama_unit) }}', kode_unit: '{{ addslashes($unit->kode_unit) }}', kepala_unit_id: '{{ $unit->kepala_unit_id }}', parent_id: '{{ $unit->parent_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
-                            <form action="{{ route('master.unit.destroy', $unit->id) }}" method="POST" onsubmit="return confirm('Hapus unit kerja ini?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
-                            </form>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="empty-state"><p>Belum ada data unit kerja.</p></div>
-                    @endforelse
-                </div>
-
-                <div style="margin-top: 20px;">
-                    {{ $units->appends(['tab' => 'unit', 'user_page' => request('user_page'), 'lokasi_page' => request('lokasi_page'), 'jenis_page' => request('jenis_page')])->links() }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tab: Pegawai & Pimpinan -->
-    <div class="tab-content" :class="{ 'active': tab === 'pegawai' }" x-show="tab === 'pegawai'">
-        <div class="split-container">
-            <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-plus-lg"></i></span> Tambah Pegawai / Pimpinan</h3>
-                <form action="{{ route('master.user.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-group">
-                        <label>Nama Lengkap</label>
-                        <input type="text" name="nama" class="{{ $errors->has('nama') ? 'is-invalid' : '' }}" placeholder="Masukkan nama lengkap" required>
-                        @error('nama') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="username" class="{{ $errors->has('username') ? 'is-invalid' : '' }}" placeholder="Masukkan username" required>
-                        @error('username') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Email (Untuk Google Login)</label>
-                        <input type="email" name="email" class="{{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Contoh: pegawai@alazhar.org">
-                        @error('email') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Password Awal</label>
-                        <input type="password" name="password" class="{{ $errors->has('password') ? 'is-invalid' : '' }}" placeholder="Masukkan password" required>
-                        @error('password') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Foto Profil (Opsional)</label>
-                        <input type="file" name="foto" accept="image/*" class="{{ $errors->has('foto') ? 'is-invalid' : '' }}" style="padding: 6px 14px;">
-                        @error('foto') <small class="text-error">{{ $message }}</small> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label>Unit Kerja</label>
-                        <select name="unit_id" required>
-                            <option value="">— Pilih Unit Kerja —</option>
-                            @foreach($allUnits as $u)
-                                <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Role / Jabatan</label>
-                        <select name="role_id" required>
-                            <option value="">— Pilih Role —</option>
-                            @foreach($roles as $r)
-                                <option value="{{ $r->id }}">{{ $r->nama_role }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="btn" style="width:100%;">Simpan Pegawai</button>
-                </form>
-            </div>
-            <div class="section-box">
-                <h3 class="section-title" style="margin-bottom: 16px;"><span class="title-icon"><i class="bi bi-people"></i></span> Daftar Pegawai</h3>
-                <div class="master-table-wrap" style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Profil Pegawai</th><th>Unit & Jabatan</th><th>Aksi</th></tr>
-                        </thead>
-                        <tbody>
-                            @foreach($users as $user)
-                            <tr>
-                                <td>{{ $user->id }}</td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        @if($user->foto)
-                                            <img src="{{ Storage::url($user->foto) }}" alt="Foto" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-100); flex-shrink: 0;">
-                                        @else
-                                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-50); color: var(--primary-700); display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid var(--primary-100); flex-shrink: 0;">
-                                                {{ substr($user->nama, 0, 1) }}
-                                            </div>
-                                        @endif
-                                        <div>
-                                            <div style="font-weight: 700; color: var(--text-900);">{{ $user->nama }}</div>
-                                            <div style="font-size: 12px; color: var(--text-500); margin-top: 2px;"><i class="bi bi-person-badge"></i> {{ $user->username }} &nbsp;&bull;&nbsp; <i class="bi bi-envelope"></i> {{ $user->email ?? '—' }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style="font-size: 12.5px; color: var(--text-700); margin-bottom: 6px;"><i class="bi bi-building" style="color: var(--text-400);"></i> {{ $user->unitKerja->nama_unit ?? '—' }}</div>
-                                    <div>
-                                        @if($user->role->nama_role == 'Admin')
-                                            <span class="badge bg-belum"><i class="bi bi-shield-lock"></i> Admin</span>
-                                        @elseif($user->role->nama_role == 'Pimpinan')
-                                            <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
-                                        @else
-                                            <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td style="display:flex; gap:5px;">
-                                    <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', email: '{{ addslashes($user->email ?? '') }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i></button>
-                                    <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Mobile Card View: Pegawai --}}
-                <div class="master-cards-mobile">
-                    @forelse($users as $user)
-                    <div class="task-card">
-                        <div class="task-card-title">{{ $user->nama }}</div>
-                        <div class="task-card-subtitle">{{ $user->username }} | Email: {{ $user->email ?? '—' }} | ID: {{ $user->id }}</div>
-                        <div style="font-size: 12px; color: var(--text-600); margin-bottom: 8px;"><i class="bi bi-building"></i> {{ $user->unitKerja->nama_unit ?? '—' }}</div>
-                        <div>
-                            @if($user->role->nama_role == 'Admin')
-                                <span class="badge bg-belum"><i class="bi bi-shield-lock"></i> Admin</span>
-                            @elseif($user->role->nama_role == 'Pimpinan')
-                                <span class="badge bg-proses"><i class="bi bi-person-badge"></i> Pimpinan</span>
-                            @else
-                                <span class="badge bg-selesai"><i class="bi bi-person"></i> Pegawai</span>
-                            @endif
-                        </div>
-                        <div class="task-card-actions">
-                            <button type="button" class="btn btn-sm btn-secondary" @click="openEditModal('user', {{ $user->id }}, { nama: '{{ addslashes($user->nama) }}', username: '{{ addslashes($user->username) }}', email: '{{ addslashes($user->email ?? '') }}', unit_id: '{{ $user->unit_id }}', role_id: '{{ $user->role_id }}' })"><i class="bi bi-pencil"></i> Edit</button>
-                            <form action="{{ route('master.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
-                            </form>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="empty-state"><p>Belum ada data pegawai.</p></div>
-                    @endforelse
-                </div>
-
-                <div style="margin-top: 20px;">
-                    {{ $users->appends(['tab' => 'pegawai', 'unit_page' => request('unit_page'), 'lokasi_page' => request('lokasi_page'), 'jenis_page' => request('jenis_page')])->links() }}
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Tab: Lokasi Kegiatan -->
     <div class="tab-content" :class="{ 'active': tab === 'lokasi' }" x-show="tab === 'lokasi'">
@@ -558,86 +322,7 @@
                 <h3><i class="bi bi-pencil"></i> Edit Data</h3>
                 <button type="button" class="modal-close" @click="editModalOpen = false">×</button>
             </div>
-            
-            <!-- Form untuk Unit Kerja -->
-            <form x-show="editType === 'unit'" :action="'{{ url('/master-data/unit') }}/' + editId" method="POST">
-                @csrf @method('PUT')
-                <div class="form-group">
-                    <label>Nama Unit Kerja</label>
-                    <input type="text" name="nama_unit" x-model="editData.nama_unit" required>
-                </div>
-                <div class="form-group">
-                    <label>Kode Unit</label>
-                    <input type="text" name="kode_unit" x-model="editData.kode_unit" required>
-                </div>
-                <div class="form-group">
-                    <label>Induk Unit Kerja (Opsional)</label>
-                    <select name="parent_id" x-model="editData.parent_id">
-                        <option value="">— Tidak Ada Induk (Level Tertinggi) —</option>
-                        @foreach($allUnits as $u)
-                            <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Kepala Unit</label>
-                    <select name="kepala_unit_id" x-model="editData.kepala_unit_id">
-                        <option value="">— Pilih Pimpinan (Opsional) —</option>
-                        @foreach($allUsers->where('role.nama_role', 'Pimpinan') as $p)
-                            <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
-                </div>
-            </form>
 
-            <!-- Form untuk User -->
-            <form x-show="editType === 'user'" :action="'{{ url('/master-data/user') }}/' + editId" method="POST" enctype="multipart/form-data">
-                @csrf @method('PUT')
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="nama" x-model="editData.nama" required>
-                </div>
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" x-model="editData.username" required>
-                </div>
-                <div class="form-group">
-                    <label>Email (Untuk Google Login)</label>
-                    <input type="email" name="email" x-model="editData.email" placeholder="Contoh: pegawai@alazhar.org">
-                </div>
-                <div class="form-group">
-                    <label>Password Baru (Kosongkan jika tidak diubah)</label>
-                    <input type="password" name="password" placeholder="***">
-                </div>
-                <div class="form-group">
-                    <label>Ubah Foto Profil (Biarkan kosong jika tidak diubah)</label>
-                    <input type="file" name="foto" accept="image/*" style="padding: 6px 14px;">
-                </div>
-                <div class="form-group">
-                    <label>Unit Kerja</label>
-                    <select name="unit_id" x-model="editData.unit_id" required>
-                        @foreach($allUnits as $u)
-                            <option value="{{ $u->id }}">{{ $u->nama_unit }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Role / Jabatan</label>
-                    <select name="role_id" x-model="editData.role_id" required>
-                        @foreach($roles as $r)
-                            <option value="{{ $r->id }}">{{ $r->nama_role }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary" @click="editModalOpen = false">Batal</button>
-                    <button type="submit" class="btn"><i class="bi bi-floppy"></i> Simpan Perubahan</button>
-                </div>
-            </form>
 
             <!-- Form untuk Lokasi -->
             <form x-show="editType === 'lokasi'" :action="'{{ url('/master-data/lokasi') }}/' + editId" method="POST">

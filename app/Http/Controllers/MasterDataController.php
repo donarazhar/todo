@@ -19,8 +19,8 @@ class MasterDataController extends Controller {
         $lokasi = LokasiKegiatan::paginate(10, ['*'], 'lokasi_page');
         $jenis = JenisKegiatan::paginate(10, ['*'], 'jenis_page');
         
-        // Pass the active tab from request or default to 'unit'
-        $activeTab = request()->query('tab', 'unit');
+        // Pass the active tab from request or default to 'lokasi'
+        $activeTab = request()->query('tab', 'lokasi');
         
         return view('admin.master-data', compact('users', 'allUsers', 'roles', 'units', 'allUnits', 'lokasi', 'jenis', 'activeTab'));
     }
