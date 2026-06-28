@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Login ke sistem Task&Schedule — Kelola tugas dan jadwal organisasi Anda dengan mudah.">
-    <title>Login — Task&Schedule</title>
+    <meta name="description" content="Login ke sistem Al Azhar Task & Schedule System — Kelola tugas dan jadwal organisasi Anda dengan mudah.">
+    <title>Login — Al Azhar Task & Schedule System</title>
     <link rel="icon" type="image/png" href="{{ asset('logo-alazhar.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -312,7 +312,7 @@
         <div class="header">
             <div class="logo-container">
                 <img src="{{ asset('logo-alazhar.png') }}" alt="YPI Al Azhar Logo" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain;">
-                <div class="logo-text">Task<span style="color: #9ca3af; font-weight: 500; margin: 0 2px;">&</span><span style="color: #2563eb;">Schedule</span></div>
+                <div class="logo-text">Al Azhar Task<span style="color: #9ca3af; font-weight: 500; margin: 0 2px;">&</span><span style="color: #2563eb;">Schedule System</span></div>
             </div>
 
             <p class="welcome-subtitle" style="margin-top: -12px;">Kelola tugas dan jadwal organisasi Anda dengan lebih mudah dan cepat!</p>
