@@ -11,6 +11,7 @@ class SSOController extends Controller
 {
     public function redirect()
     {
+        Auth::logout();
         return Socialite::driver('presensi')->redirect();
     }
 
@@ -47,24 +48,43 @@ class SSOController extends Controller
                 $roleId = 1; // Admin override
             }
 
-            // Prevent overwriting existing privileged role if they are Admin (1)
-            $existingUser = User::where('email', $email)->first();
-            if ($existingUser && $existingUser->role_id == 1) {
-                $roleId = 1;
+            // Find existing user by email OR username (since seeders left email null)
+            $usernamePrefix = explode('@', $email)[0];
+            $user = User::where('email', $email)->first();
+            
+            if (!$user) {
+                $user = User::where('username', $usernamePrefix)->first();
             }
 
-            // Update or Create User
-            $user = User::updateOrCreate(
-                ['email' => $email],
-                [
-                    'nama' => $presensiUser->getName() ?? 'User',
-                    'username' => explode('@', $email)[0],
-                    'password' => bcrypt(\Illuminate\Support\Str::random(16)), // Auth is via SSO
+            if ($user) {
+                // Prevent overwriting Admin role
+                if ($user->role_id == 1) {
+                    $roleId = 1;
+                }
+                
+                $user->update([
+                    'email' => $email, // sync email
+                    'nama' => $presensiUser->getName() ?? $user->nama,
                     'role_id' => $roleId,
                     'unit_id' => $unitId,
                     'foto' => $photoUrl,
-                ]
-            );
+                ]);
+            } else {
+                // Make sure username is absolutely unique
+                while (User::where('username', $usernamePrefix)->exists()) {
+                    $usernamePrefix = $usernamePrefix . rand(10, 99);
+                }
+
+                $user = User::create([
+                    'email' => $email,
+                    'username' => $usernamePrefix,
+                    'nama' => $presensiUser->getName() ?? 'User',
+                    'password' => bcrypt(\Illuminate\Support\Str::random(16)),
+                    'role_id' => $roleId,
+                    'unit_id' => $unitId,
+                    'foto' => $photoUrl,
+                ]);
+            }
 
             if ($user) {
                 Auth::login($user);
