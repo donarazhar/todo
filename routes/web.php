@@ -14,9 +14,9 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Google Auth Routes
-Route::get('/auth/google', [\App\Http\Controllers\GoogleAuthController::class, 'redirect'])->name('auth.google');
-Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController::class, 'callback']);
+// SSO Presensi Routes
+Route::get('/auth/presensi', [\App\Http\Controllers\SSOController::class, 'redirect'])->name('auth.presensi');
+Route::get('/auth/presensi/callback', [\App\Http\Controllers\SSOController::class, 'callback']);
 
 // Public Monitoring Dashboard for Presentations
 Route::get('/monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');

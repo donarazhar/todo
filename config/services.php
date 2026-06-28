@@ -41,4 +41,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
     ],
 
+    'presensi' => [
+        'client_id' => env('PRESENSI_CLIENT_ID'),
+        'client_secret' => env('PRESENSI_CLIENT_SECRET'),
+        'redirect' => env('PRESENSI_REDIRECT_URI', env('APP_URL') . '/auth/presensi/callback'),
+    ],
+
 ];

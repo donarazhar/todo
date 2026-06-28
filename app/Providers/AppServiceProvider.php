@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Laravel\Socialite\Facades\Socialite;
+use App\Socialite\PresensiProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +23,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFour();
+        
+        Socialite::extend('presensi', function ($app) {
+            $config = $app['config']['services.presensi'];
+            return Socialite::buildProvider(PresensiProvider::class, $config);
+        });
+
         \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
             $notifPimpinan = 0;
             $notifPegawai = 0;
