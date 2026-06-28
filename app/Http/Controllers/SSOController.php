@@ -41,9 +41,36 @@ class SSOController extends Controller
 
             // Determine Role (1=Admin, 2=Pimpinan, 3=Pegawai)
             $roleId = 3; // Default Pegawai
-            if (isset($rawUser['organ']['name']) && stripos($rawUser['organ']['name'], 'kepala') !== false) {
-                $roleId = 2; // Pimpinan
+            $persuratanRole = null;
+            
+            try {
+                $persuratanUrl = rtrim(env('PERSURATAN_URL', 'http://localhost:8001'), '/');
+                $response = \Illuminate\Support\Facades\Http::timeout(3)->get($persuratanUrl . '/api/check-user', [
+                    'email' => $email
+                ]);
+                if ($response->successful()) {
+                    $persuratanRole = $response->json('role');
+                }
+            } catch (\Exception $e) {
+                // Abaikan jika tidak terhubung
             }
+
+            if ($persuratanRole) {
+                $pimpinanRoles = ['bagian_tu', 'subag_persuratan', 'kepala_sekretariat', 'kepala_unit', 'sub_unit'];
+                if (in_array($persuratanRole, $pimpinanRoles)) {
+                    $roleId = 2; // Pimpinan
+                } elseif ($persuratanRole === 'admin') {
+                    $roleId = 1; // Admin
+                } else {
+                    $roleId = 3; // Pegawai
+                }
+            } else {
+                // Fallback jika tidak ada data dari Persuratan
+                if (isset($rawUser['organ']['name']) && stripos($rawUser['organ']['name'], 'kepala') !== false) {
+                    $roleId = 2; // Pimpinan
+                }
+            }
+
             if ($email === 'donarazhar@gmail.com') {
                 $roleId = 1; // Admin override
             }
