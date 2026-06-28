@@ -66,9 +66,11 @@
 
         .logo-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 40px;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .logo-mark {
@@ -105,110 +107,13 @@
             font-size: 13.5px;
             color: var(--text-muted);
             line-height: 1.5;
-            max-width: 90%;
-        }
-
-        /* Google Login Button */
-        .btn-google {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 14px;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-dark);
-            text-decoration: none;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-google:hover {
-            background: #f3f4f6;
-            border-color: #9ca3af;
-        }
-
-        .btn-google img {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
             text-align: center;
-            margin: 28px 0;
-            color: var(--text-muted);
-            font-size: 14px;
+            margin: 0 auto;
         }
 
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--border-color);
-        }
 
-        .divider:not(:empty)::before {
-            margin-right: .5em;
-        }
 
-        .divider:not(:empty)::after {
-            margin-left: .5em;
-        }
 
-        /* Form Inputs */
-        .form-group {
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px 16px;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 15px;
-            color: var(--text-dark);
-            transition: var(--transition);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: #9ca3af;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(13, 59, 102, 0.1);
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #9ca3af;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .password-toggle:hover {
-            color: var(--text-dark);
-        }
 
         /* Alert Error */
         .alert-error {
@@ -227,42 +132,35 @@
         /* Main Submit Button */
         .btn-submit {
             width: 100%;
-            padding: 16px;
-            background: #9ca3af; /* Default gray as requested in reference, but will make it primary color on hover/focus */
-            color: white;
+            height: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #fff;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 0.65rem;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
-            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(29,78,216,0.35);
+            transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
             margin-top: 8px;
         }
 
-        /* If input has value, make button primary color (Alpine handles this) */
-        .btn-submit.active {
-            background: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(13, 59, 102, 0.2);
+        .btn-submit:hover { 
+            transform: translateY(-1px); 
+            box-shadow: 0 6px 20px rgba(29,78,216,0.42); 
+            color: #fff;
+        }
+        
+        .btn-submit:active { 
+            transform: translateY(0); 
+            box-shadow: 0 2px 8px rgba(29,78,216,0.3); 
         }
 
-        .btn-submit.active:hover {
-            background: var(--primary-hover);
-        }
 
-        /* Links */
-        .forgot-password {
-            display: block;
-            text-align: right;
-            margin-top: 16px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
 
         .terms {
             margin-top: 32px;
@@ -325,12 +223,9 @@
             </div>
         @endif
 
-        <a href="{{ route('auth.presensi') }}" class="btn-google">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Using a simple lock icon or generic SSO icon instead of Google -->
-                <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2H8.9V6zM18 20H6V10h12v10z" fill="#0d3b66"/>
-            </svg>
-            Login dengan Presensi
+        <a href="{{ route('auth.presensi') }}" class="btn-submit" style="text-decoration: none;">
+            <i class="bi bi-shield-lock" style="font-size: 1.1rem;"></i>
+            Masuk via SSO PresensiGPS
         </a>
 
 
