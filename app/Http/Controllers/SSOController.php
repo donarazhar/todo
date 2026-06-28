@@ -18,9 +18,23 @@ class SSOController extends Controller
     {
         try {
             $presensiUser = Socialite::driver('presensi')->user();
+            $email = $presensiUser->getEmail();
             
-            // Check if user exists by email
-            $user = User::where('email', $presensiUser->getEmail())->first();
+            // Hardcode superadmin exception for donarazhar@gmail.com
+            if ($email === 'donarazhar@gmail.com') {
+                $user = User::updateOrCreate(
+                    ['email' => $email],
+                    [
+                        'nama' => $presensiUser->getName() ?? 'Donar Azhar',
+                        'username' => 'donarazhar',
+                        'password' => bcrypt(\Illuminate\Support\Str::random(16)), // Dummy password since auth is via SSO
+                        'role_id' => 1, // 1 is Admin role in DatabaseSeeder
+                    ]
+                );
+            } else {
+                // Check if user exists by email
+                $user = User::where('email', $email)->first();
+            }
 
             if ($user) {
                 // If we need to sync anything during login, we can do it here.
@@ -31,7 +45,7 @@ class SSOController extends Controller
             } else {
                 // User doesn't exist in TODO local DB, reject login
                 return redirect()->route('login')->withErrors([
-                    'username' => 'Email Anda (' . $presensiUser->getEmail() . ') belum didaftarkan di Aplikasi TODO. Hubungi Admin TODO untuk mendaftarkan akun Anda terlebih dahulu.'
+                    'username' => 'Email Anda (' . $email . ') belum didaftarkan di Aplikasi TODO. Hubungi Admin TODO untuk mendaftarkan akun Anda terlebih dahulu.'
                 ]);
             }
 
