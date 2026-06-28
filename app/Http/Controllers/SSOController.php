@@ -44,7 +44,7 @@ class SSOController extends Controller
             $persuratanRole = null;
             
             try {
-                $persuratanUrl = rtrim(env('PERSURATAN_URL', 'http://localhost:8001'), '/');
+                $persuratanUrl = rtrim(env('PERSURATAN_URL', 'https://surat.masjidagungalazhar.com'), '/');
                 $response = \Illuminate\Support\Facades\Http::timeout(3)->get($persuratanUrl . '/api/check-user', [
                     'email' => $email
                 ]);
