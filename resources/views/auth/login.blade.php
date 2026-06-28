@@ -303,11 +303,7 @@
 </head>
 <body>
 
-    <div class="login-wrapper" x-data="{ 
-            username: '{{ old('username') }}', 
-            password: '', 
-            showPassword: false 
-        }">
+    <div class="login-wrapper">
         
         <div class="header">
             <div class="logo-container">
@@ -337,55 +333,13 @@
             Login dengan Presensi
         </a>
 
-        <div class="divider">Or</div>
 
-        <form action="{{ route('login') }}" method="POST">
-            @csrf
-            
-            <div class="form-group">
-                <input 
-                    type="text" 
-                    name="username" 
-                    class="form-control" 
-                    placeholder="Username/Email" 
-                    x-model="username"
-                    required 
-                    autocomplete="username"
-                >
-            </div>
-
-            <div class="form-group">
-                <input 
-                    :type="showPassword ? 'text' : 'password'" 
-                    name="password" 
-                    class="form-control" 
-                    placeholder="Password" 
-                    x-model="password"
-                    required
-                >
-                <button type="button" class="password-toggle" @click="showPassword = !showPassword" aria-label="Toggle password visibility">
-                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-                </button>
-            </div>
-
-            <button 
-                type="submit" 
-                class="btn-submit"
-                :class="{'active': username.length > 0 && password.length > 0}"
-            >
-                Login
-            </button>
-
-            <a href="#" class="forgot-password">Forgot Password?</a>
-        </form>
 
         <div class="terms">
             By logging in to Tasks, you agree to all of YPI Al Azhar's <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>.
         </div>
 
-        <div class="footer">
-            Don't have an account yet? <a href="#">Sign up</a>
-        </div>
+
 
     </div>
 
