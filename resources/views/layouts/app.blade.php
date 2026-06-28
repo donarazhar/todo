@@ -1619,7 +1619,7 @@
             <!-- DESKTOP / TABLET / MOBILE SIDEBAR USER (Bottom) -->
             <div class="sidebar-user">
                 @if(Auth::user()->foto)
-                    <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300); flex-shrink: 0;">
+                    <img src="{{ \Illuminate\Support\Str::startsWith(Auth::user()->foto, ['http://', 'https://']) ? Auth::user()->foto : Storage::url(Auth::user()->foto) }}" alt="Foto Profil" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-300); flex-shrink: 0;">
                 @else
                     <div class="user-avatar" id="avatar-initial">{{ substr(Auth::user()->nama, 0, 1) }}</div>
                 @endif

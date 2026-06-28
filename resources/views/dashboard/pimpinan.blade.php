@@ -810,7 +810,7 @@
                     @if($tab !== 'mandiri')
                     <div style="flex-shrink: 0;">
                         @if($person && $person->foto)
-                            <img src="{{ Storage::url($person->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                            <img src="{{ \Illuminate\Support\Str::startsWith($person->foto, ['http://', 'https://']) ? $person->foto : Storage::url($person->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
                         @else
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-800); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">
                                 {{ substr($person->nama ?? '?', 0, 1) }}

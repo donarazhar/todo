@@ -784,7 +784,7 @@
                 @if($tab === 'pimpinan')
                     <div style="flex-shrink: 0;">
                         @if($t->creator && $t->creator->foto)
-                            <img src="{{ Storage::url($t->creator->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                            <img src="{{ \Illuminate\Support\Str::startsWith($t->creator->foto, ['http://', 'https://']) ? $t->creator->foto : Storage::url($t->creator->foto) }}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
                         @else
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-800); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">
                                 {{ substr($t->creator->nama ?? '?', 0, 1) }}
