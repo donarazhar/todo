@@ -19,35 +19,61 @@ class SSOController extends Controller
         try {
             $presensiUser = Socialite::driver('presensi')->user();
             $email = $presensiUser->getEmail();
+            $rawUser = $presensiUser->user;
             
-            // Hardcode superadmin exception for donarazhar@gmail.com
-            if ($email === 'donarazhar@gmail.com') {
-                $user = User::updateOrCreate(
-                    ['email' => $email],
-                    [
-                        'nama' => $presensiUser->getName() ?? 'Donar Azhar',
-                        'username' => 'donarazhar',
-                        'password' => bcrypt(\Illuminate\Support\Str::random(16)), // Dummy password since auth is via SSO
-                        'role_id' => 1, // 1 is Admin role in DatabaseSeeder
-                    ]
-                );
-            } else {
-                // Check if user exists by email
-                $user = User::where('email', $email)->first();
+            // Generate Photo URL
+            $photoUrl = null;
+            if (!empty($rawUser['foto'])) {
+                $photoUrl = rtrim(env('PRESENSI_URL', 'https://presensigps.masjidagungalazhar.com'), '/') . '/storage/uploads/karyawan/' . $rawUser['foto'];
             }
 
+            // Sync Unit
+            $unitId = null;
+            if (isset($rawUser['organ']['unit'])) {
+                $unitData = $rawUser['organ']['unit'];
+                \App\Models\UnitKerja::updateOrCreate(
+                    ['id' => $unitData['id']],
+                    ['nama_unit' => $unitData['name']]
+                );
+                $unitId = $unitData['id'];
+            }
+
+            // Determine Role (1=Admin, 2=Pimpinan, 3=Pegawai)
+            $roleId = 3; // Default Pegawai
+            if (isset($rawUser['organ']['name']) && stripos($rawUser['organ']['name'], 'kepala') !== false) {
+                $roleId = 2; // Pimpinan
+            }
+            if ($email === 'donarazhar@gmail.com') {
+                $roleId = 1; // Admin override
+            }
+
+            // Prevent overwriting existing privileged role if they are Admin (1)
+            $existingUser = User::where('email', $email)->first();
+            if ($existingUser && $existingUser->role_id == 1) {
+                $roleId = 1;
+            }
+
+            // Update or Create User
+            $user = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'nama' => $presensiUser->getName() ?? 'User',
+                    'username' => explode('@', $email)[0],
+                    'password' => bcrypt(\Illuminate\Support\Str::random(16)), // Auth is via SSO
+                    'role_id' => $roleId,
+                    'unit_id' => $unitId,
+                    'foto' => $photoUrl,
+                ]
+            );
+
             if ($user) {
-                // If we need to sync anything during login, we can do it here.
-                // KaryawanAdminController (Presensi) will handle the background auto-sync for data changes.
-                
                 Auth::login($user);
                 return redirect()->intended('dashboard');
-            } else {
-                // User doesn't exist in TODO local DB, reject login
-                return redirect()->route('login')->withErrors([
-                    'username' => 'Email Anda (' . $email . ') belum didaftarkan di Aplikasi TODO. Hubungi Admin TODO untuk mendaftarkan akun Anda terlebih dahulu.'
-                ]);
             }
+
+            return redirect()->route('login')->withErrors([
+                'username' => 'Gagal membuat atau menyinkronkan akun TODO Anda.'
+            ]);
 
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors([
