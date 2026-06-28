@@ -34,10 +34,6 @@ class DatabaseSeeder extends Seeder {
         JenisKegiatan::firstOrCreate(['nama_jenis' => 'Rapat Koordinasi']);
         JenisKegiatan::firstOrCreate(['nama_jenis' => 'Pelatihan']);
 
-        // 4. Jalankan Seeder yang baru dibuat
-        $this->call([
-            OrgSeeder::class,
-            TaskSeeder::class,
-        ]);
+        // 4. Seeder data dummy (OrgSeeder, TaskSeeder) telah dihapus karena tidak diperlukan di production.
     }
 }
